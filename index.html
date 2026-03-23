@@ -258,12 +258,23 @@
     <div>
       <div class="eyebrow">Serato Library Utility</div>
       <h1>Text → CSV Studio</h1>
-      <div class="sub">Choose the look you want with a built-in theme switcher, while keeping the full parser, merge, overwrite, drag-and-drop, collapsible options, and remembered settings.</div>
+      <div class="sub">
+      <div class="field" style="max-width:280px;">
+        <label class="label" for="themeSelect"><span>UI Theme</span></label>
+        <select id="themeSelect">
+          <option value="serato-red">Serato Red / Burgundy</option>
+          <option value="nightclub-gold">Nightclub Gold</option>
+          <option value="neon-blue">Neon Blue</option>
+          <option value="forest-green">Forest Green</option>
+          <option value="plum-violet">Plum Violet</option>
+          <option value="silver">Silver (Light)</option>
+        </select>
+      </div>
+    </div>
     </div>
     <div class="hero-right">
-      <div class="tag">Theme Switcher</div>
-      <div class="tag">Settings Remembered</div>
-      <div class="tag">Full Track Preview</div>
+      <div class="tag">v1.0.1</div>
+      
     </div>
   </div>
 
@@ -272,12 +283,12 @@
       <section class="panel">
         <div class="panel-header">
           <div>
-            <div class="panel-title">Files, Theme & Export</div>
+            <div class="panel-title">Files Import and Export</div>
             <div class="panel-sub">Load files, pick a style, and export your library</div>
           </div>
         </div>
         <div class="panel-body">
-          <div class="field" style="margin-bottom:14px;">
+          <div class="field" style="margin-bottom:14px; display:none;">
             <label class="label" for="themeSelect">
               <span>UI Theme</span>
               <span class="hint">Choose your preferred look</span>
