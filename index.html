@@ -234,7 +234,64 @@
   tbody tr:hover{background:color-mix(in srgb, var(--accent-3) 10%, transparent)}
   .footer-note{color:var(--muted-2);font-size:12px;padding:12px 16px}
 
-  @media (max-width: 1140px){ .grid{grid-template-columns:1fr} }
+  
+  .cell-input{
+    width:100%;
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:8px;
+    color:var(--text);
+    padding:6px 7px;
+    font:inherit;
+    min-width:0;
+  }
+  .cell-input:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+    background:color-mix(in srgb, var(--panel-2) 85%, white 3%);
+  }
+
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .table-toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .table-toolbar-left{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .cell-btn{
+    appearance:none;
+    border:1px solid var(--line-2);
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    color:var(--text);
+    border-radius:10px;
+    padding:7px 10px;
+    cursor:pointer;
+    font-weight:700;
+    min-width:36px;
+  }
+  .cell-btn:hover{ filter:brightness(1.04); }
+  .row-number{
+    color:var(--muted-2);
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+
+@media (max-width: 1140px){ .grid{grid-template-columns:1fr} }
   @media (max-width: 760px){
     body{padding:18px}
     .hero{flex-direction:column;align-items:flex-start}
@@ -273,7 +330,7 @@
     </div>
     </div>
     <div class="hero-right">
-      <div class="tag">v1.0.1</div>
+      <div class="tag">v1.0.4</div>
       
     </div>
   </div>
@@ -305,8 +362,8 @@
 
           <div class="actions">
             <label class="file-btn primary">
-              Load Serato TXT
-              <input id="fileInput" type="file" accept=".txt,.text" />
+              Load TXT or CSV
+              <input id="fileInput" type="file" accept=".txt,.text,.csv" />
             </label>
             <label class="file-btn secondary">
               Load Existing CSV
@@ -449,9 +506,26 @@
         <div class="panel-header">
           <div>
             <div class="panel-title">All Parsed Tracks</div>
-            <div class="panel-sub">Every parsed row is shown here</div>
+            <div class="panel-sub">Search, edit, add, and remove rows before export</div>
           </div>
           <div class="pill" id="previewCount">0 rows</div>
+        </div>
+        <div class="panel-body" style="padding-bottom:12px;">
+          <div class="table-toolbar">
+            <div class="table-toolbar-left">
+              <div class="field" style="min-width:260px;">
+                <label class="label" for="tableSearch">
+                  <span>Search Table</span>
+                  <span class="hint">Find by artist or song</span>
+                </label>
+                <input class="input" id="tableSearch" type="text" placeholder="Search artist or song..." />
+              </div>
+            </div>
+            <div class="toolbar" style="margin-top:20px;">
+              <button class="btn secondary" id="addRowBtn" type="button">Add Song</button>
+              <button class="btn secondary" id="removeSelectedBtn" type="button">Remove Selected</button>
+            </div>
+          </div>
         </div>
         <div class="table-wrap">
           <div id="preview"></div>
@@ -590,13 +664,93 @@ function parseText() {
     "\nHeader-based column positions: " + (pos ? JSON.stringify(pos) : "not found");
   renderPreview(); updateMetrics();
 }
+
+
 function renderPreview() {
-  const preview = document.getElementById('preview'), cols = getSelectedColumns(), rows = state.rows;
-  if (!rows.length) { preview.innerHTML = '<div style="padding:16px;color:var(--muted-2)">No rows parsed yet.</div>'; updateMetrics(); return; }
-  let html = "<table><thead><tr>" + cols.map(c => "<th>" + escapeHtml(c) + "</th>").join("") + "</tr></thead><tbody>";
-  for (const row of rows) html += "<tr>" + cols.map(c => "<td>" + escapeHtml(row[c] || "") + "</td>").join("") + "</tr>";
-  html += "</tbody></table>"; preview.innerHTML = html; updateMetrics();
+  const preview = document.getElementById('preview');
+  const cols = getSelectedColumns();
+  const rows = state.rows;
+  const searchTerm = (document.getElementById('tableSearch')?.value || '').trim().toLowerCase();
+
+  let filteredIndexes = rows.map((_, idx) => idx);
+  if (searchTerm) {
+    filteredIndexes = filteredIndexes.filter((idx) => {
+      const row = rows[idx];
+      const artist = String(row.Artist || '').toLowerCase();
+      const song = String(row.Song || '').toLowerCase();
+      return artist.includes(searchTerm) || song.includes(searchTerm);
+    });
+  }
+
+  if (!rows.length) {
+    preview.innerHTML = '<div style="padding:16px;color:var(--muted)">No rows parsed yet.</div>';
+    document.getElementById('previewCount').textContent = "0 rows";
+    updateMetrics();
+    return;
+  }
+
+  let html = "<table><thead><tr><th>#</th><th>Actions</th>" + cols.map(c => "<th>" + escapeHtml(c) + "</th>").join("") + "</tr></thead><tbody>";
+  for (const rowIndex of filteredIndexes) {
+    const row = rows[rowIndex];
+    const selected = state.selectedRowIndex === rowIndex ? ' class="selected-row"' : '';
+    html += "<tr data-row-select='" + rowIndex + "'" + selected + ">";
+    html += "<td><span class='row-number'>" + (rowIndex + 1) + "</span></td>";
+    html += "<td><button class='cell-btn' type='button' data-remove-row='" + rowIndex + "'>Remove</button></td>";
+    html += cols.map(c => '<td><input class="cell-input" data-row="' + rowIndex + '" data-col="' + escapeHtml(c) + '" value="' + escapeHtml(row[c] || '') + '"></td>').join("");
+    html += "</tr>";
+  }
+  html += "</tbody></table>";
+  preview.innerHTML = html;
+  document.getElementById('previewCount').textContent = filteredIndexes.length + " rows";
+
+  preview.querySelectorAll('[data-row-select]').forEach((rowEl) => {
+    rowEl.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('cell-input') && !e.target.hasAttribute('data-remove-row')) {
+        state.selectedRowIndex = Number(this.getAttribute('data-row-select'));
+        renderPreview();
+      }
+    });
+  });
+
+  preview.querySelectorAll('[data-remove-row]').forEach((btn) => {
+    btn.addEventListener('click', function() {
+      const idx = Number(this.getAttribute('data-remove-row'));
+      removeRow(idx);
+    });
+  });
+
+  preview.querySelectorAll('.cell-input').forEach((input) => {
+    input.addEventListener('focus', function() {
+      const rowIdx = Number(this.getAttribute('data-row'));
+      state.selectedRowIndex = rowIdx;
+      preview.querySelectorAll('[data-row-select]').forEach(tr => tr.classList.remove('selected-row'));
+      const tr = this.closest('tr');
+      if (tr) tr.classList.add('selected-row');
+    });
+
+    input.addEventListener('input', function() {
+      const rowIdx = Number(this.getAttribute('data-row'));
+      const col = this.getAttribute('data-col');
+      if (!state.rows[rowIdx]) return;
+      state.rows[rowIdx][col] = this.value;
+    });
+
+    input.addEventListener('blur', function() {
+      const rowIdx = Number(this.getAttribute('data-row'));
+      const col = this.getAttribute('data-col');
+      if (!state.rows[rowIdx]) return;
+      if (col === 'Key' && document.getElementById('camelot').checked && this.value.trim()) {
+        const converted = toCamelot(this.value);
+        state.rows[rowIdx][col] = converted;
+        this.value = converted;
+      }
+    });
+  });
+
+  updateMetrics();
 }
+
+
 function parseCSVLine(line) {
   const out = []; let cur = "", inQuotes = false;
   for (let i=0;i<line.length;i++) {
@@ -699,12 +853,91 @@ function handleMergeCSVFile(file) {
   reader.onload = function(evt){ loadMergeCSV(evt.target.result, file.name); };
   reader.readAsText(file);
 }
-function handleDroppedFile(file) {
-  const name = (file.name || "").toLowerCase();
-  if (name.endsWith(".csv")) handleMergeCSVFile(file); else handleSeratoTextFile(file);
+
+function loadCSVAsMain(text, fileName) {
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim() !== "");
+  if (!lines.length) {
+    document.getElementById('status').textContent = "Loaded CSV was empty.";
+    state.rows = [];
+    state.loadedLines = 0;
+    renderPreview();
+    updateMetrics();
+    return;
+  }
+
+  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+  const rows = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const vals = parseCSVLine(lines[i]);
+    const row = {};
+    headers.forEach((h, idx) => row[h] = vals[idx] ?? "");
+    rows.push(row);
+  }
+
+  state.rows = rows;
+  state.loadedLines = lines.length;
+
+  document.getElementById('status').textContent =
+    "Loaded CSV as main dataset: " + fileName +
+    "\nColumns: " + headers.join(", ") +
+    "\nRows: " + rows.length;
+
+  renderPreview();
+  updateMetrics();
 }
 
-document.getElementById('fileInput').addEventListener('change', e => { const file = e.target.files[0]; if (file) handleSeratoTextFile(file); });
+function handleMainFile(file) {
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const text = evt.target.result;
+    const name = (file.name || "").toLowerCase();
+
+    if (name.endsWith(".csv")) {
+      loadCSVAsMain(text, file.name);
+    } else {
+      document.getElementById('input').value = text;
+      state.loadedLines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').length;
+      document.getElementById('status').textContent =
+        "Loaded Serato text file: " + file.name +
+        "\nCharacters: " + text.length +
+        "\nLines: " + state.loadedLines;
+      updateMetrics();
+    }
+  };
+  reader.readAsText(file);
+}
+function handleDroppedFile(file) {
+  const name = (file.name || "").toLowerCase();
+  handleMainFile(file);
+}
+
+
+function addBlankRow() {
+  const newRow = { Artist: "", Song: "", BPM: "", Key: "", Year: "", Genre: "" };
+  state.rows.push(newRow);
+  state.selectedRowIndex = state.rows.length - 1;
+  renderPreview();
+}
+
+function removeRow(idx) {
+  if (idx < 0 || idx >= state.rows.length) return;
+  state.rows.splice(idx, 1);
+  if (state.selectedRowIndex === idx) state.selectedRowIndex = null;
+  else if (state.selectedRowIndex !== null && state.selectedRowIndex > idx) state.selectedRowIndex -= 1;
+  renderPreview();
+}
+
+function removeSelectedRow() {
+  if (state.selectedRowIndex === null) {
+    alert("Select a row first.");
+    return;
+  }
+  removeRow(state.selectedRowIndex);
+}
+
+
+document.getElementById('fileInput').addEventListener('change', e => { const file = e.target.files[0]; if (file) handleMainFile(file); });
 document.getElementById('mergeFileInput').addEventListener('change', e => { const file = e.target.files[0]; if (file) handleMergeCSVFile(file); });
 document.getElementById('parseBtn').addEventListener('click', parseText);
 document.getElementById('downloadBtn').addEventListener('click', downloadCSV);
@@ -715,7 +948,10 @@ document.getElementById('dedupe').addEventListener('change', savePrefs);
 document.getElementById('processingDetails').addEventListener('toggle', savePrefs);
 document.getElementById('columnsDetails').addEventListener('toggle', savePrefs);
 document.getElementById('themeSelect').addEventListener('change', function(){ applyTheme(this.value); savePrefs(); });
+document.getElementById('addRowBtn').addEventListener('click', addBlankRow);
+document.getElementById('removeSelectedBtn').addEventListener('click', removeSelectedRow);
 document.querySelectorAll('.col').forEach(el => el.addEventListener('change', function(){ renderPreview(); savePrefs(); }));
+document.getElementById('tableSearch').addEventListener('input', renderPreview);
 
 const dropzone = document.getElementById('dropzone');
 ['dragenter', 'dragover'].forEach(evtName => {
