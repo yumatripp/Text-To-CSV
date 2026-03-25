@@ -291,6 +291,53 @@
     white-space:nowrap;
   }
 
+
+  .row-check{
+    width:18px;
+    height:18px;
+    accent-color: var(--accent-3);
+    cursor:pointer;
+  }
+  .header-check-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .table-wrap{
+    overflow-y: scroll !important;
+    overflow-x: auto;
+    scrollbar-width: auto;
+    scrollbar-color: var(--accent-3) color-mix(in srgb, var(--panel) 90%, black);
+  }
+  .table-wrap::-webkit-scrollbar{
+    width: 14px;
+    height: 14px;
+  }
+  .table-wrap::-webkit-scrollbar-track{
+    background: color-mix(in srgb, var(--panel) 92%, black);
+    border-left: 1px solid var(--line-2);
+  }
+  .table-wrap::-webkit-scrollbar-thumb{
+    background: color-mix(in srgb, var(--accent-3) 70%, var(--accent));
+    border-radius: 10px;
+    border: 3px solid color-mix(in srgb, var(--panel) 92%, black);
+  }
+  .table-wrap::-webkit-scrollbar-thumb:hover{
+    background: var(--accent-3);
+  }
+  th.sortable{
+    cursor:pointer;
+    user-select:none;
+  }
+  th.sortable:hover{
+    background: color-mix(in srgb, var(--accent-3) 10%, transparent);
+  }
+  .sort-indicator{
+    margin-left:6px;
+    font-size:11px;
+    color:var(--muted-2);
+  }
+
 @media (max-width: 1140px){ .grid{grid-template-columns:1fr} }
   @media (max-width: 760px){
     body{padding:18px}
@@ -330,7 +377,7 @@
     </div>
     </div>
     <div class="hero-right">
-      <div class="tag">v1.0.4</div>
+      <div class="tag">v1.0.5c</div>
       
     </div>
   </div>
@@ -523,6 +570,8 @@
             </div>
             <div class="toolbar" style="margin-top:20px;">
               <button class="btn secondary" id="addRowBtn" type="button">Add Song</button>
+              <button class="btn secondary" id="selectAllBtn" type="button">Select All</button>
+              <button class="btn secondary" id="deselectAllBtn" type="button">Deselect All</button>
               <button class="btn secondary" id="removeSelectedBtn" type="button">Remove Selected</button>
             </div>
           </div>
@@ -537,7 +586,7 @@
 </div>
 
 <script>
-const state = { rows: [], mergeRows: [], mergeHeaders: [], loadedLines: 0 };
+const state = { rows: [], mergeRows: [], mergeHeaders: [], loadedLines: 0, selectedRowIndex: null, checkedRows: new Set(), sortColumn: null, sortDirection: 'asc' };
 const STORAGE_KEY = "serato_text_to_csv_ui_prefs_v3_themes";
 
 function savePrefs() {
@@ -549,7 +598,9 @@ function savePrefs() {
     selectedColumns: Array.from(document.querySelectorAll('.col:checked')).map(el => el.value),
     processingOpen: document.getElementById('processingDetails')?.open || false,
     columnsOpen: document.getElementById('columnsDetails')?.open || false,
-    theme: document.getElementById('themeSelect')?.value || "serato-red"
+    theme: document.getElementById('themeSelect')?.value || "serato-red",
+    sortColumn: state.sortColumn,
+    sortDirection: state.sortDirection
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
 }
@@ -567,6 +618,8 @@ function loadPrefs() {
     if (typeof prefs.processingOpen === "boolean") document.getElementById('processingDetails').open = prefs.processingOpen;
     if (typeof prefs.columnsOpen === "boolean") document.getElementById('columnsDetails').open = prefs.columnsOpen;
     if (typeof prefs.theme === "string") document.getElementById('themeSelect').value = prefs.theme;
+    if (typeof prefs.sortColumn === "string") state.sortColumn = prefs.sortColumn;
+    if (typeof prefs.sortDirection === "string") state.sortDirection = prefs.sortDirection;
   } catch(e) {}
 }
 
@@ -596,7 +649,19 @@ function updateMetrics() {
   document.getElementById('previewCount').textContent = (state.rows.length || 0) + " rows";
   document.getElementById('mergeBadge').textContent = state.mergeRows.length ? (state.mergeRows.length + " merge rows loaded") : "No merge CSV loaded";
 }
+function sanitizeKeyValue(value) {
+  let v = String(value ?? "").trim();
+  if (!v) return "";
+  if (v === "0") return "";
+  if (/^0+$/i.test(v)) return "";
+  const m = v.match(/^0*([1-9]|1[0-2])([AB])$/i);
+  if (m) return m[1] + m[2].toUpperCase();
+  if (/^0+[AB]$/i.test(v)) return "";
+  return v;
+}
+
 function normalizeKey(key) {
+  key = sanitizeKeyValue(key);
   if (!key) return "";
   let k = String(key).trim().replace(/♭/g, 'b').replace(/♯/g, '#').replace(/\s+/g, ' ').replace(/major/i, '').replace(/maj/i, '').replace(/minor/i, 'm').replace(/min/i, 'm').trim();
   if (/^\d{1,2}[AB]$/i.test(k)) return k.toUpperCase();
@@ -633,12 +698,12 @@ function parseLineByPositions(line, pos) {
   const genre = line.slice(starts[5]).trim();
   if (!artist && !song) return null;
   if (!bpm && !key && !year && !genre) return null;
-  return { Artist: artist, Song: song, BPM: bpm, Key: key, Year: year, Genre: genre };
+  return { Artist: artist, Song: song, BPM: bpm, Key: sanitizeKeyValue(key), Year: year, Genre: genre };
 }
 function parseFallback(line) {
   const m = line.match(/^(.*?\S)\s{2,}(\d{2,3})\s{2,}([A-G](?:#|b)?m?|\d{1,2}[AB])?\s{2,}(\d{4})?\s{2,}(.*)$/i);
   if (!m) return null;
-  return { Artist: "", Song: m[1].trim(), BPM: m[2] || "", Key: m[3] || "", Year: m[4] || "", Genre: m[5] || "" };
+  return { Artist: "", Song: m[1].trim(), BPM: m[2] || "", Key: sanitizeKeyValue(m[3] || ""), Year: m[4] || "", Genre: m[5] || "" };
 }
 function parseText() {
   const text = document.getElementById('input').value;
@@ -657,6 +722,8 @@ function parseText() {
     } else skipped++;
   }
   state.rows = rows;
+  state.checkedRows = new Set();
+  state.selectedRowIndex = null;
   document.getElementById('status').textContent =
     "Loaded lines: " + lines.length +
     "\nParsed tracks: " + rows.length +
@@ -666,21 +733,111 @@ function parseText() {
 }
 
 
-function renderPreview() {
-  const preview = document.getElementById('preview');
-  const cols = getSelectedColumns();
-  const rows = state.rows;
-  const searchTerm = (document.getElementById('tableSearch')?.value || '').trim().toLowerCase();
 
-  let filteredIndexes = rows.map((_, idx) => idx);
+function getVisibleRowIndexes() {
+  const searchTerm = (document.getElementById('tableSearch')?.value || '').trim().toLowerCase();
+  let filteredIndexes = state.rows.map((_, idx) => idx);
   if (searchTerm) {
     filteredIndexes = filteredIndexes.filter((idx) => {
-      const row = rows[idx];
+      const row = state.rows[idx];
       const artist = String(row.Artist || '').toLowerCase();
       const song = String(row.Song || '').toLowerCase();
       return artist.includes(searchTerm) || song.includes(searchTerm);
     });
   }
+  return filteredIndexes;
+}
+
+function selectAllVisibleRows() {
+  getVisibleRowIndexes().forEach((idx) => state.checkedRows.add(idx));
+  renderPreview();
+}
+
+function deselectAllRows() {
+  state.checkedRows = new Set();
+  renderPreview();
+}
+
+function removeCheckedRows() {
+  if (!state.checkedRows.size) {
+    alert("Select one or more rows first.");
+    return;
+  }
+  const indexes = Array.from(state.checkedRows).sort((a, b) => b - a);
+  for (const idx of indexes) {
+    if (idx >= 0 && idx < state.rows.length) state.rows.splice(idx, 1);
+  }
+  state.checkedRows = new Set();
+  state.selectedRowIndex = null;
+  renderPreview();
+}
+
+function compareValues(a, b, direction = 'asc') {
+  const aa = String(a ?? '').trim();
+  const bb = String(b ?? '').trim();
+
+  const na = parseFloat(aa);
+  const nb = parseFloat(bb);
+  const bothNumeric = aa !== '' && bb !== '' && !Number.isNaN(na) && !Number.isNaN(nb);
+
+  let result = 0;
+  if (bothNumeric) {
+    result = na - nb;
+  } else {
+    result = aa.localeCompare(bb, undefined, { numeric: true, sensitivity: 'base' });
+  }
+
+  return direction === 'asc' ? result : -result;
+}
+
+function sortRowsByColumn(column) {
+  if (!column) return;
+
+  if (state.sortColumn === column) {
+    state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sortColumn = column;
+    state.sortDirection = 'asc';
+  }
+
+  const indexed = state.rows.map((row, idx) => ({ row, idx }));
+  indexed.sort((a, b) => {
+    const primary = compareValues(a.row[column], b.row[column], state.sortDirection);
+    if (primary !== 0) return primary;
+    return a.idx - b.idx;
+  });
+
+  const indexMap = new Map();
+  indexed.forEach((item, newIdx) => indexMap.set(item.idx, newIdx));
+  state.rows = indexed.map(item => item.row);
+
+  const shiftedChecked = new Set();
+  state.checkedRows.forEach((oldIdx) => {
+    if (indexMap.has(oldIdx)) shiftedChecked.add(indexMap.get(oldIdx));
+  });
+  state.checkedRows = shiftedChecked;
+
+  if (state.selectedRowIndex !== null && indexMap.has(state.selectedRowIndex)) {
+    state.selectedRowIndex = indexMap.get(state.selectedRowIndex);
+  } else {
+    state.selectedRowIndex = null;
+  }
+
+  renderPreview();
+}
+
+function getSortIndicator(column) {
+  if (state.sortColumn !== column) return "";
+  return state.sortDirection === 'asc' ? "▲" : "▼";
+}
+
+
+
+function renderPreview() {
+  const preview = document.getElementById('preview');
+  const cols = getSelectedColumns();
+  const rows = state.rows;
+  const filteredIndexes = getVisibleRowIndexes();
 
   if (!rows.length) {
     preview.innerHTML = '<div style="padding:16px;color:var(--muted)">No rows parsed yet.</div>';
@@ -689,11 +846,14 @@ function renderPreview() {
     return;
   }
 
-  let html = "<table><thead><tr><th>#</th><th>Actions</th>" + cols.map(c => "<th>" + escapeHtml(c) + "</th>").join("") + "</tr></thead><tbody>";
+  const allVisibleSelected = filteredIndexes.length > 0 && filteredIndexes.every(idx => state.checkedRows.has(idx));
+
+  let html = "<table><thead><tr><th class='header-check-wrap'><input class='row-check' id='headerSelectAll' type='checkbox' " + (allVisibleSelected ? "checked" : "") + "></th><th>#</th><th>Actions</th>" + cols.map(c => "<th class='sortable' data-sort-col='" + escapeHtml(c) + "'>" + escapeHtml(c) + "<span class='sort-indicator'>" + getSortIndicator(c) + "</span></th>").join("") + "</tr></thead><tbody>";
   for (const rowIndex of filteredIndexes) {
     const row = rows[rowIndex];
     const selected = state.selectedRowIndex === rowIndex ? ' class="selected-row"' : '';
     html += "<tr data-row-select='" + rowIndex + "'" + selected + ">";
+    html += "<td><input class='row-check' type='checkbox' data-check-row='" + rowIndex + "' " + (state.checkedRows.has(rowIndex) ? "checked" : "") + "></td>";
     html += "<td><span class='row-number'>" + (rowIndex + 1) + "</span></td>";
     html += "<td><button class='cell-btn' type='button' data-remove-row='" + rowIndex + "'>Remove</button></td>";
     html += cols.map(c => '<td><input class="cell-input" data-row="' + rowIndex + '" data-col="' + escapeHtml(c) + '" value="' + escapeHtml(row[c] || '') + '"></td>').join("");
@@ -701,11 +861,33 @@ function renderPreview() {
   }
   html += "</tbody></table>";
   preview.innerHTML = html;
-  document.getElementById('previewCount').textContent = filteredIndexes.length + " rows";
+  document.getElementById('previewCount').textContent = filteredIndexes.length + " rows" + (state.checkedRows.size ? " • " + state.checkedRows.size + " selected" : "");
+
+  const headerCheck = preview.querySelector('#headerSelectAll');
+  if (headerCheck) {
+    headerCheck.addEventListener('change', function(e) {
+      if (this.checked) filteredIndexes.forEach(idx => state.checkedRows.add(idx));
+      else filteredIndexes.forEach(idx => state.checkedRows.delete(idx));
+      renderPreview();
+      e.stopPropagation();
+    });
+    headerCheck.addEventListener('click', function(e) { e.stopPropagation(); });
+  }
+
+  preview.querySelectorAll('[data-check-row]').forEach((cb) => {
+    cb.addEventListener('change', function(e) {
+      const idx = Number(this.getAttribute('data-check-row'));
+      if (this.checked) state.checkedRows.add(idx);
+      else state.checkedRows.delete(idx);
+      renderPreview();
+      e.stopPropagation();
+    });
+    cb.addEventListener('click', function(e) { e.stopPropagation(); });
+  });
 
   preview.querySelectorAll('[data-row-select]').forEach((rowEl) => {
     rowEl.addEventListener('click', function(e) {
-      if (!e.target.classList.contains('cell-input') && !e.target.hasAttribute('data-remove-row')) {
+      if (!e.target.classList.contains('cell-input') && !e.target.hasAttribute('data-remove-row') && !e.target.hasAttribute('data-check-row')) {
         state.selectedRowIndex = Number(this.getAttribute('data-row-select'));
         renderPreview();
       }
@@ -713,9 +895,19 @@ function renderPreview() {
   });
 
   preview.querySelectorAll('[data-remove-row]').forEach((btn) => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function(e) {
       const idx = Number(this.getAttribute('data-remove-row'));
       removeRow(idx);
+      e.stopPropagation();
+    });
+  });
+
+  preview.querySelectorAll('[data-sort-col]').forEach((th) => {
+    th.addEventListener('click', function(e) {
+      const col = this.getAttribute('data-sort-col');
+      sortRowsByColumn(col);
+      savePrefs();
+      e.stopPropagation();
     });
   });
 
@@ -739,16 +931,20 @@ function renderPreview() {
       const rowIdx = Number(this.getAttribute('data-row'));
       const col = this.getAttribute('data-col');
       if (!state.rows[rowIdx]) return;
-      if (col === 'Key' && document.getElementById('camelot').checked && this.value.trim()) {
-        const converted = toCamelot(this.value);
-        state.rows[rowIdx][col] = converted;
-        this.value = converted;
+      if (col === 'Key') {
+        let cleaned = sanitizeKeyValue(this.value);
+        if (document.getElementById('camelot').checked && cleaned) {
+          cleaned = toCamelot(cleaned);
+        }
+        state.rows[rowIdx][col] = cleaned;
+        this.value = cleaned;
       }
     });
   });
 
   updateMetrics();
 }
+
 
 
 function parseCSVLine(line) {
@@ -854,33 +1050,77 @@ function handleMergeCSVFile(file) {
   reader.readAsText(file);
 }
 
+function canonicalColumnName(name) {
+  const n = String(name || "").trim().toLowerCase();
+  const map = {
+    "artist": "Artist",
+    "artists": "Artist",
+    "song": "Song",
+    "title": "Song",
+    "track": "Song",
+    "track title": "Song",
+    "name": "Song",
+    "bpm": "BPM",
+    "tempo": "BPM",
+    "key": "Key",
+    "camelot": "Key",
+    "year": "Year",
+    "genre": "Genre"
+  };
+  return map[n] || null;
+}
+
+function normalizeImportedRow(row) {
+  return {
+    Artist: row.Artist || "",
+    Song: row.Song || "",
+    BPM: row.BPM || "",
+    Key: sanitizeKeyValue(row.Key || ""),
+    Year: row.Year || "",
+    Genre: row.Genre || ""
+  };
+}
+
 function loadCSVAsMain(text, fileName) {
   const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim() !== "");
   if (!lines.length) {
     document.getElementById('status').textContent = "Loaded CSV was empty.";
     state.rows = [];
     state.loadedLines = 0;
+    state.checkedRows = new Set();
+    state.selectedRowIndex = null;
     renderPreview();
     updateMetrics();
     return;
   }
 
-  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+  const rawHeaders = parseCSVLine(lines[0]).map(h => h.trim());
+  const mappedHeaders = rawHeaders.map(canonicalColumnName);
   const rows = [];
 
   for (let i = 1; i < lines.length; i++) {
     const vals = parseCSVLine(lines[i]);
-    const row = {};
-    headers.forEach((h, idx) => row[h] = vals[idx] ?? "");
-    rows.push(row);
+    const temp = {};
+    rawHeaders.forEach((h, idx) => {
+      const mapped = mappedHeaders[idx];
+      if (!mapped) return;
+      temp[mapped] = vals[idx] ?? "";
+    });
+    rows.push(normalizeImportedRow(temp));
   }
 
   state.rows = rows;
   state.loadedLines = lines.length;
+  state.checkedRows = new Set();
+  state.selectedRowIndex = null;
+
+  const recognized = rawHeaders
+    .map((h, idx) => mappedHeaders[idx] ? (h + " → " + mappedHeaders[idx]) : null)
+    .filter(Boolean);
 
   document.getElementById('status').textContent =
     "Loaded CSV as main dataset: " + fileName +
-    "\nColumns: " + headers.join(", ") +
+    "\nRecognized columns: " + (recognized.length ? recognized.join(", ") : "none") +
     "\nRows: " + rows.length;
 
   renderPreview();
@@ -917,6 +1157,7 @@ function addBlankRow() {
   const newRow = { Artist: "", Song: "", BPM: "", Key: "", Year: "", Genre: "" };
   state.rows.push(newRow);
   state.selectedRowIndex = state.rows.length - 1;
+  state.checkedRows.add(state.selectedRowIndex);
   renderPreview();
 }
 
@@ -925,10 +1166,21 @@ function removeRow(idx) {
   state.rows.splice(idx, 1);
   if (state.selectedRowIndex === idx) state.selectedRowIndex = null;
   else if (state.selectedRowIndex !== null && state.selectedRowIndex > idx) state.selectedRowIndex -= 1;
+
+  const shifted = new Set();
+  state.checkedRows.forEach((i) => {
+    if (i === idx) return;
+    shifted.add(i > idx ? i - 1 : i);
+  });
+  state.checkedRows = shifted;
   renderPreview();
 }
 
 function removeSelectedRow() {
+  if (state.checkedRows.size) {
+    removeCheckedRows();
+    return;
+  }
   if (state.selectedRowIndex === null) {
     alert("Select a row first.");
     return;
@@ -949,6 +1201,8 @@ document.getElementById('processingDetails').addEventListener('toggle', savePref
 document.getElementById('columnsDetails').addEventListener('toggle', savePrefs);
 document.getElementById('themeSelect').addEventListener('change', function(){ applyTheme(this.value); savePrefs(); });
 document.getElementById('addRowBtn').addEventListener('click', addBlankRow);
+document.getElementById('selectAllBtn').addEventListener('click', selectAllVisibleRows);
+document.getElementById('deselectAllBtn').addEventListener('click', deselectAllRows);
 document.getElementById('removeSelectedBtn').addEventListener('click', removeSelectedRow);
 document.querySelectorAll('.col').forEach(el => el.addEventListener('change', function(){ renderPreview(); savePrefs(); }));
 document.getElementById('tableSearch').addEventListener('input', renderPreview);
