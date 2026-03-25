@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Serato Text → CSV Studio Themes</title>
+<title>Serato CSV Crate Creator Themes</title>
 <style>
   :root{
     --bg:#050505;
@@ -338,6 +338,26 @@
     color:var(--muted-2);
   }
 
+
+  .tunebat-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:78px;
+    padding:7px 10px;
+    border-radius:10px;
+    border:1px solid var(--line-2);
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    color:var(--text);
+    text-decoration:none;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .tunebat-btn:hover{
+    filter:brightness(1.05);
+  }
+
 @media (max-width: 1140px){ .grid{grid-template-columns:1fr} }
   @media (max-width: 760px){
     body{padding:18px}
@@ -354,30 +374,29 @@
     opacity: 1;
   }
 
+
+  [data-theme="silver"] table th {
+    color: #000 !important;
+  }
+
+
+  .cell-input.empty-cell {
+    background: color-mix(in srgb, var(--panel) 70%, #ccc);
+    border: 1px solid #b5b5b5;
+  }
+
 </style>
 </head>
 <body data-theme="serato-red">
 <div class="wrap">
   <div class="hero">
     <div>
-      <div class="eyebrow">Serato Library Utility</div>
-      <h1>Text → CSV Studio</h1>
-      <div class="sub">
-      <div class="field" style="max-width:280px;">
-        <label class="label" for="themeSelect"><span>UI Theme</span></label>
-        <select id="themeSelect">
-          <option value="serato-red">Serato Red / Burgundy</option>
-          <option value="nightclub-gold">Nightclub Gold</option>
-          <option value="neon-blue">Neon Blue</option>
-          <option value="forest-green">Forest Green</option>
-          <option value="plum-violet">Plum Violet</option>
-          <option value="silver">Silver (Light)</option>
-        </select>
-      </div>
-    </div>
+      <div class="eyebrow">CSV Crate Creator</div>
+      <h1>CSV Crate Creator</h1>
+      <div class="sub">by Decknics</div>
     </div>
     <div class="hero-right">
-      <div class="tag">v1.0.5c</div>
+      <div class="tag">v1.0.6</div>
       
     </div>
   </div>
@@ -392,19 +411,13 @@
           </div>
         </div>
         <div class="panel-body">
-          <div class="field" style="margin-bottom:14px; display:none;">
-            <label class="label" for="themeSelect">
-              <span>UI Theme</span>
-              <span class="hint">Choose your preferred look</span>
-            </label>
-            <select id="themeSelect">
-              <option value="serato-red">Serato Red / Burgundy</option>
-              <option value="nightclub-gold">Nightclub Gold</option>
-              <option value="neon-blue">Neon Blue</option>
-              <option value="forest-green">Forest Green</option>
-              <option value="plum-violet">Plum Violet</option>
-              <option value="silver">Silver (Light)</option>
-            </select>
+
+          <div class="field" style="margin-top:14px; margin-bottom:14px;">
+            <div class="label"><span>Drop Area</span><span class="hint">TXT = source text, CSV = merge file</span></div>
+            <div id="dropzone" class="dropzone">
+              <div class="drop-big">Drag and drop files here</div>
+              <div class="drop-small">Use the buttons below if you prefer.</div>
+            </div>
           </div>
 
           <div class="actions">
@@ -424,14 +437,6 @@
               <span class="hint" id="filenamePreview">serato_export.csv</span>
             </label>
             <input class="input" id="filename" type="text" value="serato_export" placeholder="Enter CSV filename" />
-          </div>
-
-          <div class="field" style="margin-top:14px;">
-            <div class="label"><span>Drop Area</span><span class="hint">TXT = source text, CSV = merge file</span></div>
-            <div id="dropzone" class="dropzone">
-              <div class="drop-big">Drag and drop files here</div>
-              <div class="drop-small">Use the buttons above if you prefer.</div>
-            </div>
           </div>
 
           <div class="actions" style="margin-top:16px;">
@@ -482,6 +487,21 @@
                     <span>Useful after merging, especially when files overlap.</span>
                   </div>
                 </label>
+                <div class="toggle">
+                  <div style="width:18px; flex:0 0 18px;"></div>
+                  <div style="flex:1;">
+                    <strong>UI Theme</strong>
+                    <span style="margin-bottom:8px;">Choose your preferred look.</span>
+                    <select id="themeSelect">
+                      <option value="serato-red">Serato Red / Burgundy</option>
+                      <option value="nightclub-gold">Nightclub Gold</option>
+                      <option value="neon-blue">Neon Blue</option>
+                      <option value="forest-green">Forest Green</option>
+                      <option value="plum-violet">Plum Violet</option>
+                      <option value="silver">Silver (Light)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </details>
@@ -508,17 +528,6 @@
         </div>
       </section>
 
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Input Text</div>
-            <div class="panel-sub">Paste Serato export text or load a TXT file</div>
-          </div>
-        </div>
-        <div class="panel-body">
-          <textarea id="input" placeholder="Paste Serato text here or load a file..."></textarea>
-        </div>
-      </section>
     </div>
 
     <div class="stack">
@@ -833,6 +842,22 @@ function getSortIndicator(column) {
 
 
 
+
+function buildTunebatSearchUrl(row) {
+  const artist = String(row.Artist || "").trim();
+  const song = String(row.Song || "").trim();
+  const query = [artist, song].filter(Boolean).join(" ");
+  if (!query) return "https://tunebat.com/";
+  return "https://tunebat.com/Search?q=" + encodeURIComponent(query);
+}
+
+function openTunebatForRow(rowIndex) {
+  const row = state.rows[rowIndex];
+  if (!row) return;
+  const url = buildTunebatSearchUrl(row);
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 function renderPreview() {
   const preview = document.getElementById('preview');
   const cols = getSelectedColumns();
@@ -848,7 +873,7 @@ function renderPreview() {
 
   const allVisibleSelected = filteredIndexes.length > 0 && filteredIndexes.every(idx => state.checkedRows.has(idx));
 
-  let html = "<table><thead><tr><th class='header-check-wrap'><input class='row-check' id='headerSelectAll' type='checkbox' " + (allVisibleSelected ? "checked" : "") + "></th><th>#</th><th>Actions</th>" + cols.map(c => "<th class='sortable' data-sort-col='" + escapeHtml(c) + "'>" + escapeHtml(c) + "<span class='sort-indicator'>" + getSortIndicator(c) + "</span></th>").join("") + "</tr></thead><tbody>";
+  let html = "<table><thead><tr><th class='header-check-wrap'><input class='row-check' id='headerSelectAll' type='checkbox' " + (allVisibleSelected ? "checked" : "") + "></th><th>#</th><th>Actions</th><th>TuneBat</th>" + cols.map(c => "<th class='sortable' data-sort-col='" + escapeHtml(c) + "'>" + escapeHtml(c) + "<span class='sort-indicator'>" + getSortIndicator(c) + "</span></th>").join("") + "</tr></thead><tbody>";
   for (const rowIndex of filteredIndexes) {
     const row = rows[rowIndex];
     const selected = state.selectedRowIndex === rowIndex ? ' class="selected-row"' : '';
@@ -856,7 +881,12 @@ function renderPreview() {
     html += "<td><input class='row-check' type='checkbox' data-check-row='" + rowIndex + "' " + (state.checkedRows.has(rowIndex) ? "checked" : "") + "></td>";
     html += "<td><span class='row-number'>" + (rowIndex + 1) + "</span></td>";
     html += "<td><button class='cell-btn' type='button' data-remove-row='" + rowIndex + "'>Remove</button></td>";
-    html += cols.map(c => '<td><input class="cell-input" data-row="' + rowIndex + '" data-col="' + escapeHtml(c) + '" value="' + escapeHtml(row[c] || '') + '"></td>').join("");
+    html += "<td><button class='tunebat-btn' type='button' data-tunebat-row='" + rowIndex + "'>Search</button></td>";
+    html += cols.map(c => {
+      const isEmpty = String(row[c] || '').trim() === '';
+      const cellClass = 'cell-input' + (isEmpty ? ' empty-cell' : '');
+      return '<td><input class="' + cellClass + '" data-row="' + rowIndex + '" data-col="' + escapeHtml(c) + '" value="' + escapeHtml(row[c] || '') + '"></td>';
+    }).join("");
     html += "</tr>";
   }
   html += "</tbody></table>";
@@ -898,6 +928,14 @@ function renderPreview() {
     btn.addEventListener('click', function(e) {
       const idx = Number(this.getAttribute('data-remove-row'));
       removeRow(idx);
+      e.stopPropagation();
+    });
+  });
+
+  preview.querySelectorAll('[data-tunebat-row]').forEach((btn) => {
+    btn.addEventListener('click', function(e) {
+      const idx = Number(this.getAttribute('data-tunebat-row'));
+      openTunebatForRow(idx);
       e.stopPropagation();
     });
   });
@@ -1157,7 +1195,6 @@ function addBlankRow() {
   const newRow = { Artist: "", Song: "", BPM: "", Key: "", Year: "", Genre: "" };
   state.rows.push(newRow);
   state.selectedRowIndex = state.rows.length - 1;
-  state.checkedRows.add(state.selectedRowIndex);
   renderPreview();
 }
 
