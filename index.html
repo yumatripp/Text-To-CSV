@@ -396,7 +396,7 @@
       <div class="sub">by Decknics</div>
     </div>
     <div class="hero-right">
-      <div class="tag">v1.0.6g42</div>
+      <div class="tag">v1.0.6g52</div>
       
     </div>
   </div>
@@ -625,7 +625,12 @@ function loadPrefs() {
     if (typeof prefs.camelot === "boolean") document.getElementById('camelot').checked = prefs.camelot;
     if (typeof prefs.replaceExisting === "boolean") document.getElementById('replaceExisting').checked = prefs.replaceExisting;
     if (typeof prefs.dedupe === "boolean") document.getElementById('dedupe').checked = prefs.dedupe;
-    if (Array.isArray(prefs.selectedColumns)) document.querySelectorAll('.col').forEach(el => el.checked = prefs.selectedColumns.includes(el.value));
+    if (Array.isArray(prefs.selectedColumns)) {
+      const selected = prefs.selectedColumns.includes("Album")
+        ? prefs.selectedColumns
+        : prefs.selectedColumns.concat(["Album"]);
+      document.querySelectorAll('.col').forEach(el => el.checked = selected.includes(el.value));
+    }
     if (typeof prefs.processingOpen === "boolean") document.getElementById('processingDetails').open = prefs.processingOpen;
     if (typeof prefs.columnsOpen === "boolean") document.getElementById('columnsDetails').open = prefs.columnsOpen;
     if (typeof prefs.theme === "string") document.getElementById('themeSelect').value = prefs.theme;
