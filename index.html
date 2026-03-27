@@ -343,11 +343,63 @@ td input{
       line-height:1.55;
     }
 
+
+    .collectionLayout{
+      display:grid;
+      grid-template-columns:320px 1fr;
+      gap:12px;
+    }
+    .collectionList{
+      max-height:620px;
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#0b1017;
+      padding:8px;
+    }
+    .collectionItem{
+      width:100%;
+      text-align:left;
+      padding:10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#121923,#0f151d);
+      margin-bottom:8px;
+      color:var(--text);
+      cursor:pointer;
+    }
+    .collectionItem:hover{border-color:#38506a}
+    .collectionItem.active{
+      border-color:rgba(102,179,255,.45);
+      box-shadow:0 0 0 1px rgba(102,179,255,.18) inset;
+    }
+    .collectionMeta{
+      color:var(--muted);
+      font-size:11px;
+      margin-top:4px;
+      line-height:1.45;
+    }
+    .collectionPreview{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:linear-gradient(180deg,#10161e,#0c1219);
+      padding:12px;
+    }
+    .collectionArt{
+      width:100%;
+      max-height:360px;
+      object-fit:contain;
+      background:#091018;
+      border:1px solid var(--line);
+      border-radius:12px;
+    }
+
 @media (max-width:1080px){
   .layout{grid-template-columns:1fr}
   .sidebar{position:static}
   .stats{grid-template-columns:repeat(2,1fr)}
   .scannerGrid{grid-template-columns:1fr}
+  .collectionLayout{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -360,6 +412,7 @@ td input{
   <div class="tabs">
     <button id="workflowTabBtn" class="tabBtn active" type="button" onclick="window.switchTab && window.switchTab('workflow')">Workflow Studio</button>
     <button id="upcomingTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('upcoming')">Discogs Scanner</button>
+    <button id="collectionTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('collection')">My Discogs Collection</button>
     <button id="helpTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('help')">Help</button>
   </div>
 
@@ -629,6 +682,86 @@ td input{
       </main>
     </div>
   </div>
+  <div id="collectionView" style="display:none">
+    <div class="collectionLayout">
+      <aside class="card sidebar">
+        <div class="section">
+          <h2>My Discogs Collection</h2>
+          <div class="small">Use your Discogs token to load your collection album by album, then send a selected release into Workflow Studio.</div>
+          <div class="row" style="margin-top:8px">
+            <button id="loadCollectionBtn" type="button" class="primary">Load Collection</button>
+            <button id="importCollectionAlbumBtn" type="button">Import Selected Album</button>
+          </div>
+          <div class="grid2" style="margin-top:8px">
+            <input id="collectionUsernameInput" type="text" placeholder="Discogs username (optional)" />
+            <select id="collectionFolderSelect">
+              <option value="0">Folder 0 — All Items</option>
+            </select>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="collectionPrevPageBtn" type="button">Prev Page</button>
+            <button id="collectionNextPageBtn" type="button">Next Page</button>
+            <div class="small" id="collectionPageInfo" style="margin-top:0">Page 1 of 1</div>
+          </div>
+          <div class="small" style="margin-top:8px">Loads vinyl only from your Discogs collection. CDs, VHS, books, and cassettes are excluded automatically.</div>
+        </div>
+
+        <div class="section">
+          <h2>Search Collection</h2>
+          <input id="collectionSearchInput" type="text" placeholder="Search artist, title, label, year..." />
+          <div class="small" style="margin-top:8px">Loads a simple release list first. Click one album to preview it, then import it.</div>
+        </div>
+
+        <div class="section">
+          <h2>Status</h2>
+          <div id="collectionStatus" class="status">No Discogs collection loaded yet.</div>
+        </div>
+      </aside>
+
+      <main class="card main">
+        <div class="stats">
+          <div class="stat"><div class="label">Albums Loaded</div><div id="collectionCount" class="value">0</div></div>
+          <div class="stat"><div class="label">Visible</div><div id="collectionVisible" class="value">0</div></div>
+          <div class="stat"><div class="label">Track Count</div><div id="collectionTrackCount" class="value">0</div></div>
+          <div class="stat"><div class="label">Year</div><div id="collectionYear" class="value">—</div></div>
+          <div class="stat"><div class="label">Page</div><div id="collectionFolderStat" class="value">1</div></div>
+        </div>
+
+        <div class="collectionLayout" style="grid-template-columns:360px 1fr;">
+          <div class="collectionList" id="collectionList"></div>
+
+          <div class="collectionPreview">
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <strong id="collectionTitle">No album selected</strong>
+                <div id="collectionSubtitle" class="small">Load your Discogs collection, then select an album to preview it here.</div>
+              </div>
+              <div class="row">
+                <button id="openCollectionReleaseBtn" type="button">Open Release</button>
+                <button id="sendCollectionToWorkflowBtn" type="button" class="primary">Send to Workflow</button>
+              </div>
+            </div>
+
+            <img id="collectionArtwork" class="collectionArt" alt="Collection artwork" />
+            <div id="collectionEmptyArt" class="small" style="margin-top:8px">No artwork preview loaded yet.</div>
+
+            <div class="previewMeta" style="margin-top:10px">
+              <div class="miniCard"><strong>Artist</strong><div id="collectionArtist" class="small"></div></div>
+              <div class="miniCard"><strong>Album</strong><div id="collectionAlbum" class="small"></div></div>
+              <div class="miniCard"><strong>Label / Cat No</strong><div id="collectionLabel" class="small"></div></div>
+              <div class="miniCard"><strong>Year / Format</strong><div id="collectionFormat" class="small"></div></div>
+            </div>
+
+            <div class="section" style="margin-top:10px;margin-bottom:0;">
+              <h2>Tracklist Preview</h2>
+              <div id="collectionTracklist" class="small">No tracklist loaded yet.</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
   <div id="helpView" style="display:none">
     <div class="helpLayout">
       <div class="helpHero">
@@ -678,11 +811,35 @@ td input{
 (() => {
   const workflowTabBtn = document.getElementById('workflowTabBtn');
   const upcomingTabBtn = document.getElementById('upcomingTabBtn');
+  const collectionTabBtn = document.getElementById('collectionTabBtn');
   const helpTabBtn = document.getElementById('helpTabBtn');
   const workflowView = document.getElementById('workflowView');
   const upcomingView = document.getElementById('upcomingView');
+  const collectionView = document.getElementById('collectionView');
   const helpView = document.getElementById('helpView');
   const helpContextBox = document.getElementById('helpContextBox');
+
+  const loadCollectionBtn = document.getElementById('loadCollectionBtn');
+  const importCollectionAlbumBtn = document.getElementById('importCollectionAlbumBtn');
+  const collectionUsernameInput = document.getElementById('collectionUsernameInput');
+  const collectionFolderSelect = document.getElementById('collectionFolderSelect');
+  const collectionPrevPageBtn = document.getElementById('collectionPrevPageBtn');
+  const collectionNextPageBtn = document.getElementById('collectionNextPageBtn');
+  const collectionPageInfo = document.getElementById('collectionPageInfo');
+  const collectionSearchInput = document.getElementById('collectionSearchInput');
+  const collectionStatusEl = document.getElementById('collectionStatus');
+  const collectionList = document.getElementById('collectionList');
+  const collectionTitle = document.getElementById('collectionTitle');
+  const collectionSubtitle = document.getElementById('collectionSubtitle');
+  const collectionArtwork = document.getElementById('collectionArtwork');
+  const collectionEmptyArt = document.getElementById('collectionEmptyArt');
+  const collectionArtist = document.getElementById('collectionArtist');
+  const collectionAlbum = document.getElementById('collectionAlbum');
+  const collectionLabel = document.getElementById('collectionLabel');
+  const collectionFormat = document.getElementById('collectionFormat');
+  const collectionTracklist = document.getElementById('collectionTracklist');
+  const openCollectionReleaseBtn = document.getElementById('openCollectionReleaseBtn');
+  const sendCollectionToWorkflowBtn = document.getElementById('sendCollectionToWorkflowBtn');
 
   const xmlInput = document.getElementById('xmlInput');
   const csvInput = document.getElementById('csvInput');
@@ -745,6 +902,14 @@ td input{
   let currentBarcodeResultIndex = 0;
   let barcodeAutoLookupTimer = null;
 
+  let collectionRows = [];
+  let collectionSearch = '';
+  let selectedCollectionRelease = null;
+  let collectionFolders = [];
+  let collectionPage = 1;
+  let collectionPages = 1;
+  let collectionUsernameResolved = '';
+
   const CSV_HEADERS = ['Artist','Song','Album','BPM','Key','Year','Genre','Artwork','Size','Speed','Disc Number'];
   const UPCOMING_HEADERS = ['Artist','Title','Label','CatNo','Barcode','Year','Released','Format','Country','Genre','Style','URL','Artwork'];
 
@@ -767,10 +932,12 @@ td input{
   function showTab(name){
     const isWorkflow = name === 'workflow';
     const isUpcoming = name === 'upcoming';
+    const isCollection = name === 'collection';
     const isHelp = name === 'help';
 
     if (workflowView) workflowView.style.display = isWorkflow ? 'block' : 'none';
     if (upcomingView) upcomingView.style.display = isUpcoming ? 'block' : 'none';
+    if (collectionView) collectionView.style.display = isCollection ? 'block' : 'none';
     if (helpView) helpView.style.display = isHelp ? 'block' : 'none';
 
     if (isUpcoming) {
@@ -783,15 +950,366 @@ td input{
       setHelpContext('Discogs Scanner is best for barcode-based importing, artwork preview, and sending release tracks into Workflow Studio.');
     } else if (isWorkflow) {
       setHelpContext('Workflow Studio is best for cleanup. Use Tab Empty Cells to jump through missing metadata quickly.');
+    } else if (isCollection) {
+      setHelpContext('My Discogs Collection lets you pull one album at a time from your Discogs account and send it into Workflow Studio.');
     } else if (isHelp) {
-      setHelpContext('This Help tab explains the main areas of WaxFlow. Switch back to Workflow Studio or Discogs Scanner whenever you are ready.');
+      setHelpContext('This Help tab explains the main areas of WaxFlow. Switch back to Workflow Studio, Discogs Scanner, or My Discogs Collection whenever you are ready.');
     }
 
     if (workflowTabBtn) workflowTabBtn.classList.toggle('active', isWorkflow);
     if (upcomingTabBtn) upcomingTabBtn.classList.toggle('active', isUpcoming);
+    if (collectionTabBtn) collectionTabBtn.classList.toggle('active', isCollection);
     if (helpTabBtn) helpTabBtn.classList.toggle('active', isHelp);
   }
   window.switchTab = showTab;
+
+  function isVinylCollectionItem(entry){
+    const formats = Array.isArray(entry?.basic_information?.formats) ? entry.basic_information.formats : [];
+    const text = formats.map(f => [f.name, ...(Array.isArray(f.descriptions) ? f.descriptions : [])].join(' ')).join(' / ').toLowerCase();
+    if (!text.includes('vinyl')) return false;
+    if (text.includes('cd') || text.includes('vhs') || text.includes('book') || text.includes('cassette')) return false;
+    return true;
+  }
+
+  async function loadDiscogsCollectionFolders(username, token){
+    try{
+      const res = await fetch(`https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders`, {
+        headers: {
+          'Authorization':'Discogs token=' + token,
+          'User-Agent':'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) throw new Error('Discogs folder load failed: ' + res.status);
+      const data = await res.json();
+      collectionFolders = Array.isArray(data.folders) ? data.folders : [];
+      collectionFolderSelect.innerHTML = collectionFolders.map(folder =>
+        `<option value="${folder.id}">Folder ${folder.id} — ${folder.name}</option>`
+      ).join('') || '<option value="0">Folder 0 — All Items</option>';
+      if (!collectionFolderSelect.value) collectionFolderSelect.value = '0';
+    } catch (err) {
+      console.error(err);
+      collectionFolders = [];
+      collectionFolderSelect.innerHTML = '<option value="0">Folder 0 — All Items</option>';
+    }
+  }
+
+  function setCollectionStatus(msg, type=''){
+    collectionStatusEl.textContent = msg;
+    collectionStatusEl.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function updateCollectionStats(){
+    const visible = getVisibleCollectionRows();
+    document.getElementById('collectionCount').textContent = collectionRows.length;
+    document.getElementById('collectionVisible').textContent = visible.length;
+    document.getElementById('collectionTrackCount').textContent = Array.isArray(selectedCollectionRelease?.tracklist) ? selectedCollectionRelease.tracklist.length : 0;
+    document.getElementById('collectionYear').textContent = safe(selectedCollectionRelease?.year) || '—';
+    document.getElementById('collectionFolderStat').textContent = String(collectionPage);
+    if (collectionPageInfo) collectionPageInfo.textContent = `Page ${collectionPage} of ${collectionPages}`;
+  }
+
+  function getVisibleCollectionRows(){
+    const q = lc(collectionSearch);
+    return collectionRows.filter(item => {
+      if (!q) return true;
+      return [
+        item.artist,
+        item.title,
+        item.label,
+        item.catno,
+        item.year,
+        item.country,
+        item.genre,
+        item.style
+      ].join(' ').toLowerCase().includes(q);
+    });
+  }
+
+  function renderCollectionList(){
+    const visible = getVisibleCollectionRows();
+    collectionList.innerHTML = '';
+    for (const item of visible){
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'collectionItem' + ((selectedCollectionRelease && selectedCollectionRelease.id === item.id) ? ' active' : '');
+      btn.innerHTML = `
+        <div><strong>${item.artist || '—'}</strong> — ${item.title || 'Untitled'}</div>
+        <div class="collectionMeta">${[item.label, item.catno, item.year].filter(Boolean).join(' / ') || 'No extra details yet'}</div>
+      `;
+      btn.addEventListener('click', async () => {
+        selectedCollectionRelease = item;
+        renderCollectionList();
+        await ensureCollectionReleaseDetails(item);
+        renderCollectionPreview();
+      });
+      collectionList.appendChild(btn);
+    }
+    if (!visible.length){
+      collectionList.innerHTML = '<div class="small">No collection releases match your search yet.</div>';
+    }
+    updateCollectionStats();
+  }
+
+  function renderCollectionPreview(){
+    const item = selectedCollectionRelease;
+    if (!item){
+      collectionTitle.textContent = 'No album selected';
+      collectionSubtitle.textContent = 'Load your Discogs collection, then select an album to preview it here.';
+      collectionArtwork.removeAttribute('src');
+      collectionEmptyArt.textContent = 'No artwork preview loaded yet.';
+      collectionArtist.textContent = '';
+      collectionAlbum.textContent = '';
+      collectionLabel.textContent = '';
+      collectionFormat.textContent = '';
+      collectionTracklist.innerHTML = 'No tracklist loaded yet.';
+      updateCollectionStats();
+      return;
+    }
+
+    collectionTitle.textContent = item.title || 'Untitled';
+    collectionSubtitle.textContent = 'Previewing one release from your Discogs collection.';
+    if (item.artwork){
+      collectionArtwork.src = item.artwork;
+      collectionEmptyArt.textContent = '';
+    } else {
+      collectionArtwork.removeAttribute('src');
+      collectionEmptyArt.textContent = 'No artwork preview loaded yet.';
+    }
+
+    collectionArtist.textContent = item.artist || '—';
+    collectionAlbum.textContent = item.title || '—';
+    collectionLabel.textContent = [item.label, item.catno].filter(Boolean).join(' / ') || '—';
+    collectionFormat.textContent = [item.year, item.format, item.country].filter(Boolean).join(' / ') || '—';
+
+    if (Array.isArray(item.tracklist) && item.tracklist.length){
+      collectionTracklist.innerHTML = item.tracklist.map((track, idx) =>
+        `<div style="padding:4px 0;border-bottom:1px solid var(--line-soft)">${track.position || idx + 1}. ${track.title || 'Untitled'}${track.artist ? ` <span class="small">— ${track.artist}</span>` : ''}</div>`
+      ).join('');
+      if (item.size || item.speed) {
+        collectionTracklist.innerHTML = `<div class="small" style="margin-bottom:8px">Vinyl details: ${[item.size, item.speed ? item.speed + ' RPM' : ''].filter(Boolean).join(' / ')}</div>` + collectionTracklist.innerHTML;
+      }
+    } else {
+      collectionTracklist.innerHTML = 'No tracklist loaded yet.';
+    }
+
+    updateCollectionStats();
+  }
+
+  async function resolveDiscogsUsernameFromToken(token){
+    try{
+      const res = await fetch('https://api.discogs.com/oauth/identity', {
+        headers: {
+          'Authorization':'Discogs token=' + token,
+          'User-Agent':'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) return '';
+      const data = await res.json();
+      return safe(data.username);
+    } catch (err) {
+      console.error(err);
+      return '';
+    }
+  }
+
+  async function loadDiscogsCollection(page = 1){
+    const token = safe(discogsTokenInput.value);
+    if (!token){
+      setCollectionStatus('Add your Discogs personal token first.', 'warn');
+      return;
+    }
+
+    let username = safe(collectionUsernameInput.value);
+    const folderId = safe(collectionFolderSelect?.value) || '0';
+
+    if (!username){
+      setCollectionStatus('Resolving Discogs username from token...', 'warn');
+      username = await resolveDiscogsUsernameFromToken(token);
+      if (username) collectionUsernameInput.value = username;
+    }
+
+    if (!username){
+      setCollectionStatus('Could not determine your Discogs username. Enter it manually and try again.', 'warn');
+      return;
+    }
+
+    collectionUsernameResolved = username;
+    collectionPage = page;
+    setCollectionStatus(`Loading Discogs collection for ${username}...`, 'warn');
+
+    try{
+      await loadDiscogsCollectionFolders(username, token);
+
+      const url = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/${encodeURIComponent(folderId)}/releases?per_page=100&page=${encodeURIComponent(page)}`;
+      const res = await fetch(url, {
+        headers: {
+          'Authorization':'Discogs token=' + token,
+          'User-Agent':'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) throw new Error('Discogs collection load failed: ' + res.status);
+      const data = await res.json();
+      const releases = Array.isArray(data.releases) ? data.releases : [];
+
+      collectionPages = Number(data.pagination?.pages || 1);
+      collectionPage = Number(data.pagination?.page || page);
+
+      collectionRows = releases
+        .filter(isVinylCollectionItem)
+        .map((entry, idx) => {
+          const basic = entry.basic_information || {};
+          const artist = Array.isArray(basic.artists) ? basic.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).filter(Boolean).join(' / ') : '';
+          const label = Array.isArray(basic.labels) ? basic.labels.map(l => safe(l.name)).filter(Boolean).join(' / ') : '';
+          const catno = Array.isArray(basic.labels) ? basic.labels.map(l => safe(l.catno)).filter(Boolean).join(' / ') : '';
+          const format = Array.isArray(basic.formats) ? basic.formats.map(f => safe(f.name || f.descriptions?.join(' / '))).filter(Boolean).join(' / ') : '';
+          const genre = Array.isArray(basic.genres) ? basic.genres.join(' / ') : '';
+          const style = Array.isArray(basic.styles) ? basic.styles.join(' / ') : '';
+          return {
+            id: String(entry.id || basic.id || idx),
+            releaseId: basic.id,
+            instanceId: entry.instance_id,
+            folderId,
+            artist,
+            title: safe(basic.title),
+            year: safe(basic.year),
+            label,
+            catno,
+            format,
+            country: safe(basic.country),
+            genre,
+            style,
+            artwork: safe(basic.cover_image || basic.thumb),
+            thumb: safe(basic.thumb),
+            resource_url: safe(basic.resource_url),
+            tracklist: null,
+            discogsRelease: null,
+            size: '',
+            speed: ''
+          };
+        });
+
+      selectedCollectionRelease = collectionRows[0] || null;
+      renderCollectionList();
+      if (selectedCollectionRelease) {
+        await ensureCollectionReleaseDetails(selectedCollectionRelease);
+      }
+      renderCollectionPreview();
+      setCollectionStatus(`Loaded ${collectionRows.length} vinyl album(s) from page ${collectionPage} of your Discogs collection.`, 'good');
+    } catch (err) {
+      console.error(err);
+      setCollectionStatus(err.message || 'Could not load your Discogs collection.', 'bad');
+    }
+  }
+
+  async function ensureCollectionReleaseDetails(item){
+    if (!item || item.tracklist) return;
+    const token = safe(discogsTokenInput.value);
+    if (!token || !item.releaseId) return;
+
+    try{
+      const res = await fetch(`https://api.discogs.com/releases/${item.releaseId}`, {
+        headers: {
+          'Authorization':'Discogs token=' + token,
+          'User-Agent':'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) throw new Error('Discogs release detail fetch failed: ' + res.status);
+      const data = await res.json();
+      item.discogsRelease = data;
+      item.tracklist = extractTracklistFromDiscogsRelease(data, item.artist || '');
+      if (!item.artwork) {
+        item.artwork = safe(data.images?.[0]?.uri || data.thumb);
+      }
+      if (!item.format && Array.isArray(data.formats)) {
+        item.format = data.formats.map(f => safe(f.name || f.descriptions?.join(' / '))).filter(Boolean).join(' / ');
+      }
+      if (!item.genre && Array.isArray(data.genres)) item.genre = data.genres.join(' / ');
+      if (!item.style && Array.isArray(data.styles)) item.style = data.styles.join(' / ');
+      if (!item.country) item.country = safe(data.country);
+      if (!item.label && Array.isArray(data.labels)) item.label = data.labels.map(l => safe(l.name)).filter(Boolean).join(' / ');
+      if (!item.catno && Array.isArray(data.labels)) item.catno = data.labels.map(l => safe(l.catno)).filter(Boolean).join(' / ');
+      const vinylFormat = Array.isArray(data.formats) ? data.formats.find(f => safe(f.name).toLowerCase().includes('vinyl')) : null;
+      if (vinylFormat && Array.isArray(vinylFormat.descriptions)) {
+        if (!item.size) {
+          const size = vinylFormat.descriptions.find(d => ['12"', '10"', '9"', '7"', '4"'].includes(safe(d)));
+          if (size) item.size = size;
+        }
+        if (!item.speed) {
+          const speed = vinylFormat.descriptions.find(d => ['33 RPM', '45 RPM', '78 RPM'].includes(safe(d)));
+          if (speed) item.speed = speed.replace(' RPM', '');
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setCollectionStatus(err.message || 'Could not load release details for this album.', 'warn');
+    }
+  }
+
+  function sendCollectionReleaseToWorkflow(){
+    if (!selectedCollectionRelease){
+      setCollectionStatus('Select an album first.', 'warn');
+      return;
+    }
+
+    const item = selectedCollectionRelease;
+    const detailedTracklist = Array.isArray(item.discogsRelease?.tracklist) ? item.discogsRelease.tracklist : [];
+    const releaseArtists = item.artist || '';
+    const parsedTracklist = detailedTracklist.length
+      ? detailedTracklist
+          .filter(track => {
+            const type = safe(track.type_ || track.type);
+            return !type || type === 'track' || type === 'index';
+          })
+          .map((track, idx) => ({
+            position: safe(track.position),
+            title: safe(track.title),
+            artist: Array.isArray(track.artists) && track.artists.length
+              ? track.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).filter(Boolean).join(' / ')
+              : releaseArtists,
+            discNumber: (() => {
+              const pos = safe(track.position);
+              const m = pos.match(/^(\d+)[.-]/);
+              if (m) return m[1];
+              return '';
+            })()
+          }))
+          .filter(track => track.title)
+      : (Array.isArray(item.tracklist) ? item.tracklist : []);
+
+    const fakeUpcomingRow = {
+      Artist: item.artist || '',
+      Title: item.title || '',
+      Label: item.label || '',
+      CatNo: item.catno || '',
+      Barcode: '',
+      Year: item.year || '',
+      Released: item.year || '',
+      Format: item.format || '',
+      Country: item.country || '',
+      Genre: item.genre || '',
+      Style: item.style || '',
+      URL: item.resource_url || '',
+      Artwork: item.artwork || '',
+      Size: item.size || '',
+      Speed: item.speed || '',
+      __releaseTracklist: parsedTracklist
+    };
+
+    const created = applyUpcomingRowToWorkflow(fakeUpcomingRow);
+    if (Array.isArray(created) && parsedTracklist.length) {
+      created.forEach((row, idx) => {
+        const sourceTrack = parsedTracklist[idx];
+        if (!sourceTrack) return;
+        if (!safe(row['Disc Number']) && safe(sourceTrack.discNumber)) row['Disc Number'] = sourceTrack.discNumber;
+        if (!safe(row.Size) && safe(item.size)) row.Size = item.size;
+        if (!safe(row.Speed) && safe(item.speed)) row.Speed = item.speed;
+      });
+      render();
+    }
+    showTab('workflow');
+    setStatus(`Imported ${item.title || 'selected album'} from My Discogs Collection into Workflow Studio.`, 'good');
+    setCollectionStatus(`Sent ${item.title || 'selected album'} to Workflow Studio.`, 'good');
+  }
 
   function updateBatchSessionUI(){
     if (batchSessionStatus) batchSessionStatus.textContent = `Batch Session: ${batchSessionActive ? 'On' : 'Off'}`;
@@ -1837,7 +2355,32 @@ td input{
   // Workflow events
   workflowTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('workflow'); });
   upcomingTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('upcoming'); });
+  collectionTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('collection'); });
   helpTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('help'); });
+
+  loadCollectionBtn.addEventListener('click', () => loadDiscogsCollection(1));
+  importCollectionAlbumBtn.addEventListener('click', sendCollectionReleaseToWorkflow);
+  sendCollectionToWorkflowBtn.addEventListener('click', sendCollectionReleaseToWorkflow);
+  collectionPrevPageBtn.addEventListener('click', () => {
+    if (collectionPage > 1) loadDiscogsCollection(collectionPage - 1);
+  });
+  collectionNextPageBtn.addEventListener('click', () => {
+    if (collectionPage < collectionPages) loadDiscogsCollection(collectionPage + 1);
+  });
+  collectionFolderSelect.addEventListener('change', () => {
+    if (collectionUsernameResolved || safe(collectionUsernameInput.value)) loadDiscogsCollection(1);
+  });
+  collectionSearchInput.addEventListener('input', e => {
+    collectionSearch = e.target.value;
+    renderCollectionList();
+  });
+  openCollectionReleaseBtn.addEventListener('click', () => {
+    if (!selectedCollectionRelease || !selectedCollectionRelease.resource_url){
+      setCollectionStatus('No release URL available for the selected album.', 'warn');
+      return;
+    }
+    window.open(selectedCollectionRelease.resource_url, 'discogs_collection_release', 'width=1100,height=820,resizable=yes,scrollbars=yes');
+  });
 
   searchInput.addEventListener('focus', () => {
     setHelpContext('Search filters the visible library rows so you can focus on a subset of tracks while cleaning metadata.');
