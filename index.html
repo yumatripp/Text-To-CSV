@@ -3,1341 +3,1984 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Serato CSV Crate Creator Themes</title>
+<title>WaxFlow by Decknics</title>
 <style>
-  :root{
-    --bg:#050505;
-    --bg-2:#0b0b0c;
-    --panel:#111112;
-    --panel-2:#171718;
-    --line:#2a1619;
-    --line-2:#3a1d22;
-    --text:#ffffff;
-    --muted:#d2c7c9;
-    --muted-2:#a88f93;
-    --accent:#9f1d2c;
-    --accent-2:#7c1622;
-    --accent-3:#c43347;
-    --shadow:0 18px 60px rgba(0,0,0,.45);
-    --radius:18px;
-    --input-bg:linear-gradient(180deg, rgba(10,10,11,.95), rgba(6,6,7,.95));
-    --drop-bg:linear-gradient(180deg, rgba(22,10,12,.85), rgba(10,10,11,.9));
-    --button-secondary:linear-gradient(180deg, #231517 0%, #171112 100%);
-    --button-primary:linear-gradient(180deg, #c43347 0%, #961f2d 100%);
-    --metric-bg:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.01));
-    --hero-bg:
-      radial-gradient(1000px 500px at 0% 0%, rgba(159,29,44,.18), transparent 60%),
-      radial-gradient(900px 450px at 100% 0%, rgba(79,24,32,.20), transparent 62%),
-      linear-gradient(180deg, #030303 0%, #070707 42%, #09090a 100%);
-  }
+:root{
+  --bg:#0b0f14;
+  --panel:#11161d;
+  --panel2:#18202a;
+  --panel3:#0e141b;
+  --line:#263242;
+  --line-soft:#1c2734;
+  --text:#e8eef5;
+  --muted:#93a2b5;
+  --accent:#66b3ff;
+  --accent-soft:rgba(102,179,255,.12);
+  --good:#4dd37a;
+  --warn:#e0ad43;
+  --bad:#ff6b6b;
+  --shadow:0 14px 40px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(102,179,255,.08), transparent 30%),
+    linear-gradient(180deg,#0a0e13,#10161e 55%,#0c1117);
+  color:var(--text);
+}
+.app{max-width:1480px;margin:0 auto;padding:16px}
+h1{margin:0 0 4px;font-size:28px;letter-spacing:-.02em;font-weight:800}
+.sub{color:var(--muted);margin:0 0 14px;font-size:13px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+button,.tabBtn,input,select{font:inherit}
+button,.tabBtn{
+  appearance:none;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#1a2230,#141b25);
+  color:var(--text);
+  border-radius:10px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.01em;
+  cursor:pointer;
+  transition:transform .06s ease, border-color .12s ease, background .12s ease, opacity .12s ease;
+}
+button:hover,.tabBtn:hover{border-color:#38506a}
+button:active,.tabBtn:active{transform:translateY(1px)}
+.tabBtn.active,.primary{
+  background:linear-gradient(180deg,#7bc2ff,#54a8ff)!important;
+  color:#07111a!important;
+  border-color:transparent!important;
+  box-shadow:0 8px 22px rgba(84,168,255,.22);
+}
+.good{background:rgba(77,211,122,.12);border-color:rgba(77,211,122,.34);color:#c2f6d3}
+.warn{background:rgba(224,173,67,.12);border-color:rgba(224,173,67,.34);color:#f4d99b}
+.bad{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.34);color:#ffc1c1}
+button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.layout{display:grid;grid-template-columns:250px 1fr;gap:12px}
+.card{
+  background:linear-gradient(180deg,rgba(17,22,29,.96),rgba(13,18,24,.96));
+  border:1px solid var(--line-soft);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.sidebar{padding:10px;height:max-content;position:sticky;top:10px}
+.main{padding:12px}
+.section{
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:linear-gradient(180deg,rgba(19,26,35,.78),rgba(13,18,24,.72));
+  padding:10px;
+  margin-bottom:10px;
+}
+.section h2{
+  margin:0 0 8px;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#dbe8f5;
+}
+.small{font-size:11px;color:var(--muted);line-height:1.45}
+.dropzone{
+  border:1px dashed #49627d;
+  background:linear-gradient(180deg,rgba(102,179,255,.08),rgba(102,179,255,.03));
+  border-radius:12px;
+  padding:14px 12px;
+  text-align:center;
+}
+.dropzone.drag{border-color:var(--accent);background:rgba(102,179,255,.12)}
+.dropzone strong{display:block;margin-bottom:4px;font-size:14px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type=text],select{
+  width:100%;
+  background:#0b1118;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 9px;
+  font-size:12px;
+  outline:none;
+}
+input[type=text]:focus,select:focus,td input:focus{
+  border-color:#4d77a2;
+  box-shadow:0 0 0 3px rgba(102,179,255,.08);
+}
+input[type=file]{display:none}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
+.stat{
+  background:linear-gradient(180deg,#121923,#0f151d);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:9px 10px;
+}
+.stat .label{
+  font-size:10px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.stat .value{font-size:21px;font-weight:800;margin-top:2px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.grow{flex:1 1 280px}
+.status{
+  min-height:20px;
+  color:var(--muted);
+  margin-bottom:10px;
+  padding:7px 9px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:rgba(255,255,255,.02);
+  font-size:12px;
+}
+.status.good{color:#b8f0c8;border-color:rgba(77,211,122,.22);background:rgba(77,211,122,.07)}
+.status.warn{color:#f0d79a;border-color:rgba(224,173,67,.22);background:rgba(224,173,67,.06)}
+.status.bad{color:#ffbcbc;border-color:rgba(255,107,107,.22);background:rgba(255,107,107,.06)}
+.tableWrap{
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#0b1017;
+}
+table{border-collapse:collapse;width:100%;min-width:920px}
+th,td{
+  border-bottom:1px solid #1b2632;
+  padding:5px 4px;
+  vertical-align:top;
+}
+th{
+  position:sticky;
+  top:0;
+  background:linear-gradient(180deg,#16202b,#111821);
+  z-index:2;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:#c7d6e5;
+}
+td input{
+  width:100%;
+  min-width:0;
+  background:#0a1017;
+  color:var(--text);
+  border:1px solid #273547;
+  border-radius:8px;
+  padding:5px 6px;
+  font-size:12px;
+}
+.actions{display:flex;gap:4px;flex-wrap:wrap}
+.actionSelect{min-width:78px;width:78px;background:#0a1017;color:var(--text);border:1px solid #273547;border-radius:8px;padding:5px 6px;font-size:12px}
+.hidden{display:none!important}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{
+  font-size:10px;
+  color:#aebed0;
+  background:#16202a;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:4px 7px;
+}
+.footer{margin-top:8px;font-size:11px;color:var(--muted)}
+.libraryActionBar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+.libraryActionGroup{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  padding:6px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(18,25,34,.82),rgba(12,18,25,.72));
+}
+.libraryActionDivider{
+  width:1px;
+  align-self:stretch;
+  background:var(--line);
+  opacity:.8;
+}
+.libraryToggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  color:var(--muted);
+  padding:0 4px;
+  cursor:pointer;
+}
+.libraryToggle input{width:auto;accent-color:var(--accent)}
+.iconBtnText{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
 
-  [data-theme="serato-red"]{
-    --bg:#050505; --bg-2:#0b0b0c; --panel:#111112; --panel-2:#171718;
-    --line:#2a1619; --line-2:#3a1d22; --text:#ffffff; --muted:#d2c7c9; --muted-2:#a88f93;
-    --accent:#9f1d2c; --accent-2:#7c1622; --accent-3:#c43347;
-    --hero-bg:
-      radial-gradient(1000px 500px at 0% 0%, rgba(159,29,44,.18), transparent 60%),
-      radial-gradient(900px 450px at 100% 0%, rgba(79,24,32,.20), transparent 62%),
-      linear-gradient(180deg, #030303 0%, #070707 42%, #09090a 100%);
-    --button-primary:linear-gradient(180deg, #c43347 0%, #961f2d 100%);
-    --button-secondary:linear-gradient(180deg, #231517 0%, #171112 100%);
-    --input-bg:linear-gradient(180deg, rgba(10,10,11,.95), rgba(6,6,7,.95));
-    --drop-bg:linear-gradient(180deg, rgba(22,10,12,.85), rgba(10,10,11,.9));
-  }
-
-  [data-theme="nightclub-gold"]{
-    --bg:#070605; --bg-2:#11100d; --panel:#14120f; --panel-2:#1a1711;
-    --line:#3d301c; --line-2:#5a4627; --text:#fffdf8; --muted:#d3c8b4; --muted-2:#b19d76;
-    --accent:#b9852a; --accent-2:#7c5a1b; --accent-3:#e5b556;
-    --hero-bg:
-      radial-gradient(1000px 500px at 0% 0%, rgba(229,181,86,.16), transparent 60%),
-      radial-gradient(900px 450px at 100% 0%, rgba(120,90,27,.18), transparent 62%),
-      linear-gradient(180deg, #040403 0%, #0b0a08 42%, #0e0c0a 100%);
-    --button-primary:linear-gradient(180deg, #e0aa45 0%, #a67624 100%);
-    --button-secondary:linear-gradient(180deg, #251d12 0%, #19140e 100%);
-    --input-bg:linear-gradient(180deg, rgba(12,10,8,.95), rgba(8,7,6,.95));
-    --drop-bg:linear-gradient(180deg, rgba(27,22,14,.85), rgba(11,10,8,.9));
-  }
-
-  [data-theme="neon-blue"]{
-    --bg:#03060a; --bg-2:#08111c; --panel:#0d1521; --panel-2:#111d2c;
-    --line:#163248; --line-2:#214d6d; --text:#f7fbff; --muted:#c2d6e9; --muted-2:#88a9c4;
-    --accent:#1f89c9; --accent-2:#155e8a; --accent-3:#45c0ff;
-    --hero-bg:
-      radial-gradient(1000px 500px at 0% 0%, rgba(69,192,255,.16), transparent 60%),
-      radial-gradient(900px 450px at 100% 0%, rgba(21,94,138,.18), transparent 62%),
-      linear-gradient(180deg, #02060a 0%, #06101a 42%, #08131f 100%);
-    --button-primary:linear-gradient(180deg, #45c0ff 0%, #177fbc 100%);
-    --button-secondary:linear-gradient(180deg, #112130 0%, #0d1824 100%);
-    --input-bg:linear-gradient(180deg, rgba(8,15,24,.95), rgba(5,9,15,.95));
-    --drop-bg:linear-gradient(180deg, rgba(9,23,37,.85), rgba(7,15,24,.9));
-  }
-
-  [data-theme="forest-green"]{
-    --bg:#030705; --bg-2:#07110c; --panel:#0d1510; --panel-2:#132018;
-    --line:#1c3a2b; --line-2:#27533c; --text:#f7fff9; --muted:#c5ddd0; --muted-2:#8bb39b;
-    --accent:#1f8c57; --accent-2:#176742; --accent-3:#39d088;
-    --hero-bg:
-      radial-gradient(1000px 500px at 0% 0%, rgba(57,208,136,.14), transparent 60%),
-      radial-gradient(900px 450px at 100% 0%, rgba(23,103,66,.18), transparent 62%),
-      linear-gradient(180deg, #020503 0%, #07100b 42%, #09140e 100%);
-    --button-primary:linear-gradient(180deg, #39d088 0%, #1e8b56 100%);
-    --button-secondary:linear-gradient(180deg, #132119 0%, #0d1711 100%);
-    --input-bg:linear-gradient(180deg, rgba(7,14,10,.95), rgba(5,10,7,.95));
-    --drop-bg:linear-gradient(180deg, rgba(12,25,18,.85), rgba(7,14,10,.9));
-  }
-
-  [data-theme="plum-violet"]{
-    --bg:#060408; --bg-2:#110a15; --panel:#140f18; --panel-2:#1c1422;
-    --line:#3a1c46; --line-2:#56286a; --text:#fffaff; --muted:#d8c8de; --muted-2:#b18fc0;
-    --accent:#8b37b5; --accent-2:#652887; --accent-3:#c56cff;
-    --hero-bg:
-      radial-gradient(1000px 500px at 0% 0%, rgba(197,108,255,.16), transparent 60%),
-      radial-gradient(900px 450px at 100% 0%, rgba(101,40,135,.18), transparent 62%),
-      linear-gradient(180deg, #040306 0%, #0d0810 42%, #120b15 100%);
-    --button-primary:linear-gradient(180deg, #c56cff 0%, #8737b3 100%);
-    --button-secondary:linear-gradient(180deg, #20142b 0%, #160f1d 100%);
-    --input-bg:linear-gradient(180deg, rgba(13,8,16,.95), rgba(8,6,11,.95));
-    --drop-bg:linear-gradient(180deg, rgba(24,12,31,.85), rgba(11,8,15,.9));
-  }
-  [data-theme="silver"]{
-    --bg:#e9eaec; --bg-2:#dcdde0; --panel:#ffffff; --panel-2:#f3f4f6;
-    --line:#c5c7cc; --line-2:#9ea2a8; --text:#000000; --muted:#55585f; --muted-2:#4f535a;
-    --accent:#8a8f99; --accent-2:#6f747c; --accent-3:#b3b7bf;
-    --hero-bg:
-      linear-gradient(180deg, #f5f6f8 0%, #e9eaec 40%, #dcdde0 100%);
-    --button-primary:linear-gradient(180deg, #b3b7bf 0%, #8a8f99 100%);
-    --button-secondary:linear-gradient(180deg, #e0e2e6 0%, #c9ccd2 100%);
-    --button-text:#111111;
-    --input-bg:linear-gradient(180deg, #ffffff, #eef0f3);
-    --drop-bg:linear-gradient(180deg, #f0f1f3, #e3e4e7);
-    --metric-bg:linear-gradient(180deg, #ffffff, #f3f4f6);
-    --status-bg:linear-gradient(180deg, #ffffff, #f3f4f6);
-  }
-
-
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    color:var(--text);
-    font:14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background:var(--hero-bg);
-    padding:26px;
-    transition:background .2s ease, color .2s ease;
-  }
-  .wrap{max-width:1440px;margin:0 auto}
-  .hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px}
-  .hero h1{margin:0;font-size:38px;font-weight:900;letter-spacing:.02em;text-transform:uppercase}
-  .hero .sub{margin-top:8px;color:var(--muted);max-width:840px}
-  .eyebrow{
-    display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;
-    border:1px solid color-mix(in srgb, var(--accent-3) 28%, transparent);
-    background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 25%, transparent), color-mix(in srgb, var(--accent-2) 18%, transparent));
-    color:#fff;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
-  }
-  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent-3);box-shadow:0 0 14px color-mix(in srgb, var(--accent-3) 85%, transparent)}
-  .hero-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-  .tag,.pill{
-    padding:9px 12px;border-radius:999px;border:1px solid var(--line-2);
-    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-    color:var(--text);font-size:12px;font-weight:700;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
-  }
-
-  .grid{display:grid;grid-template-columns:430px minmax(0,1fr);gap:20px}
-  .stack{display:grid;gap:20px}
-  .panel{
-    position:relative;overflow:hidden;
-    background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)), linear-gradient(180deg, var(--panel), var(--bg-2));
-    border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.45);
-  }
-  .panel::before{
-    content:"";position:absolute;inset:0 0 auto 0;height:2px;
-    background:linear-gradient(90deg, transparent, var(--accent-3), transparent);opacity:.8;
-  }
-  .panel-header{
-    padding:16px 18px;border-bottom:1px solid color-mix(in srgb, var(--accent-3) 10%, transparent);
-    display:flex;justify-content:space-between;align-items:center;gap:12px;
-    background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0));
-  }
-  .panel-title{font-size:15px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--text)}
-  .panel-sub{font-size:12px;color:var(--muted-2);margin-top:3px}
-  .panel-body{padding:18px}
-  .actions{display:flex;flex-wrap:wrap;gap:10px}
-  .btn,.file-btn{
-    appearance:none;border:none;cursor:pointer;text-decoration:none;
-    display:inline-flex;align-items:center;justify-content:center;gap:10px;
-    min-height:46px;padding:12px 16px;border-radius:14px;
-    font-weight:900;letter-spacing:.03em;text-transform:uppercase;color:var(--button-text, #fff);
-    transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
-  }
-  .btn:hover,.file-btn:hover{transform:translateY(-1px);filter:brightness(1.03)}
-  .btn.primary,.file-btn.primary{background:var(--button-primary);box-shadow:0 12px 28px color-mix(in srgb, var(--accent) 35%, transparent), inset 0 1px 0 rgba(255,255,255,.12)}
-  .btn.secondary,.file-btn.secondary{background:var(--button-secondary);border:1px solid var(--line-2);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
-  input[type="file"]{display:none}
-
-  .field{display:grid;gap:8px}
-  .label{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text)}
-  .hint{font-size:12px;color:var(--muted-2)}
-  .input, textarea, select{
-    color:var(--text);
-    width:100%;background:var(--input-bg);color:#fff;border:1px solid var(--line-2);border-radius:14px;
-    outline:none;padding:13px 14px;transition:border-color .15s ease, box-shadow .15s ease;
-  }
-  .input:focus, textarea:focus, select:focus{
-    border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 22px color-mix(in srgb, var(--accent) 10%, transparent);
-  }
-  textarea{min-height:300px;color:var(--text);resize:vertical;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-
-  .dropzone{
-    border:1.5px dashed var(--line-2);border-radius:16px;padding:24px 18px;text-align:center;background:var(--drop-bg);transition:all .15s ease;
-  }
-  .dropzone.dragover{border-color:var(--accent-3);box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent) inset, 0 0 24px color-mix(in srgb, var(--accent) 14%, transparent);transform:scale(1.005)}
-  .drop-big{font-size:15px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:var(--text)}
-  .drop-small{color:var(--muted);font-size:12px;margin-top:4px}
-
-  .toggle-grid{display:grid;gap:12px}
-  .toggle{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line-2);border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01))}
-  .toggle input,.chip input{margin-top:2px;accent-color:var(--accent-3);transform:scale(1.08)}
-  .toggle strong{display:block;font-size:13px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
-  .toggle span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
-  .chips{display:flex;flex-wrap:wrap;gap:10px}
-  .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:999px;border:1px solid var(--line-2);background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));font-size:13px;color:var(--text)}
-
-  .status{
-    white-space:pre-wrap;background:var(--status-bg, linear-gradient(180deg, rgba(9,9,10,.95), rgba(6,6,7,.95)));
-    border:1px solid var(--line-2);border-radius:16px;padding:15px;color:var(--text);min-height:112px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
-  }
-  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
-  .metric{
-    background:radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent-3) 10%, transparent), transparent 70%), var(--metric-bg);
-    border:1px solid var(--line-2);border-radius:16px;padding:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
-  }
-  .metric .k{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.1em;font-weight:800}
-  .metric .v{font-size:26px;font-weight:900;margin-top:6px;color:var(--text)}
-
-  details.collapse{border:1px solid var(--line-2);border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));overflow:hidden}
-  details.collapse + details.collapse{margin-top:12px}
-  details.collapse summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
-  details.collapse summary::-webkit-details-marker{display:none}
-  details.collapse .sum-sub{font-size:12px;color:var(--muted-2);font-weight:700;letter-spacing:normal;text-transform:none;margin-top:2px}
-  details.collapse .collapse-body{padding:0 16px 16px}
-  details.collapse .chev{transition:transform .15s ease;color:var(--muted)}
-  details.collapse[open] .chev{transform:rotate(180deg)}
-
-  .table-wrap{max-height:820px;overflow:auto;border-top:1px solid color-mix(in srgb, var(--accent-3) 12%, transparent)}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.05);text-align:left;vertical-align:top}
-  th{position:sticky;top:0;z-index:5;background:color-mix(in srgb, var(--panel) 94%, black);backdrop-filter:blur(8px);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#fff}
-  tbody tr:nth-child(odd){background:rgba(255,255,255,.018)}
-  tbody tr:hover{background:color-mix(in srgb, var(--accent-3) 10%, transparent)}
-  .footer-note{color:var(--muted-2);font-size:12px;padding:12px 16px}
-
-  
-  .cell-input{
-    width:100%;
-    background:transparent;
-    border:1px solid transparent;
-    border-radius:8px;
-    color:var(--text);
-    padding:6px 7px;
-    font:inherit;
-    min-width:0;
-  }
-  .cell-input:focus{
-    outline:none;
-    border-color:var(--accent);
-    box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
-    background:color-mix(in srgb, var(--panel-2) 85%, white 3%);
-  }
-
-
-  .toolbar{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-  .table-toolbar{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .table-toolbar-left{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-  .cell-btn{
-    appearance:none;
-    border:1px solid var(--line-2);
-    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-    color:var(--text);
-    border-radius:10px;
-    padding:7px 10px;
-    cursor:pointer;
-    font-weight:700;
-    min-width:36px;
-  }
-  .cell-btn:hover{ filter:brightness(1.04); }
-  .row-number{
-    color:var(--muted-2);
-    font-size:12px;
-    font-weight:700;
-    white-space:nowrap;
-  }
-
-
-  .row-check{
-    width:18px;
-    height:18px;
-    accent-color: var(--accent-3);
-    cursor:pointer;
-  }
-  .header-check-wrap{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .table-wrap{
-    overflow-y: scroll !important;
-    overflow-x: auto;
-    scrollbar-width: auto;
-    scrollbar-color: var(--accent-3) color-mix(in srgb, var(--panel) 90%, black);
-  }
-  .table-wrap::-webkit-scrollbar{
-    width: 14px;
-    height: 14px;
-  }
-  .table-wrap::-webkit-scrollbar-track{
-    background: color-mix(in srgb, var(--panel) 92%, black);
-    border-left: 1px solid var(--line-2);
-  }
-  .table-wrap::-webkit-scrollbar-thumb{
-    background: color-mix(in srgb, var(--accent-3) 70%, var(--accent));
-    border-radius: 10px;
-    border: 3px solid color-mix(in srgb, var(--panel) 92%, black);
-  }
-  .table-wrap::-webkit-scrollbar-thumb:hover{
-    background: var(--accent-3);
-  }
-  th.sortable{
-    cursor:pointer;
-    user-select:none;
-  }
-  th.sortable:hover{
-    background: color-mix(in srgb, var(--accent-3) 10%, transparent);
-  }
-  .sort-indicator{
-    margin-left:6px;
-    font-size:11px;
-    color:var(--muted-2);
-  }
-
-
-  .tunebat-btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width:78px;
-    padding:7px 10px;
-    border-radius:10px;
-    border:1px solid var(--line-2);
-    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-    color:var(--text);
-    text-decoration:none;
-    font-size:12px;
-    font-weight:800;
-    cursor:pointer;
-  }
-  .tunebat-btn:hover{
-    filter:brightness(1.05);
-  }
-
-@media (max-width: 1140px){ .grid{grid-template-columns:1fr} }
-  @media (max-width: 760px){
-    body{padding:18px}
-    .hero{flex-direction:column;align-items:flex-start}
-    .metrics{grid-template-columns:1fr}
-    .hero h1{font-size:30px}
-  }
-
-  .input, textarea, select {
-    color: var(--text) !important;
-  }
-  .input::placeholder, textarea::placeholder {
-    color: var(--muted-2) !important;
-    opacity: 1;
-  }
-
-
-  [data-theme="silver"] table th {
-    color: #000 !important;
-  }
-
-
-  .cell-input.empty-cell {
-    background: color-mix(in srgb, var(--panel) 70%, #ccc);
-    border: 1px solid #b5b5b5;
-  }
-
+.previewCard,.scannerPanel{
+  margin-top:10px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:linear-gradient(180deg,#10161e,#0c1219);
+  padding:10px;
+}
+.previewImg{
+  width:100%;
+  max-height:320px;
+  object-fit:contain;
+  background:#091018;
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+.previewMeta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:8px;
+}
+.previewMeta .miniCard{
+  background:#111821;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px;
+  font-size:12px;
+}
+.videoWrap{
+  width:100%;
+  aspect-ratio:16/10;
+  background:#081018;
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted)
+}
+#scannerVideo{width:100%;height:100%;object-fit:cover;display:none}
+.scannerGrid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:10px;
+  margin-top:10px
+}
+#batchSessionStatus{margin-top:6px}
+@media (max-width:1080px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:static}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .scannerGrid{grid-template-columns:1fr}
+}
 </style>
 </head>
-<body data-theme="serato-red">
-<div class="wrap">
-  <div class="hero">
-    <div>
-      <div class="eyebrow">CSV Crate Creator</div>
-      <h1>CSV Crate Creator</h1>
-      <div class="sub">by Decknics</div>
-    </div>
-    <div class="hero-right">
-      <div class="tag">v1.0.6g52</div>
-      
+<body>
+<div class="app">
+  <h1>WaxFlow<br><span style="font-size:12px;color:#888;">by Decknics</span></h1>
+  <div class="sub">Import XML, CSV, or TXT for your library, then scan Discogs releases and clean the library from one tighter workspace.</div>
+
+  <div class="tabs">
+    <button id="workflowTabBtn" class="tabBtn active" type="button" onclick="window.switchTab && window.switchTab('workflow')">Workflow Studio</button>
+    <button id="upcomingTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('upcoming')">Discogs Scanner</button>
+  </div>
+
+  <div id="workflowView" style="display:block">
+    <div class="layout">
+      <aside class="card sidebar">
+        <div class="section">
+          <h2>Import</h2>
+          <div id="dropzone" class="dropzone">
+            <strong>Drop XML, CSV, or TXT here</strong>
+            <div class="small">or pick a file from a folder</div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="browseXmlBtn" type="button">Load XML</button>
+            <button id="browseCsvBtn" type="button">Load CSV / TXT</button>
+          </div>
+          <input id="xmlInput" type="file" accept=".xml,.plist,text/xml,application/xml" />
+          <input id="csvInput" type="file" accept=".csv,.txt,text/csv,text/plain" />
+        </div>
+
+        <div class="section">
+          <h2>Metadata Tools</h2>
+          <div class="row">
+            <button id="camelotBtn" class="good">Key Cleanup → Camelot</button>
+            <button id="bpmBtn">BPM Cleanup</button>
+          </div>
+          <div class="grid2" style="margin-top:8px">
+            <input id="bulkYear" type="text" placeholder="Set Year" />
+            <input id="bulkGenre" type="text" placeholder="Set Genre" />
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="applyYearGenreBtn">Apply Year / Genre</button>
+            <button id="fillMissingBtn">Fill Missing</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Artwork / Discogs</h2>
+          <input id="discogsToken" type="text" placeholder="Discogs personal token" />
+<div style="font-size:11px;color:#aaa;margin-top:4px;">
+  Required for Discogs lookup & artwork fetching. Get your personal token here:
+  <a href="https://www.discogs.com/settings/developers" target="_blank" style="color:#6cf;text-decoration:underline;">Discogs Developer Settings</a>
+</div>
+<div id="discogsWarning" style="display:none;font-size:11px;color:#ffb347;margin-top:6px;">
+⚠ Discogs token required for artwork + release lookup
+</div>
+<div style="margin-top:6px;">
+  <button id="testTokenBtn" style="font-size:11px;padding:4px 8px;">Test Token</button>
+  <span id="testTokenResult" style="font-size:11px;margin-left:6px;color:#aaa;"></span>
+</div>
+
+          <div class="row" style="margin-top:8px">
+            <button id="discogsSelectedBtn">Match Selected</button>
+            <button id="discogsMissingBtn">Fill Missing Artwork</button>
+          </div>
+          <div class="small" style="margin-top:6px">Best on one or a few rows at a time.</div>
+        </div>
+
+
+
+      </aside>
+
+      <main class="card main">
+        <div class="stats">
+          <div class="stat"><div class="label">Rows</div><div id="statRows" class="value">0</div></div>
+          <div class="stat"><div class="label">Filtered</div><div id="statFiltered" class="value">0</div></div>
+          <div class="stat"><div class="label">With Key</div><div id="statKeys" class="value">0</div></div>
+          <div class="stat"><div class="label">With Artwork</div><div id="statArtwork" class="value">0</div></div>
+          <div class="stat"><div class="label">Selected</div><div id="statSelected" class="value">0</div></div>
+        </div>
+
+        <div class="toolbar">
+          <input id="searchInput" class="grow" type="text" placeholder="Search artist, song, album, genre, artwork..." />
+          <select id="filterSelect">
+            <option value="all">All Rows</option>
+            <option value="missing-artwork">Missing Artwork</option>
+            <option value="missing-key">Missing Key</option>
+            <option value="missing-bpm">Missing BPM</option>
+            <option value="selected">Selected Rows</option>
+          </select>
+          <button id="selectVisibleBtn">Select Visible</button>
+          <button id="clearSelectionBtn">Clear Selection</button>
+        </div>
+
+        <div id="status" class="status">No file loaded yet.</div>
+
+                <div class="section">
+          <h2>Library Actions</h2>
+          <div class="libraryActionBar">
+            <div class="libraryActionGroup">
+              <button id="addBlankBtn"><span class="iconBtnText">＋ <span>Add Row</span></span></button>
+              <button id="deleteSelectedBtn" class="bad"><span class="iconBtnText">− <span>Delete Selected</span></span></button>
+              <button id="clearAllBtn" class="warn"><span class="iconBtnText">✕ <span>Clear All</span></span></button>
+            </div>
+            <div class="libraryActionGroup">
+              <button id="exportAllBtn" class="primary"><span class="iconBtnText">⬇ <span>Export Clean CSV</span></span></button>
+              <button id="exportFilteredBtn"><span class="iconBtnText">⤓ <span>Export Filtered CSV</span></span></button>
+            </div>
+            <div class="libraryActionGroup">
+              <label class="libraryToggle">
+                <input id="tabEmptyCellsCheckbox" type="checkbox" checked />
+                <span>Tab Empty Cells</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:42px">Pick</th>
+                <th style="width:100px">Artist</th>
+                <th style="width:120px">Song</th>
+                <th style="width:100px">Album</th>
+                <th style="width:58px">BPM</th>
+                <th style="width:58px">Key</th>
+                <th style="width:62px">Year</th>
+                <th style="width:90px">Genre</th>
+                <th style="width:140px">Artwork</th>
+                <th style="width:64px">Size</th>
+                <th style="width:64px">Speed</th>
+                <th style="width:80px">Disc #</th>
+                <th style="width:90px">Tools</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="footer">CSV export includes Artist, Song, Album, BPM, Key, Year, Genre, Artwork.</div>
+      </main>
     </div>
   </div>
 
-  <div class="grid">
-    <div class="stack">
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Files Import and Export</div>
-            <div class="panel-sub">Load files, pick a style, and export your library</div>
+  <div id="upcomingView" style="display:none">
+    <div class="layout">
+      <aside class="card sidebar">
+        <div class="section">
+          <h2>Discogs Scanner</h2>
+          <div class="small">Load a scanner file here. After rows appear, use <strong>Preview Art</strong> on each row to verify the artwork.</div>
+          <div id="upcomingDropzone" class="dropzone" style="margin-top:8px">
+            <strong>Drop upcoming CSV, TXT, or JSON here</strong>
+            <div class="small">Discogs-style files</div>
           </div>
+          <div class="row" style="margin-top:8px">
+            <button id="browseUpcomingBtn" type="button">Load Scanner File</button>
+          </div>
+          <input id="upcomingInput" type="file" accept=".csv,.txt,.json,text/csv,text/plain,application/json" />
         </div>
-        <div class="panel-body">
 
-          <div class="field" style="margin-top:14px; margin-bottom:14px;">
-            <div class="label"><span>Drop Area</span><span class="hint">TXT = source text, CSV = merge file</span></div>
-            <div id="dropzone" class="dropzone">
-              <div class="drop-big">Drag and drop files here</div>
-              <div class="drop-small">Use the buttons below if you prefer.</div>
-            </div>
-          </div>
 
-          <div class="actions">
-            <label class="file-btn primary">
-              Load TXT or CSV
-              <input id="fileInput" type="file" accept=".txt,.text,.csv" />
-            </label>
-            <label class="file-btn secondary">
-              Load Existing CSV
-              <input id="mergeFileInput" type="file" accept=".csv" />
-            </label>
+        <div class="section">
+          <h2>Actions</h2>
+          <div class="row">
+            <button id="startBatchSessionBtn" class="primary">Start Batch Session</button>
+            <button id="upcomingExportBtn">Export Scanner CSV</button>
+            <button id="clearUpcomingBtn" class="warn">Clear Scanner</button>
           </div>
-
-          <div class="field" style="margin-top:14px;">
-            <label class="label" for="filename">
-              <span>Export Filename</span>
-              <span class="hint" id="filenamePreview">serato_export.csv</span>
-            </label>
-            <input class="input" id="filename" type="text" value="serato_export" placeholder="Enter CSV filename" />
-          </div>
-
-          <div class="actions" style="margin-top:16px;">
-            <button class="btn secondary" id="parseBtn">Create New CSV</button>
-            <button class="btn primary" id="downloadBtn">Download CSV</button>
-          </div>
+          <div id="batchSessionStatus" class="small" style="margin-top:6px">Batch Session: Off</div>
+          <div class="small" style="margin-top:6px">Batch Session keeps each new barcode adding another album instead of reusing the current scanner row. When turned on, the barcode field is focused so your hardware scanner can keep feeding scans there. If your scanner does not send Enter, the app will still try to auto-run the lookup when it sees a full UPC / EAN.</div>
         </div>
-      </section>
 
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Options</div>
-            <div class="panel-sub">Collapsible and remembered between sessions</div>
-          </div>
+      </aside>
+
+      <main class="card main">
+        <div class="stats">
+          <div class="stat"><div class="label">Rows</div><div id="upcomingCount" class="value">0</div></div>
+          <div class="stat"><div class="label">With Released</div><div id="upcomingDates" class="value">0</div></div>
+          <div class="stat"><div class="label">With Links</div><div id="upcomingLinks" class="value">0</div></div>
+          <div class="stat"><div class="label">With Artwork</div><div id="upcomingArtwork" class="value">0</div></div>
+          <div class="stat"><div class="label">Visible</div><div id="upcomingVisible" class="value">0</div></div>
         </div>
-        <div class="panel-body">
-          <details class="collapse" id="processingDetails" open>
-            <summary>
+
+        <div class="toolbar">
+          <input id="upcomingSearch" class="grow" type="text" placeholder="Search artist, title, label, cat no, year, released, genre..." />
+          <button id="copyUpcomingBtn" type="button">Copy Visible URLs</button>
+        </div>
+
+        <div id="upcomingStatus" class="status">No scanner file loaded yet.</div><div class="small" style="margin:-4px 0 10px">The preview button appears inside each scanner row after you load a file.</div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:84px">Preview</th>
+                <th style="width:110px">Artist</th>
+                <th style="width:130px">Title</th>
+                <th style="width:100px">Label</th>
+                <th style="width:80px">Cat No</th>
+                <th style="width:95px">Barcode</th>
+                <th style="width:62px">Year</th>
+                <th style="width:90px">Released</th>
+                <th style="width:90px">Format</th>
+                <th style="width:80px">Country</th>
+                <th style="width:90px">Genre</th>
+                <th style="width:90px">Style</th>
+                <th style="width:150px">URL</th>
+                <th style="width:120px">Artwork</th>
+              </tr>
+            </thead>
+            <tbody id="upcomingTbody"></tbody>
+          </table>
+        </div>
+
+        <div class="scannerGrid">
+          <div class="previewCard">
+            <div class="row" style="justify-content:space-between">
               <div>
-                <div>Processing Options</div>
-                <div class="sum-sub">Parsing, Camelot conversion, merge behavior</div>
+                <strong id="scannerTitle">Upcoming Artwork Preview</strong>
+                <div id="scannerSubtitle" class="small">Load a scanner file, then click Preview Art on a row to show the artwork here. Use Replace Artwork to try a different Discogs release match for the same barcode.</div>
               </div>
-              <div class="chev">▾</div>
-            </summary>
-            <div class="collapse-body">
-              <div class="toggle-grid">
-                <label class="toggle">
-                  <input type="checkbox" id="camelot" checked>
-                  <div>
-                    <strong>Convert Musical Keys to Camelot</strong>
-                    <span>Turns values like Fm or D major into Camelot-compatible output when possible.</span>
-                  </div>
-                </label>
-
-                <label class="toggle">
-                  <input type="checkbox" id="replaceExisting">
-                  <div>
-                    <strong>Overwrite Duplicate Tracks in the Old CSV</strong>
-                    <span>Matches duplicates by Artist + Song and replaces the old row with the newly parsed row before export.</span>
-                  </div>
-                </label>
-
-                <label class="toggle">
-                  <input type="checkbox" id="dedupe" checked>
-                  <div>
-                    <strong>Remove Exact Duplicate Rows</strong>
-                    <span>Useful after merging, especially when files overlap.</span>
-                  </div>
-                </label>
-                <div class="toggle">
-                  <div style="width:18px; flex:0 0 18px;"></div>
-                  <div style="flex:1;">
-                    <strong>UI Theme</strong>
-                    <span style="margin-bottom:8px;">Choose your preferred look.</span>
-                    <select id="themeSelect">
-                      <option value="serato-red">Serato Red / Burgundy</option>
-                      <option value="nightclub-gold">Nightclub Gold</option>
-                      <option value="neon-blue">Neon Blue</option>
-                      <option value="forest-green">Forest Green</option>
-                      <option value="plum-violet">Plum Violet</option>
-                      <option value="silver">Silver (Light)</option>
-                    </select>
-                  </div>
-                </div>
+              <div class="row">
+                <button id="replaceArtworkBtn" type="button">Replace Artwork</button>
+                <button id="sendToWorkflowBtn" type="button" class="primary">Send to Workflow</button>
+                <button id="openReleaseBtn" type="button">Open Release</button>
+                <button id="openArtworkBtn" type="button">Open Artwork</button>
+                <button id="copyArtworkBtn" type="button">Copy Artwork URL</button>
               </div>
             </div>
-          </details>
+            <img id="scannerImage" class="previewImg" alt="Artwork preview" /><div id="scannerEmptyText" class="small" style="margin-top:8px">No artwork preview loaded yet.</div>
+            <div class="previewMeta">
+              <div class="miniCard"><strong>Artist</strong><div id="scannerArtist" class="small"></div></div>
+              <div class="miniCard"><strong>Title</strong><div id="scannerTrack" class="small"></div></div>
+              <div class="miniCard"><strong>Label / Cat No</strong><div id="scannerLabel" class="small"></div></div>
+              <div class="miniCard"><strong>Date / Format</strong><div id="scannerDate" class="small"></div></div>
+            </div>
+          </div>
 
-          <details class="collapse" id="columnsDetails">
-            <summary>
+          <div class="scannerPanel">
+            <div class="row" style="justify-content:space-between">
               <div>
-                <div>Output Columns</div>
-                <div class="sum-sub">Shown in preview and exported CSV</div>
+                <strong>Webcam Barcode Scanner</strong>
+                <div id="cameraStatus" class="small">Camera idle.</div>
               </div>
-              <div class="chev">▾</div>
-            </summary>
-            <div class="collapse-body">
-              <div class="chips">
-                <label class="chip"><input type="checkbox" class="col" value="Artist" checked> Artist</label>
-                <label class="chip"><input type="checkbox" class="col" value="Song" checked> Song</label>
-                <label class="chip"><input type="checkbox" class="col" value="Album" checked> Album</label>
-                <label class="chip"><input type="checkbox" class="col" value="BPM" checked> BPM</label>
-                <label class="chip"><input type="checkbox" class="col" value="Key" checked> Key</label>
-                <label class="chip"><input type="checkbox" class="col" value="Year" checked> Year</label>
-                <label class="chip"><input type="checkbox" class="col" value="Genre" checked> Genre</label>
+              <div class="row">
+                <div class="chip">UPC-A</div>
+                <div class="chip">EAN-13</div>
+                <div class="chip">EAN-8</div>
               </div>
             </div>
-          </details>
-        </div>
-      </section>
-
-    </div>
-
-    <div class="stack">
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Session Overview</div>
-            <div class="panel-sub">Quick readout of what’s loaded and parsed</div>
-          </div>
-          <div class="pill" id="mergeBadge">No merge CSV loaded</div>
-        </div>
-        <div class="panel-body">
-          <div class="metrics">
-            <div class="metric">
-              <div class="k">Loaded Lines</div>
-              <div class="v" id="metricLines">0</div>
+            <div class="videoWrap" style="margin-top:10px">
+              <video id="scannerVideo" autoplay playsinline muted></video>
+              <div id="videoPlaceholder" class="small">Start Camera to scan a barcode with your webcam.</div>
             </div>
-            <div class="metric">
-              <div class="k">Parsed Tracks</div>
-              <div class="v" id="metricTracks">0</div>
+            <div class="previewMeta" style="margin-top:10px">
+              <div class="miniCard"><strong>Last barcode</strong><div id="lastBarcode" class="small"></div></div>
+              <div class="miniCard"><strong>Selected scanner row</strong><div id="selectedUpcomingRow" class="small"></div></div>
             </div>
-            <div class="metric">
-              <div class="k">Merge Rows</div>
-              <div class="v" id="metricMerge">0</div>
-            </div>
-          </div>
-          <div class="status" id="status">Load a file, then click Create New CSV.</div>
-        </div>
-      </section>
 
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">All Parsed Tracks</div>
-            <div class="panel-sub">Search, edit, add, and remove rows before export</div>
-          </div>
-          <div class="pill" id="previewCount">0 rows</div>
-        </div>
-        <div class="panel-body" style="padding-bottom:12px;">
-          <div class="table-toolbar">
-            <div class="table-toolbar-left">
-              <div class="field" style="min-width:260px;">
-                <label class="label" for="tableSearch">
-                  <span>Search Table</span>
-                  <span class="hint">Find by artist or song</span>
-                </label>
-                <input class="input" id="tableSearch" type="text" placeholder="Search artist or song..." />
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
+              <div class="small" style="margin-bottom:8px"><strong>UPC / EAN Scanner</strong></div>
+              <div class="small" style="margin-bottom:8px">You can scan with a webcam, a hardware scanner, or type the code manually. If no scanner rows exist yet, the app will create one automatically from the barcode result.</div>
+              <div class="field">
+                <input id="barcodeInput" type="text" placeholder="Enter UPC / EAN / barcode number" />
               </div>
-            </div>
-            <div class="toolbar" style="margin-top:20px;">
-              <button class="btn secondary" id="addRowBtn" type="button">Add Song</button>
-              <button class="btn secondary" id="selectAllBtn" type="button">Select All</button>
-              <button class="btn secondary" id="deselectAllBtn" type="button">Deselect All</button>
-              <button class="btn secondary" id="removeSelectedBtn" type="button">Remove Selected</button>
-              <button class="btn secondary" id="undoDeleteBtn" type="button">Undo Last Delete</button>
+              <div class="row" style="margin-top:8px">
+                <button id="lookupBarcodeBtn" type="button" class="primary">Lookup Barcode</button>
+                <button id="startCameraBtn" type="button">Start Camera</button>
+                <button id="stopCameraBtn" type="button">Stop Camera</button>
+              </div>
+              <div class="small" style="margin-top:8px">Barcode results will update the selected scanner row, then also send the album tracklist into Workflow Studio so you can finish any missing fields there. If there are no rows yet, the app creates one automatically. Existing filled-in fields are left alone.</div>
             </div>
           </div>
         </div>
-        <div class="table-wrap">
-          <div id="preview"></div>
-        </div>
-        <div class="footer-note">Tip: toggle output columns on the left to change both the preview and the final CSV.</div>
-      </section>
+      </main>
     </div>
   </div>
 </div>
 
 <script>
-const state = { rows: [], mergeRows: [], mergeHeaders: [], loadedLines: 0, selectedRowIndex: null, checkedRows: new Set(), sortColumn: null, sortDirection: 'asc', lastDeletedRows: null };
-const STORAGE_KEY = "serato_text_to_csv_ui_prefs_v3_themes";
+(() => {
+  const workflowTabBtn = document.getElementById('workflowTabBtn');
+  const upcomingTabBtn = document.getElementById('upcomingTabBtn');
+  const workflowView = document.getElementById('workflowView');
+  const upcomingView = document.getElementById('upcomingView');
 
-function savePrefs() {
-  const prefs = {
-    filename: document.getElementById('filename')?.value || "serato_export",
-    camelot: document.getElementById('camelot')?.checked || false,
-    replaceExisting: document.getElementById('replaceExisting')?.checked || false,
-    dedupe: document.getElementById('dedupe')?.checked || false,
-    selectedColumns: Array.from(document.querySelectorAll('.col:checked')).map(el => el.value),
-    processingOpen: document.getElementById('processingDetails')?.open || false,
-    columnsOpen: document.getElementById('columnsDetails')?.open || false,
-    theme: document.getElementById('themeSelect')?.value || "serato-red",
-    sortColumn: state.sortColumn,
-    sortDirection: state.sortDirection
+  const xmlInput = document.getElementById('xmlInput');
+  const csvInput = document.getElementById('csvInput');
+  const browseXmlBtn = document.getElementById('browseXmlBtn');
+  const browseCsvBtn = document.getElementById('browseCsvBtn');
+  const dropzone = document.getElementById('dropzone');
+  const tbody = document.getElementById('tbody');
+  const statusEl = document.getElementById('status');
+  const searchInput = document.getElementById('searchInput');
+  const filterSelect = document.getElementById('filterSelect');
+  const tabEmptyCellsCheckbox = document.getElementById('tabEmptyCellsCheckbox');
+  const discogsTokenInput = document.getElementById('discogsToken');
+
+  const upcomingInput = document.getElementById('upcomingInput');
+  const browseUpcomingBtn = document.getElementById('browseUpcomingBtn');
+  const upcomingDropzone = document.getElementById('upcomingDropzone');
+  const upcomingTbody = document.getElementById('upcomingTbody');
+  const upcomingStatusEl = document.getElementById('upcomingStatus');
+  const upcomingSearchEl = document.getElementById('upcomingSearch');
+  const openReleaseBtn = document.getElementById('openReleaseBtn');
+  const openArtworkBtn = document.getElementById('openArtworkBtn');
+  const copyArtworkBtn = document.getElementById('copyArtworkBtn');
+  const sendToWorkflowBtn = document.getElementById('sendToWorkflowBtn');
+  const replaceArtworkBtn = document.getElementById('replaceArtworkBtn');
+  const startBatchSessionBtn = document.getElementById('startBatchSessionBtn');
+  const batchSessionStatus = document.getElementById('batchSessionStatus');
+  const scannerTitle = document.getElementById('scannerTitle');
+  const scannerSubtitle = document.getElementById('scannerSubtitle');
+  const scannerImage = document.getElementById('scannerImage');
+  const scannerArtist = document.getElementById('scannerArtist');
+  const scannerTrack = document.getElementById('scannerTrack');
+  const scannerLabel = document.getElementById('scannerLabel');
+  const scannerDate = document.getElementById('scannerDate');
+  const scannerEmptyText = document.getElementById('scannerEmptyText');
+  const barcodeInput = document.getElementById('barcodeInput');
+  const lookupBarcodeBtn = document.getElementById('lookupBarcodeBtn');
+  const startCameraBtn = document.getElementById('startCameraBtn');
+  const stopCameraBtn = document.getElementById('stopCameraBtn');
+  const scannerVideo = document.getElementById('scannerVideo');
+  const videoPlaceholder = document.getElementById('videoPlaceholder');
+  const cameraStatus = document.getElementById('cameraStatus');
+  const lastBarcode = document.getElementById('lastBarcode');
+  const selectedUpcomingRow = document.getElementById('selectedUpcomingRow');
+
+  let rows = [];
+  let currentSearch = '';
+  let currentFilter = 'all';
+  let tabEmptyCellsOnly = true;
+  let lastFilename = 'dj_library';
+
+  let upcomingRows = [];
+  let upcomingSearch = '';
+  let currentUpcomingIndex = -1;
+  let batchSessionActive = false;
+  let cameraStream = null;
+  let barcodeDetector = null;
+  let barcodeLoopTimer = null;
+  let lastScannedCode = '';
+  let lastBarcodeResults = [];
+  let currentBarcodeResultIndex = 0;
+  let barcodeAutoLookupTimer = null;
+
+  const CSV_HEADERS = ['Artist','Song','Album','BPM','Key','Year','Genre','Artwork','Size','Speed','Disc Number'];
+  const UPCOMING_HEADERS = ['Artist','Title','Label','CatNo','Barcode','Year','Released','Format','Country','Genre','Style','URL','Artwork'];
+
+  const camelotMap = {
+    'B':'1B','C#':'3B','DB':'3B','D#':'5B','EB':'5B','F#':'2B','GB':'2B','G#':'4B','AB':'4B','A#':'6B','BB':'6B',
+    'C':'8B','D':'10B','E':'12B','F':'7B','G':'9B','A':'11B',
+    'ABM':'1A','G#M':'1A','EBM':'2A','D#M':'2A','BBM':'3A','A#M':'3A','FM':'4A','CM':'5A','GM':'6A','DM':'7A',
+    'AM':'8A','EM':'9A','BM':'10A','F#M':'11A','GBM':'11A','C#M':'12A','DBM':'12A'
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-}
 
-function loadPrefs() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const prefs = JSON.parse(raw);
-    if (typeof prefs.filename === "string") document.getElementById('filename').value = prefs.filename;
-    if (typeof prefs.camelot === "boolean") document.getElementById('camelot').checked = prefs.camelot;
-    if (typeof prefs.replaceExisting === "boolean") document.getElementById('replaceExisting').checked = prefs.replaceExisting;
-    if (typeof prefs.dedupe === "boolean") document.getElementById('dedupe').checked = prefs.dedupe;
-    if (Array.isArray(prefs.selectedColumns)) {
-      const selected = prefs.selectedColumns.includes("Album")
-        ? prefs.selectedColumns
-        : prefs.selectedColumns.concat(["Album"]);
-      document.querySelectorAll('.col').forEach(el => el.checked = selected.includes(el.value));
-    }
-    if (typeof prefs.processingOpen === "boolean") document.getElementById('processingDetails').open = prefs.processingOpen;
-    if (typeof prefs.columnsOpen === "boolean") document.getElementById('columnsDetails').open = prefs.columnsOpen;
-    if (typeof prefs.theme === "string") document.getElementById('themeSelect').value = prefs.theme;
-    if (typeof prefs.sortColumn === "string") state.sortColumn = prefs.sortColumn;
-    if (typeof prefs.sortDirection === "string") state.sortDirection = prefs.sortDirection;
-  } catch(e) {}
-}
+  function safe(v){ return String(v ?? '').trim(); }
+  function lc(v){ return safe(v).toLowerCase(); }
+  function setStatus(msg, type=''){ statusEl.textContent = msg; statusEl.className = 'status' + (type ? ' ' + type : ''); }
+  function setUpcomingStatus(msg, type=''){ upcomingStatusEl.textContent = msg; upcomingStatusEl.className = 'status' + (type ? ' ' + type : ''); }
 
-function applyTheme(theme) {
-  document.body.setAttribute('data-theme', theme || 'serato-red');
-}
-
-function escapeHtml(s) {
-  return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[m]));
-}
-function csvEscape(s) {
-  s = String(s ?? "");
-  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-}
-function getSelectedColumns() {
-  return Array.from(document.querySelectorAll('.col:checked')).map(el => el.value);
-}
-function getExportColumns() {
-  const cols = getSelectedColumns().slice();
-  if (!cols.includes("Artwork")) cols.push("Artwork");
-  return cols;
-}
-function updateFilenamePreview() {
-  let name = document.getElementById('filename').value.trim() || 'serato_export';
-  name = name.replace(/\.csv$/i, '');
-  document.getElementById('filenamePreview').textContent = name + '.csv';
-}
-function updateMetrics() {
-  document.getElementById('metricLines').textContent = state.loadedLines || 0;
-  document.getElementById('metricTracks').textContent = state.rows.length || 0;
-  document.getElementById('metricMerge').textContent = state.mergeRows.length || 0;
-  document.getElementById('previewCount').textContent = (state.rows.length || 0) + " rows";
-  document.getElementById('mergeBadge').textContent = state.mergeRows.length ? (state.mergeRows.length + " merge rows loaded") : "No merge CSV loaded";
-}
-function sanitizeKeyValue(value) {
-  let v = String(value ?? "").trim();
-  if (!v) return "";
-  if (v === "0") return "";
-  if (/^0+$/i.test(v)) return "";
-  const m = v.match(/^0*([1-9]|1[0-2])([AB])$/i);
-  if (m) return m[1] + m[2].toUpperCase();
-  if (/^0+[AB]$/i.test(v)) return "";
-  return v;
-}
-
-
-function roundBpmHalf(val){
-  if (val === null || val === undefined) return "";
-  const n = parseFloat(String(val).trim());
-  if (isNaN(n)) return val;
-  return Math.round(n * 2) / 2;
-}
-
-function normalizeKey(key) {
-  key = sanitizeKeyValue(key);
-  if (!key) return "";
-  let k = String(key).trim().replace(/♭/g, 'b').replace(/♯/g, '#').replace(/\s+/g, ' ').replace(/major/i, '').replace(/maj/i, '').replace(/minor/i, 'm').replace(/min/i, 'm').trim();
-  if (/^\d{1,2}[AB]$/i.test(k)) return k.toUpperCase();
-  k = k.replace(/\s/g, '');
-  if (/^[A-G](#|b)?m?$/i.test(k)) return k.charAt(0).toUpperCase() + k.slice(1);
-  return String(key).trim();
-}
-function toCamelot(key) {
-  const k = normalizeKey(key);
-  if (!k) return "";
-  if (/^\d{1,2}[AB]$/i.test(k)) return k.toUpperCase();
-  const map = {"Abm":"1A","G#m":"1A","B":"1B","Ebm":"2A","D#m":"2A","F#":"2B","Gb":"2B","Bbm":"3A","A#m":"3A","Db":"3B","C#":"3B","Fm":"4A","Ab":"4B","G#":"4B","Cm":"5A","Eb":"5B","D#":"5B","Gm":"6A","Bb":"6B","A#":"6B","Dm":"7A","F":"7B","Am":"8A","C":"8B","Em":"9A","G":"9B","Bm":"10A","D":"10B","F#m":"11A","Gbm":"11A","A":"11B","C#m":"12A","Dbm":"12A","E":"12B"};
-  return map[k] || String(key).trim();
-}
-function parseHeaderPositions(headerLine) {
-  const cols = ["Artist","Song","BPM","Key","Year","Genre"], pos = {};
-  for (const c of cols) pos[c] = headerLine.indexOf(c);
-  return cols.every(c => pos[c] >= 0) ? pos : null;
-}
-function looksLikeTrackLine(line) {
-  if (!line.trim()) return false;
-  if (/^-+\s*$/.test(line.trim())) return false;
-  if (/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*$/.test(line)) return false;
-  if (/^\s*Artist\s+Song\s+BPM\s+Key\s+Year\s+Genre\s*$/i.test(line.trim())) return false;
-  return /\d{2,3}/.test(line);
-}
-function parseLineByPositions(line, pos) {
-  const starts = [pos.Artist, pos.Song, pos.BPM, pos.Key, pos.Year, pos.Genre];
-  const artist = line.slice(starts[0], starts[1]).trim();
-  const song = line.slice(starts[1], starts[2]).trim();
-  const bpm = line.slice(starts[2], starts[3]).trim();
-  const key = line.slice(starts[3], starts[4]).trim();
-  const year = line.slice(starts[4], starts[5]).trim();
-  const genre = line.slice(starts[5]).trim();
-  if (!artist && !song) return null;
-  if (!bpm && !key && !year && !genre) return null;
-  return { Artist: artist, Song: song, Album: "", BPM: (bpm ? String(roundBpmHalf(bpm)).replace(/\.0$/, "") : ""), Key: sanitizeKeyValue(key), Year: year, Genre: genre, Artwork: "" };
-}
-function parseFallback(line) {
-  const m = line.match(/^(.*?\S)\s{2,}(\d{2,3})\s{2,}([A-G](?:#|b)?m?|\d{1,2}[AB])?\s{2,}(\d{4})?\s{2,}(.*)$/i);
-  if (!m) return null;
-  return { Artist: "", Song: m[1].trim(), Album: "", BPM: (m[2] ? String(roundBpmHalf(m[2])).replace(/\.0$/, "") : ""), Key: sanitizeKeyValue(m[3] || ""), Year: m[4] || "", Genre: m[5] || "", Artwork: "" };
-}
-function parseText() {
-  const text = document.getElementById('input').value;
-  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
-  state.loadedLines = lines.length;
-  const headerLine = lines.find(line => /Artist\s+Song\s+BPM\s+Key\s+Year\s+Genre/i.test(line));
-  const pos = headerLine ? parseHeaderPositions(headerLine) : null;
-  let rows = [], skipped = 0;
-  for (const rawLine of lines) {
-    if (!looksLikeTrackLine(rawLine)) continue;
-    let row = pos ? parseLineByPositions(rawLine, pos) : null;
-    if (!row) row = parseFallback(rawLine);
-    if (row && (row.Artist || row.Song) && row.BPM) {
-      if (document.getElementById('camelot').checked) row.Key = toCamelot(row.Key);
-      rows.push(row);
-    } else skipped++;
-  }
-  state.rows = rows;
-  state.checkedRows = new Set();
-  state.selectedRowIndex = null;
-  state.lastDeletedRows = null;
-  document.getElementById('status').textContent =
-    "Loaded lines: " + lines.length +
-    "\nParsed tracks: " + rows.length +
-    "\nSkipped candidate lines: " + skipped +
-    "\nHeader-based column positions: " + (pos ? JSON.stringify(pos) : "not found");
-  renderPreview(); updateMetrics();
-}
-
-
-
-function getVisibleRowIndexes() {
-  const searchTerm = (document.getElementById('tableSearch')?.value || '').trim().toLowerCase();
-  let filteredIndexes = state.rows.map((_, idx) => idx);
-  if (searchTerm) {
-    filteredIndexes = filteredIndexes.filter((idx) => {
-      const row = state.rows[idx];
-      const artist = String(row.Artist || '').toLowerCase();
-      const song = String(row.Song || '').toLowerCase();
-      return artist.includes(searchTerm) || song.includes(searchTerm);
-    });
-  }
-  return filteredIndexes;
-}
-
-function selectAllVisibleRows() {
-  getVisibleRowIndexes().forEach((idx) => state.checkedRows.add(idx));
-  renderPreview();
-}
-
-function deselectAllRows() {
-  state.checkedRows = new Set();
-  renderPreview();
-}
-
-function removeCheckedRows() {
-  if (!state.checkedRows.size) {
-    alert("Select one or more rows first.");
-    return;
-  }
-
-  const indexes = Array.from(state.checkedRows)
-    .filter(idx => idx >= 0 && idx < state.rows.length)
-    .sort((a, b) => a - b);
-
-  state.lastDeletedRows = indexes.map(idx => ({
-    index: idx,
-    row: JSON.parse(JSON.stringify(state.rows[idx]))
-  }));
-
-  for (let i = indexes.length - 1; i >= 0; i--) {
-    state.rows.splice(indexes[i], 1);
-  }
-
-  state.checkedRows = new Set();
-  state.selectedRowIndex = null;
-  renderPreview();
-}
-
-function undoLastDelete() {
-  if (!state.lastDeletedRows || !state.lastDeletedRows.length) {
-    alert("Nothing to undo.");
-    return;
-  }
-
-  for (const item of state.lastDeletedRows) {
-    const idx = Math.max(0, Math.min(item.index, state.rows.length));
-    state.rows.splice(idx, 0, item.row);
-  }
-
-  state.lastDeletedRows = null;
-  state.checkedRows = new Set();
-  state.selectedRowIndex = null;
-  renderPreview();
-}
-
-function compareValues(a, b, direction = 'asc') {
-  const aa = String(a ?? '').trim();
-  const bb = String(b ?? '').trim();
-
-  const na = parseFloat(aa);
-  const nb = parseFloat(bb);
-  const bothNumeric = aa !== '' && bb !== '' && !Number.isNaN(na) && !Number.isNaN(nb);
-
-  let result = 0;
-  if (bothNumeric) {
-    result = na - nb;
-  } else {
-    result = aa.localeCompare(bb, undefined, { numeric: true, sensitivity: 'base' });
-  }
-
-  return direction === 'asc' ? result : -result;
-}
-
-function sortRowsByColumn(column) {
-  if (!column) return;
-
-  if (state.sortColumn === column) {
-    state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
-  } else {
-    state.sortColumn = column;
-    state.sortDirection = 'asc';
-  }
-
-  const indexed = state.rows.map((row, idx) => ({ row, idx }));
-  indexed.sort((a, b) => {
-    const primary = compareValues(a.row[column], b.row[column], state.sortDirection);
-    if (primary !== 0) return primary;
-    return a.idx - b.idx;
-  });
-
-  const indexMap = new Map();
-  indexed.forEach((item, newIdx) => indexMap.set(item.idx, newIdx));
-  state.rows = indexed.map(item => item.row);
-
-  const shiftedChecked = new Set();
-  state.checkedRows.forEach((oldIdx) => {
-    if (indexMap.has(oldIdx)) shiftedChecked.add(indexMap.get(oldIdx));
-  });
-  state.checkedRows = shiftedChecked;
-
-  if (state.selectedRowIndex !== null && indexMap.has(state.selectedRowIndex)) {
-    state.selectedRowIndex = indexMap.get(state.selectedRowIndex);
-  } else {
-    state.selectedRowIndex = null;
-  }
-
-  renderPreview();
-}
-
-function getSortIndicator(column) {
-  if (state.sortColumn !== column) return "";
-  return state.sortDirection === 'asc' ? "▲" : "▼";
-}
-
-
-
-
-function buildTunebatSearchUrl(row) {
-  const artist = String(row.Artist || "").trim();
-  const song = String(row.Song || "").trim();
-  const query = [artist, song].filter(Boolean).join(" ");
-  if (!query) return "https://tunebat.com/";
-  return "https://tunebat.com/Search?q=" + encodeURIComponent(query);
-}
-
-function openTunebatForRow(rowIndex) {
-  const row = state.rows[rowIndex];
-  if (!row) return;
-  const url = buildTunebatSearchUrl(row);
-  const width = 980;
-  const height = 760;
-  const left = Math.max(0, Math.round((window.screen.width - width) / 2));
-  const top = Math.max(0, Math.round((window.screen.height - height) / 2));
-  window.open(
-    url,
-    "tunebatSearchWindow",
-    "popup=yes,width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",resizable=yes,scrollbars=yes"
-  );
-}
-
-function renderPreview() {
-  const preview = document.getElementById('preview');
-  const cols = getSelectedColumns();
-  const rows = state.rows;
-  const filteredIndexes = getVisibleRowIndexes();
-
-  if (!rows.length) {
-    preview.innerHTML = '<div style="padding:16px;color:var(--muted)">No rows parsed yet.</div>';
-    document.getElementById('previewCount').textContent = "0 rows";
-    updateMetrics();
-    return;
-  }
-
-  const allVisibleSelected = filteredIndexes.length > 0 && filteredIndexes.every(idx => state.checkedRows.has(idx));
-
-  let html = "<table><thead><tr><th class='header-check-wrap'><input class='row-check' id='headerSelectAll' type='checkbox' " + (allVisibleSelected ? "checked" : "") + "></th><th>#</th><th>TuneBat</th>" + cols.map(c => "<th class='sortable' data-sort-col='" + escapeHtml(c) + "'>" + escapeHtml(c) + "<span class='sort-indicator'>" + getSortIndicator(c) + "</span></th>").join("") + "</tr></thead><tbody>";
-  for (const rowIndex of filteredIndexes) {
-    const row = rows[rowIndex];
-    const selected = state.selectedRowIndex === rowIndex ? ' class="selected-row"' : '';
-    html += "<tr data-row-select='" + rowIndex + "'" + selected + ">";
-    html += "<td><input class='row-check' type='checkbox' data-check-row='" + rowIndex + "' " + (state.checkedRows.has(rowIndex) ? "checked" : "") + "></td>";
-    html += "<td><span class='row-number'>" + (rowIndex + 1) + "</span></td>";
-    html += "<td><button class='tunebat-btn' type='button' data-tunebat-row='" + rowIndex + "'>Search</button></td>";
-    html += cols.map(c => {
-      const isEmpty = String(row[c] || '').trim() === '';
-      const cellClass = 'cell-input' + (isEmpty ? ' empty-cell' : '');
-      return '<td><input class="' + cellClass + '" data-row="' + rowIndex + '" data-col="' + escapeHtml(c) + '" value="' + escapeHtml(row[c] || '') + '"></td>';
-    }).join("");
-    html += "</tr>";
-  }
-  html += "</tbody></table>";
-  preview.innerHTML = html;
-  document.getElementById('previewCount').textContent = filteredIndexes.length + " rows" + (state.checkedRows.size ? " • " + state.checkedRows.size + " selected" : "");
-
-  const headerCheck = preview.querySelector('#headerSelectAll');
-  if (headerCheck) {
-    headerCheck.addEventListener('change', function(e) {
-      if (this.checked) filteredIndexes.forEach(idx => state.checkedRows.add(idx));
-      else filteredIndexes.forEach(idx => state.checkedRows.delete(idx));
-      renderPreview();
-      e.stopPropagation();
-    });
-    headerCheck.addEventListener('click', function(e) { e.stopPropagation(); });
-  }
-
-  preview.querySelectorAll('[data-check-row]').forEach((cb) => {
-    cb.addEventListener('change', function(e) {
-      const idx = Number(this.getAttribute('data-check-row'));
-      if (this.checked) state.checkedRows.add(idx);
-      else state.checkedRows.delete(idx);
-      renderPreview();
-      e.stopPropagation();
-    });
-    cb.addEventListener('click', function(e) { e.stopPropagation(); });
-  });
-
-  preview.querySelectorAll('[data-row-select]').forEach((rowEl) => {
-    rowEl.addEventListener('click', function(e) {
-      if (!e.target.classList.contains('cell-input') && !e.target.hasAttribute('data-remove-row') && !e.target.hasAttribute('data-check-row')) {
-        state.selectedRowIndex = Number(this.getAttribute('data-row-select'));
-        renderPreview();
-      }
-    });
-  });
-
-  preview.querySelectorAll('[data-tunebat-row]').forEach((btn) => {
-    btn.addEventListener('click', function(e) {
-      const idx = Number(this.getAttribute('data-tunebat-row'));
-      openTunebatForRow(idx);
-      e.stopPropagation();
-    });
-  });
-
-  preview.querySelectorAll('[data-sort-col]').forEach((th) => {
-    th.addEventListener('click', function(e) {
-      const col = this.getAttribute('data-sort-col');
-      sortRowsByColumn(col);
-      savePrefs();
-      e.stopPropagation();
-    });
-  });
-
-  preview.querySelectorAll('.cell-input').forEach((input) => {
-    input.addEventListener('focus', function() {
-      const rowIdx = Number(this.getAttribute('data-row'));
-      state.selectedRowIndex = rowIdx;
-      preview.querySelectorAll('[data-row-select]').forEach(tr => tr.classList.remove('selected-row'));
-      const tr = this.closest('tr');
-      if (tr) tr.classList.add('selected-row');
-    });
-
-    input.addEventListener('input', function() {
-      const rowIdx = Number(this.getAttribute('data-row'));
-      const col = this.getAttribute('data-col');
-      if (!state.rows[rowIdx]) return;
-      state.rows[rowIdx][col] = this.value;
-    });
-
-    input.addEventListener('blur', function() {
-      const rowIdx = Number(this.getAttribute('data-row'));
-      const col = this.getAttribute('data-col');
-      if (!state.rows[rowIdx]) return;
-      if (col === 'BPM') {
-        let v = this.value;
-        const r = roundBpmHalf(v);
-        const clean = r === '' ? '' : String(r).replace(/\.0$/, "");
-        state.rows[rowIdx][col] = clean;
-        this.value = clean;
-      }
-      if (col === 'Key') {
-        let cleaned = sanitizeKeyValue(this.value);
-        if (document.getElementById('camelot').checked && cleaned) {
-          cleaned = toCamelot(cleaned);
+  function showTab(name){
+    const isWorkflow = name === 'workflow';
+    if (workflowView) workflowView.style.display = isWorkflow ? 'block' : 'none';
+    if (upcomingView) upcomingView.style.display = isWorkflow ? 'none' : 'block';
+    if (!isWorkflow) {
+      setTimeout(() => {
+        if (barcodeInput) {
+          barcodeInput.focus();
+          barcodeInput.select?.();
         }
-        state.rows[rowIdx][col] = cleaned;
-        this.value = cleaned;
+      }, 50);
+    }
+    if (workflowTabBtn) workflowTabBtn.classList.toggle('active', isWorkflow);
+    if (upcomingTabBtn) upcomingTabBtn.classList.toggle('active', !isWorkflow);
+  }
+  window.switchTab = showTab;
+
+  function updateBatchSessionUI(){
+    if (batchSessionStatus) batchSessionStatus.textContent = `Batch Session: ${batchSessionActive ? 'On' : 'Off'}`;
+    if (startBatchSessionBtn) startBatchSessionBtn.textContent = batchSessionActive ? 'Stop Batch Session' : 'Start Batch Session';
+  }
+
+  function createBatchScannerRow(barcode=''){
+    const row = createBlankUpcomingRow();
+    if (barcode) row.Barcode = barcode;
+    upcomingRows.unshift(row);
+    currentUpcomingIndex = 0;
+    return row;
+  }
+
+  function startBatchSession(){
+    batchSessionActive = true;
+    updateBatchSessionUI();
+    setUpcomingStatus('Batch Session started. Keep scanning albums one after another.', 'good');
+  }
+
+  function stopBatchSession(){
+    batchSessionActive = false;
+    updateBatchSessionUI();
+  }
+
+  function csvEscape(value){
+    const s = String(value ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }
+
+  function parseDelimited(text, delimiter=','){
+    const lines = [];
+    let i = 0, field = '', row = [], inQuotes = false;
+    while (i < text.length) {
+      const ch = text[i], next = text[i+1];
+      if (inQuotes) {
+        if (ch === '"' && next === '"') { field += '"'; i += 2; continue; }
+        if (ch === '"') { inQuotes = false; i++; continue; }
+        field += ch; i++; continue;
       }
-    });
-  });
-
-  updateMetrics();
-}
-
-
-
-function parseCSVLine(line) {
-  const out = []; let cur = "", inQuotes = false;
-  for (let i=0;i<line.length;i++) {
-    const ch = line[i];
-    if (inQuotes) {
-      if (ch === '"') { if (line[i+1] === '"') { cur += '"'; i++; } else inQuotes = false; }
-      else cur += ch;
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ',') { out.push(cur); cur = ""; }
-      else cur += ch;
+      if (ch === '"') { inQuotes = true; i++; continue; }
+      if (ch === delimiter) { row.push(field); field = ''; i++; continue; }
+      if (ch === '\n') { row.push(field); lines.push(row); row = []; field=''; i++; continue; }
+      if (ch === '\r') { i++; continue; }
+      field += ch; i++;
     }
-  }
-  out.push(cur); return out;
-}
-function loadMergeCSV(text, fileName) {
-  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim() !== "");
-  if (!lines.length) { state.mergeRows = []; state.mergeHeaders = []; document.getElementById('status').textContent = "Loaded merge CSV was empty."; updateMetrics(); return; }
-  const headers = parseCSVLine(lines[0]).map(h => h.trim()), rows = [];
-  for (let i=1;i<lines.length;i++) {
-    const vals = parseCSVLine(lines[i]), row = {};
-    headers.forEach((h, idx) => row[h] = vals[idx] ?? "");
-    rows.push(row);
-  }
-  state.mergeHeaders = headers; state.mergeRows = rows;
-  document.getElementById('status').textContent =
-    "Loaded existing CSV: " + fileName +
-    "\nHeaders: " + headers.join(", ") +
-    "\nRows: " + rows.length +
-    "\nOn export, the parsed Serato rows will be appended using the currently selected columns.";
-  updateMetrics();
-}
-function trackIdentity(row) {
-  return String(row.Artist || "").trim().toLowerCase() + "||" + String(row.Song || "").trim().toLowerCase();
-}
-function buildExportRows() {
-  const visibleCols = getSelectedColumns();
-  const cols = getExportColumns();
-  const parsedRows = state.rows.map(r => Object.fromEntries(cols.map(c => [c, r[c] || ""])));
-  const existingRows = state.mergeRows.map(r => Object.fromEntries(cols.map(c => [c, r[c] || ""])));
-  let combined = [], replacedCount = 0, appendedNewCount = 0;
-  if (document.getElementById('replaceExisting').checked) {
-    const parsedMap = new Map();
-    for (const row of parsedRows) parsedMap.set(trackIdentity(row), row);
-    for (const oldRow of existingRows) {
-      const id = trackIdentity(oldRow);
-      if (parsedMap.has(id) && id !== "||") { combined.push(parsedMap.get(id)); parsedMap.delete(id); replacedCount++; }
-      else combined.push(oldRow);
-    }
-    for (const [id, row] of parsedMap.entries()) { combined.push(row); if (id !== "||") appendedNewCount++; }
-  } else {
-    combined = existingRows.concat(parsedRows); appendedNewCount = parsedRows.length;
-  }
-  let removedExactDuplicates = 0;
-  if (document.getElementById('dedupe').checked) {
-    const seen = new Set(), before = combined.length;
-    combined = combined.filter(row => {
-      const key = visibleCols.map(c => String(row[c] || "")).join("||");
-      if (seen.has(key)) return false;
-      seen.add(key); return true;
-    });
-    removedExactDuplicates = before - combined.length;
+    row.push(field);
+    lines.push(row);
+    return lines;
   }
 
-  const exportRows = combined.map(row => {
-    const out = {};
-    cols.forEach(c => {
-      if (c === "Artwork") out["artwork"] = row[c] || "";
-      else out[c] = row[c] || "";
-    });
+  function mapRowsFromDelimited(lines){
+    const header = (lines.shift() || []).map(h => safe(h).toLowerCase());
+    const idx = {};
+    header.forEach((h, i) => idx[h] = i);
+    const out = [];
+    for (const raw of lines){
+      if (!raw.length || raw.every(v => !safe(v))) continue;
+      out.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+        selected:false,
+        Artist: raw[idx['artist']] ?? '',
+        Song: raw[idx['song']] ?? raw[idx['name']] ?? raw[idx['title']] ?? '',
+        Album: raw[idx['album']] ?? '',
+        BPM: raw[idx['bpm']] ?? '',
+        Key: raw[idx['key']] ?? '',
+        Year: raw[idx['year']] ?? '',
+        Genre: raw[idx['genre']] ?? '',
+        Artwork: raw[idx['artwork']] ?? '',
+        Size: raw[idx['size']] ?? '',
+        Speed: raw[idx['speed']] ?? '',
+        'Disc Number': raw[idx['disc number']] ?? ''
+      });
+    }
     return out;
-  });
-  const exportCols = cols.map(c => c === "Artwork" ? "artwork" : c);
-
-  return { cols: exportCols, rows: exportRows, existingCount: existingRows.length, parsedCount: parsedRows.length, replacedCount, appendedNewCount, removedExactDuplicates };
-}
-function downloadCSV() {
-  if (!state.rows.length && !state.mergeRows.length) { alert("Load and parse Serato text, or load an existing CSV to merge."); return; }
-  if (state.mergeRows.length && document.getElementById('replaceExisting').checked) {
-    const proceed = confirm("Overwrite duplicate tracks in the existing CSV with the new parsed tracks before saving?");
-    if (!proceed) return;
-  }
-  const pack = buildExportRows(), cols = pack.cols, rows = pack.rows;
-  let csv = cols.join(",") + "\n";
-  for (const row of rows) csv += cols.map(c => csvEscape(row[c] || "")).join(",") + "\n";
-  let name = (document.getElementById('filename').value.trim() || 'serato_export').replace(/\.csv$/i, '') + '.csv';
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const a = document.createElement("a"), href = URL.createObjectURL(blob);
-  a.href = href; a.download = name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(href);
-  document.getElementById('status').textContent =
-    "Exported rows: " + rows.length +
-    "\nFrom existing CSV: " + pack.existingCount +
-    "\nFrom parsed Serato text: " + pack.parsedCount +
-    "\nOverwritten duplicates: " + pack.replacedCount +
-    "\nNew rows appended: " + pack.appendedNewCount +
-    "\nExact duplicate rows removed: " + pack.removedExactDuplicates +
-    "\nFilename: " + name;
-}
-function handleSeratoTextFile(file) {
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const text = evt.target.result;
-    document.getElementById('input').value = text;
-    state.loadedLines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').length;
-    document.getElementById('status').textContent = "Loaded Serato text file: " + file.name + "\nCharacters: " + text.length + "\nLines: " + state.loadedLines;
-    updateMetrics();
-  };
-  reader.readAsText(file);
-}
-function handleMergeCSVFile(file) {
-  const reader = new FileReader();
-  reader.onload = function(evt){ loadMergeCSV(evt.target.result, file.name); };
-  reader.readAsText(file);
-}
-
-function canonicalColumnName(name) {
-  const n = String(name || "").trim().toLowerCase();
-  const map = {
-    "artist": "Artist",
-    "artists": "Artist",
-    "song": "Song",
-    "title": "Song",
-    "track": "Song",
-    "track title": "Song",
-    "name": "Song",
-    "file": "Song",
-    "filename": "Song",
-    "file name": "Song",
-    "file name": "Song",
-    "bpm": "BPM",
-    "tempo": "BPM",
-    "key": "Key",
-    "key result": "Key",
-    "key result": "Key",
-    "camelot": "Key",
-    "year": "Year",
-    "genre": "Genre",
-    "album": "Album",
-    "playlist name": null,
-    "artwork": "Artwork"
-  };
-  return map[n] || null;
-}
-
-function normalizeImportedRow(row) {
-  return {
-    Artist: row.Artist || "",
-    Song: row.Song || "",
-    BPM: (row.BPM ? String(roundBpmHalf(row.BPM)).replace(/\.0$/, "") : ""),
-    Key: sanitizeKeyValue(row.Key || ""),
-    Year: row.Year || "",
-    Genre: row.Genre || "",
-    Album: row.Album || "",
-    Artwork: row.Artwork || ""
-  };
-}
-
-function loadCSVAsMain(text, fileName) {
-  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim() !== "");
-  if (!lines.length) {
-    document.getElementById('status').textContent = "Loaded CSV was empty.";
-    state.rows = [];
-    state.loadedLines = 0;
-    state.checkedRows = new Set();
-    state.selectedRowIndex = null;
-    state.lastDeletedRows = null;
-    renderPreview();
-    updateMetrics();
-    return;
   }
 
-  const rawHeaders = parseCSVLine(lines[0]).map(h => h.trim());
-  const mappedHeaders = rawHeaders.map(canonicalColumnName);
-  const rows = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const vals = parseCSVLine(lines[i]);
-    const temp = {};
-    rawHeaders.forEach((h, idx) => {
-      const mapped = mappedHeaders[idx];
-      if (!mapped) return;
-      temp[mapped] = vals[idx] ?? "";
-    });
-    rows.push(normalizeImportedRow(temp));
+  function parseCsv(text){ return mapRowsFromDelimited(parseDelimited(text, ',')); }
+  function parseTxt(text){
+    const first = (text.split(/\r?\n/, 1)[0] || '');
+    const delimiter = first.includes('\t') ? '\t' : (first.includes('|') ? '|' : ',');
+    return mapRowsFromDelimited(parseDelimited(text, delimiter));
   }
 
-  state.rows = rows;
-  state.loadedLines = lines.length;
-  state.checkedRows = new Set();
-  state.selectedRowIndex = null;
+  function normalizeKeyText(raw){
+    const original = safe(raw);
+    if (!original) return '';
+    let s = original.toUpperCase();
+    const camelot = s.match(/\b(1[0-2]|[1-9])[AB]\b/);
+    if (camelot) return camelot[0];
+    const openKey = s.match(/\b(1[0-2]|[1-9])([DM])\b/);
+    if (openKey) return openKey[1] + (openKey[2] === 'M' ? 'A' : 'B');
 
-  const recognized = rawHeaders
-    .map((h, idx) => mappedHeaders[idx] ? (h + " → " + mappedHeaders[idx]) : null)
-    .filter(Boolean);
+    s = s.replace(/♭/g, 'B').replace(/SHARP/g, '#').replace(/FLAT/g, 'B');
+    s = s.replace(/\bMAJOR\b/g, '').replace(/\bMAJ\b/g, '');
+    s = s.replace(/\bMINOR\b/g, 'M').replace(/\bMIN\b/g, 'M');
+    s = s.replace(/[^A-G0-9#BM]/g, '');
+    if (camelotMap[s]) return camelotMap[s];
 
-  document.getElementById('status').textContent =
-    "Loaded CSV as main dataset: " + fileName +
-    "\nRecognized columns: " + (recognized.length ? recognized.join(", ") : "none") +
-    "\nIgnored columns: " + (rawHeaders.filter((h, idx) => !mappedHeaders[idx]).join(", ") || "none") +
-    "\nRows: " + rows.length;
-
-  renderPreview();
-  updateMetrics();
-}
-
-function handleMainFile(file) {
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const text = evt.target.result;
-    const name = (file.name || "").toLowerCase();
-
-    if (name.endsWith(".csv")) {
-      loadCSVAsMain(text, file.name);
-    } else {
-      document.getElementById('input').value = text;
-      state.loadedLines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').length;
-      document.getElementById('status').textContent =
-        "Loaded Serato text file: " + file.name +
-        "\nCharacters: " + text.length +
-        "\nLines: " + state.loadedLines;
-      updateMetrics();
+    const candidates = [
+      /\b([A-G](?:#|b)?)(?:\s|-|_)?(minor|min|m)\b/i,
+      /\b([A-G](?:#|b)?)(?:\s|-|_)?(major|maj)\b/i,
+      /\b([A-G](?:#|b)?)\b/i
+    ];
+    for (const re of candidates){
+      const m = original.match(re);
+      if (!m) continue;
+      const note = m[1].toUpperCase().replace('♭','B').replace('b','B');
+      const mode = m[2] && (String(m[2]).toUpperCase() === 'M' || String(m[2]).toUpperCase().startsWith('MIN')) ? 'M' : '';
+      const candidate = note + mode;
+      if (camelotMap[candidate]) return camelotMap[candidate];
+      if (!mode && camelotMap[note]) return camelotMap[note];
     }
-  };
-  reader.readAsText(file);
-}
-function handleDroppedFile(file) {
-  const name = (file.name || "").toLowerCase();
-  handleMainFile(file);
-}
+    return '';
+  }
 
+  function normalizeBpm(raw){
+    const s = safe(raw);
+    if (!s) return '';
+    const n = parseFloat(s.replace(/[^\d.]/g, ''));
+    return Number.isFinite(n) ? String(Math.round(n)) : '';
+  }
 
-function addBlankRow() {
-  const newRow = { Artist: "", Song: "", Album: "", BPM: "", Key: "", Year: "", Genre: "", Artwork: "" };
-  state.rows.push(newRow);
-  state.selectedRowIndex = state.rows.length - 1;
-  renderPreview();
-}
+  function xmlNodeToJs(node){
+    if (!node) return null;
+    const tag = node.tagName;
+    if (tag === 'dict'){
+      const obj = {};
+      const kids = Array.from(node.children);
+      for (let i=0;i<kids.length;i+=2){
+        const keyNode = kids[i], valNode = kids[i+1];
+        if (!keyNode || keyNode.tagName !== 'key' || !valNode) continue;
+        obj[keyNode.textContent] = xmlNodeToJs(valNode);
+      }
+      return obj;
+    }
+    if (tag === 'array') return Array.from(node.children).map(xmlNodeToJs);
+    if (tag === 'string' || tag === 'data' || tag === 'date') return node.textContent ?? '';
+    if (tag === 'integer' || tag === 'real') return Number(node.textContent ?? 0);
+    if (tag === 'true') return true;
+    if (tag === 'false') return false;
+    return node.textContent ?? '';
+  }
 
-function removeRow(idx) {
-  if (idx < 0 || idx >= state.rows.length) return;
-  state.rows.splice(idx, 1);
-  if (state.selectedRowIndex === idx) state.selectedRowIndex = null;
-  else if (state.selectedRowIndex !== null && state.selectedRowIndex > idx) state.selectedRowIndex -= 1;
+  function trackKeyFromTrack(track){
+    const possible = [track['Key'], track['Initial Key'], track['Grouping'], track['Work'], track['Movement Name']];
+    for (const value of possible){
+      const key = normalizeKeyText(value);
+      if (key) return key;
+    }
+    return normalizeKeyText(track['Comments']);
+  }
 
-  const shifted = new Set();
-  state.checkedRows.forEach((i) => {
-    if (i === idx) return;
-    shifted.add(i > idx ? i - 1 : i);
+  function parseItunesXml(text){
+    const xml = new DOMParser().parseFromString(text, 'application/xml');
+    if (xml.querySelector('parsererror')) throw new Error('This file is not valid XML.');
+    const plistDict = xml.querySelector('plist > dict');
+    if (!plistDict) throw new Error('Could not find top-level plist dictionary.');
+    const library = xmlNodeToJs(plistDict);
+    const tracks = library?.Tracks;
+    if (!tracks || typeof tracks !== 'object') throw new Error('No Tracks section found in XML.');
+    const out = [];
+    for (const id of Object.keys(tracks)){
+      const t = tracks[id];
+      if (!t || typeof t !== 'object') continue;
+      if (t['Podcast'] || t['Movie'] || t['TV Show']) continue;
+      const row = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()+Math.random()),
+        selected:false,
+        Artist:safe(t['Artist']),
+        Song:safe(t['Name']),
+        Album:safe(t['Album']),
+        BPM:safe(t['BPM']),
+        Key:trackKeyFromTrack(t),
+        Year:safe(t['Year']),
+        Genre:safe(t['Genre']),
+        Artwork:'',
+        Size:'',
+        Speed:'', 'Disc Number':''
+      };
+      if (CSV_HEADERS.some(h => safe(row[h]))) out.push(row);
+    }
+    return out;
+  }
+
+  function toTunebatUrl(row){ return 'https://tunebat.com/Search?q=' + encodeURIComponent([row.Artist,row.Song].filter(Boolean).join(' ')); }
+  function toDiscogsWebUrl(row){ return 'https://www.discogs.com/search/?q=' + encodeURIComponent([row.Artist,row.Song].filter(Boolean).join(' ')) + '&type=all'; }
+
+  function getVisibleRows(){
+    const q = lc(currentSearch);
+    return rows.filter(row => {
+      if (currentFilter === 'missing-artwork' && safe(row.Artwork)) return false;
+      if (currentFilter === 'missing-key' && safe(row.Key)) return false;
+      if (currentFilter === 'missing-bpm' && safe(row.BPM)) return false;
+      if (currentFilter === 'selected' && !row.selected) return false;
+      if (!q) return true;
+      return [row.Artist,row.Song,row.Album,row.BPM,row.Key,row.Year,row.Genre,row.Artwork,row.Size,row.Speed,row['Disc Number']].join(' ').toLowerCase().includes(q);
+    });
+  }
+
+  function updateStats(){
+    document.getElementById('statRows').textContent = rows.length;
+    document.getElementById('statFiltered').textContent = getVisibleRows().length;
+    document.getElementById('statKeys').textContent = rows.filter(r => safe(r.Key)).length;
+    document.getElementById('statArtwork').textContent = rows.filter(r => safe(r.Artwork)).length;
+    document.getElementById('statSelected').textContent = rows.filter(r => r.selected).length;
+  }
+
+  function getLibraryInputs(){
+    return Array.from(tbody.querySelectorAll('[data-library-cell="1"]'));
+  }
+
+  function moveLibraryFocus(currentInput, backwards = false){
+    const allInputs = getLibraryInputs();
+    if (!allInputs.length) return false;
+
+    let eligibleInputs = tabEmptyCellsOnly
+      ? allInputs.filter(inp => !safe(inp.value))
+      : allInputs.slice();
+
+    if (!eligibleInputs.length) eligibleInputs = allInputs.slice();
+
+    let currentIndex = eligibleInputs.indexOf(currentInput);
+
+    if (currentIndex === -1) {
+      const fallbackIndex = allInputs.indexOf(currentInput);
+      if (fallbackIndex === -1) {
+        currentIndex = backwards ? eligibleInputs.length : -1;
+      } else {
+        if (backwards) {
+          currentIndex = eligibleInputs.length;
+          for (let i = eligibleInputs.length - 1; i >= 0; i--) {
+            if (allInputs.indexOf(eligibleInputs[i]) < fallbackIndex) {
+              currentIndex = i + 1;
+              break;
+            }
+          }
+        } else {
+          currentIndex = -1
+          for (let i = 0; i < eligibleInputs.length; i++) {
+            if (allInputs.indexOf(eligibleInputs[i]) > fallbackIndex) {
+              currentIndex = i - 1;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    const nextIndex = backwards
+      ? (currentIndex - 1 + eligibleInputs.length) % eligibleInputs.length
+      : (currentIndex + 1) % eligibleInputs.length;
+
+    const target = eligibleInputs[nextIndex];
+    if (!target) return false;
+    target.focus();
+    target.select?.();
+    return true;
+  }
+
+  function render(){
+    const visible = getVisibleRows();
+    tbody.innerHTML = '';
+    for (const row of visible){
+      const tr = document.createElement('tr');
+
+      const cbTd = document.createElement('td');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!row.selected;
+      cb.addEventListener('change', () => { row.selected = cb.checked; updateStats(); });
+      cbTd.appendChild(cb);
+      tr.appendChild(cbTd);
+
+      ['Artist','Song','Album','BPM','Key','Year','Genre','Artwork'].forEach(field => {
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.value = row[field] ?? '';
+        input.dataset.libraryCell = '1';
+        input.addEventListener('input', e => { row[field] = e.target.value; updateStats(); });
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            moveLibraryFocus(input, e.shiftKey);
+          }
+        });
+        td.appendChild(input);
+        tr.appendChild(td);
+      });
+
+      const sizeTd = document.createElement('td');
+      const sizeSelect = document.createElement('select');
+      sizeSelect.dataset.libraryCell = '1';
+      sizeSelect.innerHTML = `
+        <option value=""></option>
+        <option value="12\">12"</option>
+        <option value="10\">10"</option>
+        <option value="9\">9"</option>
+        <option value="7\">7"</option>
+        <option value="4\">4"</option>
+      `;
+      sizeSelect.value = row.Size ?? '';
+      sizeSelect.addEventListener('change', e => { row.Size = e.target.value; updateStats(); });
+      sizeSelect.addEventListener('focus', () => {
+        sizeSelect.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+      });
+      sizeSelect.addEventListener('keydown', e => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          moveLibraryFocus(sizeSelect, e.shiftKey);
+        }
+      });
+      sizeTd.appendChild(sizeSelect);
+      tr.appendChild(sizeTd);
+
+      const speedTd = document.createElement('td');
+      const speedSelect = document.createElement('select');
+      speedSelect.dataset.libraryCell = '1';
+      speedSelect.innerHTML = `
+        <option value=""></option>
+        <option value="33">33</option>
+        <option value="45">45</option>
+      `;
+      speedSelect.value = row.Speed ?? '';
+      speedSelect.addEventListener('change', e => { row.Speed = e.target.value; updateStats(); });
+      speedSelect.addEventListener('focus', () => {
+        speedSelect.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+      });
+      speedSelect.addEventListener('keydown', e => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          moveLibraryFocus(speedSelect, e.shiftKey);
+        }
+      });
+      speedTd.appendChild(speedSelect);
+      tr.appendChild(speedTd);
+
+      const discTd = document.createElement('td');
+      const discInput = document.createElement('input');
+      discInput.value = row['Disc Number'] ?? '';
+      discInput.dataset.libraryCell = '1';
+      discInput.addEventListener('input', e => { row['Disc Number'] = e.target.value; updateStats(); });
+      discInput.addEventListener('keydown', e => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          moveLibraryFocus(discInput, e.shiftKey);
+        }
+      });
+      discTd.appendChild(discInput);
+      tr.appendChild(discTd);
+
+      const toolsTd = document.createElement('td');
+      const box = document.createElement('div');
+      box.className = 'actions';
+
+      const actionSelect = document.createElement('select');
+      actionSelect.className = 'actionSelect';
+      actionSelect.innerHTML = `
+        <option value="">Tools…</option>
+        <option value="tunebat">Open Tunebat</option>
+        <option value="discogs_web">Open Discogs Web</option>
+        <option value="match">Discogs Match</option>
+      `;
+      actionSelect.addEventListener('change', async (e) => {
+        const value = e.target.value;
+        if (value === 'tunebat') {
+          window.open(toTunebatUrl(row), 'tunebat_search', 'width=980,height=780,resizable=yes,scrollbars=yes');
+        } else if (value === 'discogs_web') {
+          window.open(toDiscogsWebUrl(row), 'discogs_web', 'width=1100,height=820,resizable=yes,scrollbars=yes');
+        } else if (value === 'match') {
+          await matchRowWithDiscogs(row);
+          render();
+        }
+        actionSelect.value = '';
+      });
+
+      box.appendChild(actionSelect);
+      toolsTd.appendChild(box);
+      tr.appendChild(toolsTd);
+      tbody.appendChild(tr);
+    }
+    updateStats();
+  }
+
+  function exportRows(rowSet, filename){
+    const lines = [CSV_HEADERS.join(',')];
+    for (const row of rowSet) lines.push(CSV_HEADERS.map(h => csvEscape(row[h] ?? '')).join(','));
+    const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  async function handleXmlFile(file){
+    if (!file) return;
+    try{
+      lastFilename = file.name.replace(/\.[^.]+$/, '');
+      setStatus(`Reading XML: ${file.name}...`);
+      rows = parseItunesXml(await file.text());
+      render();
+      setStatus(`Imported ${rows.length} track(s) from XML.`, 'good');
+    }catch(err){ console.error(err); setStatus(err.message || 'Could not read XML file.', 'bad'); }
+  }
+
+  async function handleCsvOrTxtFile(file){
+    if (!file) return;
+    try{
+      lastFilename = file.name.replace(/\.[^.]+$/, '');
+      const isTxt = file.name.toLowerCase().endsWith('.txt');
+      setStatus(`Reading ${isTxt ? 'TXT' : 'CSV'}: ${file.name}...`);
+      rows = (isTxt ? parseTxt : parseCsv)(await file.text());
+      render();
+      setStatus(`Imported ${rows.length} row(s) from ${isTxt ? 'TXT' : 'CSV'}.`, 'good');
+    }catch(err){ console.error(err); setStatus(err.message || 'Could not read file.', 'bad'); }
+  }
+
+  function scoreDiscogsResult(row, result){
+    const title = lc(result.title);
+    let score = 0;
+    if (lc(row.Artist) && title.includes(lc(row.Artist))) score += 4;
+    if (lc(row.Song) && title.includes(lc(row.Song))) score += 5;
+    if (lc(row.Album) && title.includes(lc(row.Album))) score += 2;
+    return score;
+  }
+
+  async function matchRowWithDiscogs(row){
+    const token = safe(discogsTokenInput.value);
+    if (!token) { setStatus('Add your Discogs personal token first.', 'warn'); return; }
+    const query = [row.Artist,row.Song].filter(Boolean).join(' ');
+    if (!query) { setStatus('This row needs Artist or Song before searching Discogs.', 'warn'); return; }
+    setStatus(`Searching Discogs for: ${query}`, 'warn');
+    try{
+      const url = 'https://api.discogs.com/database/search?q=' + encodeURIComponent(query) + '&type=release&per_page=10';
+      const res = await fetch(url, { headers:{ 'Authorization':'Discogs token=' + token, 'User-Agent':'DJLibraryWorkflowStudio/1.0' } });
+      if (!res.ok) throw new Error('Discogs search failed: ' + res.status);
+      const data = await res.json();
+      const results = Array.isArray(data.results) ? data.results : [];
+      if (!results.length) { setStatus(`No Discogs release found for ${query}.`, 'warn'); return; }
+      const best = results.sort((a,b) => scoreDiscogsResult(row,b) - scoreDiscogsResult(row,a))[0];
+      row.Artwork = best.thumb || best.cover_image || row.Artwork || '';
+      setStatus(`Matched Discogs result for ${query}.`, 'good');
+    }catch(err){ console.error(err); setStatus(err.message || 'Discogs lookup failed.', 'bad'); }
+  }
+
+  function getTargetRowsForBulk(){
+    const selected = rows.filter(r => r.selected);
+    return selected.length ? selected : getVisibleRows();
+  }
+
+  function createBlankWorkflowRow(){
+    return {
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()+Math.random()),
+      selected:false,
+      Artist:'', Song:'', Album:'', BPM:'', Key:'', Year:'', Genre:'', Artwork:'', Size:'', Speed:'', 'Disc Number':'', 'Disc Number':''
+    };
+  }
+
+  function applyUpcomingRowToWorkflow(upcomingRow){
+    if (!upcomingRow) return null;
+
+    const releaseArtist = safe(upcomingRow.Artist);
+    const releaseTitle = safe(upcomingRow.Title);
+    const releaseYear = safe(upcomingRow.Year || upcomingRow.Released);
+    const releaseGenre = safe(upcomingRow.Genre);
+    const releaseArtwork = safe(upcomingRow.Artwork);
+    const tracklist = Array.isArray(upcomingRow.__releaseTracklist) ? upcomingRow.__releaseTracklist : [];
+
+    const createdOrUpdated = [];
+
+    if (tracklist.length) {
+      for (const track of tracklist) {
+        const trackTitle = safe(track.title || track.Title);
+        if (!trackTitle) continue;
+
+        let target = rows.find(r =>
+          safe(r.Artist).toLowerCase() === safe(track.artist || releaseArtist).toLowerCase() &&
+          safe(r.Song).toLowerCase() === trackTitle.toLowerCase() &&
+          safe(r.Album).toLowerCase() === releaseTitle.toLowerCase()
+        );
+
+        if (!target) {
+          target = createBlankWorkflowRow();
+          rows.unshift(target);
+        }
+
+        if (!safe(target.Artist) && safe(track.artist || releaseArtist)) target.Artist = safe(track.artist || releaseArtist);
+        if (!safe(target.Song) && trackTitle) target.Song = trackTitle;
+        if (!safe(target.Album) && releaseTitle) target.Album = releaseTitle;
+        if (!safe(target.Year) && releaseYear) target.Year = releaseYear;
+        if (!safe(target.Genre) && releaseGenre) target.Genre = releaseGenre;
+        if (!safe(target.Artwork) && releaseArtwork) target.Artwork = releaseArtwork;
+
+        createdOrUpdated.push(target);
+      }
+    } else {
+      let target = rows.find(r =>
+        (releaseArtist && safe(r.Artist).toLowerCase() === releaseArtist.toLowerCase()) &&
+        (
+          (releaseTitle && safe(r.Song).toLowerCase() === releaseTitle.toLowerCase()) ||
+          (releaseTitle && safe(r.Album).toLowerCase() === releaseTitle.toLowerCase())
+        )
+      );
+
+      if (!target) {
+        target = createBlankWorkflowRow();
+        rows.unshift(target);
+      }
+
+      if (!safe(target.Artist) && releaseArtist) target.Artist = releaseArtist;
+      if (!safe(target.Song) && releaseTitle) target.Song = releaseTitle;
+      if (!safe(target.Album) && releaseTitle) target.Album = releaseTitle;
+      if (!safe(target.Year) && releaseYear) target.Year = releaseYear;
+      if (!safe(target.Genre) && releaseGenre) target.Genre = releaseGenre;
+      if (!safe(target.Artwork) && releaseArtwork) target.Artwork = releaseArtwork;
+
+      createdOrUpdated.push(target);
+    }
+
+    render();
+    return createdOrUpdated;
+  }
+
+  // Upcoming reader helpers
+  function normalizeDiscogsList(value){ return Array.isArray(value) ? safe(value.join(' / ')) : safe(value); }
+  function normalizeUpcomingRow(row){
+    return {
+      Artist: safe(row.Artist || row.artist || row.artists || row.artist_name),
+      Title: safe(row.Title || row.title || row.release || row.name),
+      Label: normalizeDiscogsList(row.Label || row.label || row.labels),
+      CatNo: safe(row.CatNo || row.catno || row.catalog || row.catalog_number),
+      Barcode: normalizeDiscogsList(row.Barcode || row.barcode || row.barcode_text || row.upc || row.ean || row.identifiers),
+      Year: safe(row.Year || row.year),
+      Released: safe(row.Released || row.released || row.release_date || row.date),
+      Format: normalizeDiscogsList(row.Format || row.format || row.formats),
+      Country: safe(row.Country || row.country),
+      Genre: normalizeDiscogsList(row.Genre || row.genre),
+      Style: normalizeDiscogsList(row.Style || row.style),
+      URL: safe(row.URL || row.url || row.link || row.uri || row.resource_url),
+      Artwork: safe(row.Artwork || row.artwork || row.thumb || row.cover_image || row.image)
+    };
+  }
+  function mapUpcomingFromLines(lines){
+    const header = (lines.shift() || []).map(h => safe(h).toLowerCase());
+    const idx = {};
+    header.forEach((h, i) => idx[h] = i);
+    const pick = (raw, names) => {
+      for (const name of names) { if (idx[name] !== undefined && raw[idx[name]] !== undefined) return raw[idx[name]]; }
+      return '';
+    };
+    const out = [];
+    for (const raw of lines){
+      if (!raw.length || raw.every(v => !safe(v))) continue;
+      out.push(normalizeUpcomingRow({
+        Artist: pick(raw, ['artist','artists','artist_name']),
+        Title: pick(raw, ['title','release','name']),
+        Label: pick(raw, ['label','labels']),
+        CatNo: pick(raw, ['catno','catalog','catalog#','catalogue','catalog_number']),
+        Barcode: pick(raw, ['barcode','barcode_text','upc','ean','identifiers']),
+        Year: pick(raw, ['year']),
+        Released: pick(raw, ['released','release_date','date']),
+        Format: pick(raw, ['format','formats']),
+        Country: pick(raw, ['country']),
+        Genre: pick(raw, ['genre']),
+        Style: pick(raw, ['style']),
+        URL: pick(raw, ['url','link','uri','resource_url']),
+        Artwork: pick(raw, ['thumb','artwork','cover_image','image'])
+      }));
+    }
+    return out;
+  }
+  function parseUpcomingText(text, ext=''){
+    if (ext.toLowerCase().endsWith('.json')){
+      const parsed = JSON.parse(text);
+      const arr = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.results) ? parsed.results : (Array.isArray(parsed.releases) ? parsed.releases : []));
+      return arr.map(item => normalizeUpcomingRow(item));
+    }
+    const first = text.split(/\r?\n/,1)[0] || '';
+    const delimiter = first.includes('\t') ? '\t' : (first.includes('|') ? '|' : ',');
+    return mapUpcomingFromLines(parseDelimited(text, delimiter));
+  }
+  function getVisibleUpcomingRows(){
+    const q = lc(upcomingSearch);
+    return upcomingRows.filter(row => {
+      if (!q) return true;
+      return [row.Artist,row.Title,row.Label,row.CatNo,row.Year,row.Released,row.Format,row.Country,row.Genre,row.Style,row.URL,row.Artwork].join(' ').toLowerCase().includes(q);
+    });
+  }
+  function updateUpcomingStats(){
+    document.getElementById('upcomingCount').textContent = upcomingRows.length;
+    document.getElementById('upcomingDates').textContent = upcomingRows.filter(r => safe(r.Released)).length;
+    document.getElementById('upcomingLinks').textContent = upcomingRows.filter(r => safe(r.URL)).length;
+    document.getElementById('upcomingArtwork').textContent = upcomingRows.filter(r => safe(r.Artwork)).length;
+    document.getElementById('upcomingVisible').textContent = getVisibleUpcomingRows().length;
+  }
+  function renderUpcoming(){
+    const visible = getVisibleUpcomingRows();
+    upcomingTbody.innerHTML = '';
+    for (const row of visible){
+      const tr = document.createElement('tr');
+
+      const scanTd = document.createElement('td');
+      const scanBtn = document.createElement('button');
+      scanBtn.type = 'button';
+      scanBtn.textContent = 'Preview Art';
+      scanBtn.addEventListener('click', () => {
+        currentUpcomingIndex = upcomingRows.indexOf(row);
+        updateScanner();
+      });
+      scanTd.appendChild(scanBtn);
+      tr.appendChild(scanTd);
+
+      for (const field of UPCOMING_HEADERS){
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.value = row[field] ?? '';
+        input.addEventListener('input', e => {
+          row[field] = e.target.value;
+          updateUpcomingStats();
+          if (currentUpcomingIndex === upcomingRows.indexOf(row)) updateScanner();
+        });
+        td.appendChild(input);
+        tr.appendChild(td);
+      }
+      upcomingTbody.appendChild(tr);
+    }
+    if (currentUpcomingIndex >= upcomingRows.length) currentUpcomingIndex = upcomingRows.length - 1;
+    updateUpcomingStats();
+    updateScanner();
+  }
+  function updateScanner(){
+    const row = upcomingRows[currentUpcomingIndex];
+    if (!row){
+      scannerTitle.textContent = 'Upcoming Artwork Preview';
+      scannerSubtitle.textContent = 'Load a scanner file, or scan/enter a barcode to create a row automatically and send the album tracks to Workflow Studio.';
+      scannerImage.removeAttribute('src');
+      scannerEmptyText.textContent = 'No artwork preview loaded yet.';
+      scannerArtist.textContent = '';
+      scannerTrack.textContent = '';
+      scannerLabel.textContent = '';
+      scannerDate.textContent = '';
+      selectedUpcomingRow.textContent = 'No row selected yet';
+      return;
+    }
+
+    scannerTitle.textContent = `Upcoming Artwork Preview ${currentUpcomingIndex + 1} / ${upcomingRows.length}`;
+    scannerSubtitle.textContent = row.Artwork ? 'Preview the artwork and compare it to the release details below.' : 'This row has no artwork URL yet.';
+    if (row.Artwork) {
+      scannerImage.src = row.Artwork;
+      scannerEmptyText.textContent = '';
+    } else {
+      scannerImage.removeAttribute('src');
+      scannerEmptyText.textContent = 'This row has no artwork URL yet.';
+    }
+
+    scannerArtist.textContent = row.Artist || '—';
+    scannerTrack.textContent = row.Title || '—';
+    scannerLabel.textContent = [row.Label, row.CatNo].filter(Boolean).join(' / ') || '—';
+    scannerDate.textContent = [row.Year, row.Released, row.Format, row.Country, row.Barcode].filter(Boolean).join(' / ') || '—';
+    selectedUpcomingRow.textContent = [row.Artist, row.Title].filter(Boolean).join(' — ') || `Row ${currentUpcomingIndex + 1}`;
+  }
+
+  function moveScanner(step){
+    if (!upcomingRows.length){
+      setUpcomingStatus('No scanner rows to scan yet.', 'warn');
+      return;
+    }
+    if (currentUpcomingIndex < 0) currentUpcomingIndex = 0;
+    else {
+      currentUpcomingIndex += step;
+      if (currentUpcomingIndex < 0) currentUpcomingIndex = 0;
+      if (currentUpcomingIndex > upcomingRows.length - 1) currentUpcomingIndex = upcomingRows.length - 1;
+    }
+    updateScanner();
+  }
+
+  function createBlankUpcomingRow(){
+    return {
+      Artist:'', Title:'', Label:'', CatNo:'', Barcode:'', Year:'', Released:'',
+      Format:'', Country:'', Genre:'', Style:'', URL:'', Artwork:''
+    };
+  }
+
+  function getCurrentUpcomingRow(createIfMissing = false){
+    if (currentUpcomingIndex >= 0 && upcomingRows[currentUpcomingIndex]) return upcomingRows[currentUpcomingIndex];
+    if (upcomingRows[0]) {
+      currentUpcomingIndex = 0;
+      return upcomingRows[0];
+    }
+    if (createIfMissing) {
+      const row = createBlankUpcomingRow();
+      upcomingRows.push(row);
+      currentUpcomingIndex = 0;
+      return row;
+    }
+    return null;
+  }
+
+  function normalizeBarcodeValue(value){
+    return String(value || '').replace(/[^0-9Xx]/g, '').trim();
+  }
+
+  async function fetchDiscogsReleaseDetails(item, token){
+    const resourceUrl = safe(item.resource_url);
+    if (!resourceUrl) return null;
+    try {
+      const res = await fetch(resourceUrl, {
+        headers: {
+          'Authorization': 'Discogs token=' + token,
+          'User-Agent': 'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) throw new Error('Discogs release detail fetch failed: ' + res.status);
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
+  function extractTracklistFromDiscogsRelease(release, fallbackArtist=''){
+    const list = Array.isArray(release?.tracklist) ? release.tracklist : [];
+    const out = [];
+
+    for (const track of list) {
+      const type = safe(track.type_ || track.type);
+      if (type && type !== 'track' && type !== 'index') continue;
+
+      const title = safe(track.title);
+      if (!title) continue;
+
+      let artist = '';
+      if (Array.isArray(track.artists) && track.artists.length) {
+        artist = track.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).filter(Boolean).join(' / ');
+      }
+      if (!artist) artist = safe(fallbackArtist);
+
+      out.push({
+        position: safe(track.position),
+        title,
+        artist,
+        duration: safe(track.duration)
+      });
+    }
+
+    return out;
+  }
+
+  function fillRowFromDiscogsResult(row, item){
+    if (!row || !item) return;
+    const labels = Array.isArray(item.label) ? item.label.join(' / ') : (item.label || '');
+    const formats = Array.isArray(item.format) ? item.format.join(' / ') : (item.format || item.formats || '');
+    const genres = Array.isArray(item.genre) ? item.genre.join(' / ') : (item.genre || '');
+    const styles = Array.isArray(item.style) ? item.style.join(' / ') : (item.style || '');
+    const barcode = normalizeDiscogsList(item.barcode || item.identifiers || '') || normalizeBarcodeValue(lookupBarcodeBtn.dataset.lastBarcode || '');
+
+    if (!safe(row.Artist) && safe(item.country) && safe(item.title) && String(item.title).includes(' - ')) {
+      const parts = String(item.title).split(' - ');
+      row.Artist = row.Artist || parts[0].trim();
+      row.Title = row.Title || parts.slice(1).join(' - ').trim();
+    }
+    if (!safe(row.Artist) && safe(item.artist)) row.Artist = item.artist;
+    if (!safe(row.Title) && safe(item.title)) {
+      const title = String(item.title);
+      row.Title = title.includes(' - ') ? title.split(' - ').slice(1).join(' - ').trim() : title;
+    }
+    if (!safe(row.Label) && labels) row.Label = labels;
+    if (!safe(row.CatNo) && safe(item.catno)) row.CatNo = item.catno;
+    if (!safe(row.Barcode) && barcode) row.Barcode = barcode;
+    if (!safe(row.Year) && safe(item.year)) row.Year = String(item.year);
+    if (!safe(row.Released) && safe(item.year)) row.Released = String(item.year);
+    if (!safe(row.Format) && formats) row.Format = formats;
+    if (!safe(row.Country) && safe(item.country)) row.Country = item.country;
+    if (!safe(row.Genre) && genres) row.Genre = genres;
+    if (!safe(row.Style) && styles) row.Style = styles;
+    if (!safe(row.URL) && safe(item.resource_url || item.uri)) row.URL = item.resource_url || item.uri;
+    if (!safe(row.Artwork) && safe(item.cover_image || item.thumb)) row.Artwork = item.cover_image || item.thumb;
+    row.__releaseTitle = row.Title || '';
+    row.__releaseArtist = row.Artist || '';
+  }
+
+  async function lookupDiscogsByBarcode(code){
+    const token = safe(discogsTokenInput.value);
+    if (!token) {
+      setUpcomingStatus('Add your Discogs personal token first.', 'warn');
+      return;
+    }
+    const barcode = normalizeBarcodeValue(code);
+    if (!barcode) {
+      setUpcomingStatus('Enter or scan a UPC / EAN first.', 'warn');
+      return;
+    }
+    const row = batchSessionActive ? createBatchScannerRow(barcode) : getCurrentUpcomingRow(true);
+    row.Barcode = row.Barcode || barcode;
+
+    lookupBarcodeBtn.dataset.lastBarcode = barcode;
+    lastBarcode.textContent = barcode;
+    renderUpcoming();
+    setUpcomingStatus(`Looking up barcode ${barcode} on Discogs...`, 'warn');
+
+    try {
+      const url = 'https://api.discogs.com/database/search?barcode=' + encodeURIComponent(barcode) + '&type=release&per_page=10';
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': 'Discogs token=' + token,
+          'User-Agent': 'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) throw new Error('Discogs barcode search failed: ' + res.status);
+      const data = await res.json();
+      const results = Array.isArray(data.results) ? data.results : [];
+      if (!results.length) {
+        renderUpcoming();
+        applyUpcomingRowToWorkflow(row);
+        setUpcomingStatus(`No Discogs release found for barcode ${barcode}. A blank upcoming row was created, and it was also sent to Workflow Studio.`, 'warn');
+        return;
+      }
+
+      lastBarcodeResults = results;
+      currentBarcodeResultIndex = Math.max(0, results.findIndex(r => (r.cover_image || r.thumb)));
+      if (currentBarcodeResultIndex < 0) currentBarcodeResultIndex = 0;
+
+      const best = results[currentBarcodeResultIndex] || results[0];
+      fillRowFromDiscogsResult(row, best);
+      applyDiscogsSearchResultToScannerRow(row, best);
+
+      const releaseDetails = await fetchDiscogsReleaseDetails(best, token);
+      if (releaseDetails) {
+        row.__releaseTracklist = extractTracklistFromDiscogsRelease(releaseDetails, row.Artist || '');
+        row.__releaseTitle = row.Title || safe(releaseDetails.title);
+        row.__releaseArtist = row.Artist || (Array.isArray(releaseDetails.artists) ? releaseDetails.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).join(' / ') : row.Artist);
+        if (!safe(row.Artwork) && safe(releaseDetails.images?.[0]?.uri || releaseDetails.thumb)) {
+          row.Artwork = releaseDetails.images?.[0]?.uri || releaseDetails.thumb;
+        }
+      }
+
+      row.Barcode = row.Barcode || barcode;
+      if (currentUpcomingIndex < 0) currentUpcomingIndex = 0;
+      renderUpcoming();
+      const syncedRows = applyUpcomingRowToWorkflow(row);
+      const trackCount = Array.isArray(row.__releaseTracklist) ? row.__releaseTracklist.length : 0;
+      setUpcomingStatus(trackCount
+        ? `Filled a scanner row from barcode ${barcode}, and sent ${trackCount} album track(s) to Workflow Studio.`
+        : `Filled a scanner row from barcode ${barcode}, and copied the release into Workflow Studio.`, 'good');
+    } catch (err) {
+      console.error(err);
+      renderUpcoming();
+      setUpcomingStatus(err.message || 'Barcode lookup failed.', 'bad');
+    }
+  }
+
+  async function scanFrameOnce(){
+    if (!scannerVideo || !barcodeDetector || scannerVideo.readyState < 2) return;
+    try {
+      const barcodes = await barcodeDetector.detect(scannerVideo);
+      if (!barcodes || !barcodes.length) return;
+      const raw = barcodes[0].rawValue || '';
+      const code = normalizeBarcodeValue(raw);
+      if (!code || code === lastScannedCode) return;
+      lastScannedCode = code;
+      barcodeInput.value = code;
+      await lookupDiscogsByBarcode(code);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function startCameraScanner(){
+    if (!('mediaDevices' in navigator) || !navigator.mediaDevices.getUserMedia) {
+      setUpcomingStatus('Camera access is not supported in this browser.', 'warn');
+      return;
+    }
+    if (!('BarcodeDetector' in window)) {
+      setUpcomingStatus('This browser does not support BarcodeDetector. You can still type a UPC / EAN or use a hardware scanner in the barcode field.', 'warn');
+      return;
+    }
+
+    try {
+      barcodeDetector = new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128']});
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      scannerVideo.srcObject = cameraStream;
+      scannerVideo.style.display = 'block';
+      videoPlaceholder.style.display = 'none';
+      cameraStatus.textContent = 'Camera running. Point the barcode at the camera.';
+      clearInterval(barcodeLoopTimer);
+      barcodeLoopTimer = setInterval(() => { scanFrameOnce(); }, 700);
+    } catch (err) {
+      console.error(err);
+      setUpcomingStatus('Could not start the camera scanner.', 'bad');
+    }
+  }
+
+  function stopCameraScanner(){
+    if (barcodeLoopTimer) {
+      clearInterval(barcodeLoopTimer);
+      barcodeLoopTimer = null;
+    }
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    if (scannerVideo) {
+      scannerVideo.pause();
+      scannerVideo.srcObject = null;
+      scannerVideo.style.display = 'none';
+    }
+    if (videoPlaceholder) videoPlaceholder.style.display = 'flex';
+    if (cameraStatus) cameraStatus.textContent = 'Camera idle.';
+  }
+
+  function applyDiscogsSearchResultToScannerRow(row, item){
+    if (!row || !item) return;
+    const labels = Array.isArray(item.label) ? item.label.join(' / ') : (item.label || '');
+    const formats = Array.isArray(item.format) ? item.format.join(' / ') : (item.format || item.formats || '');
+    const genres = Array.isArray(item.genre) ? item.genre.join(' / ') : (item.genre || '');
+    const styles = Array.isArray(item.style) ? item.style.join(' / ') : (item.style || '');
+    const barcode = normalizeDiscogsList(item.barcode || item.identifiers || '') || normalizeBarcodeValue(lookupBarcodeBtn.dataset.lastBarcode || '');
+
+    let parsedArtist = '';
+    let parsedTitle = '';
+    if (safe(item.title) && String(item.title).includes(' - ')) {
+      const parts = String(item.title).split(' - ');
+      parsedArtist = parts[0].trim();
+      parsedTitle = parts.slice(1).join(' - ').trim();
+    } else {
+      parsedTitle = safe(item.title);
+    }
+
+    if (!safe(row.Artist) && parsedArtist) row.Artist = parsedArtist;
+    if (!safe(row.Title) && parsedTitle) row.Title = parsedTitle;
+    if (!safe(row.Label) && labels) row.Label = labels;
+    if (!safe(row.CatNo) && safe(item.catno)) row.CatNo = item.catno;
+    if (!safe(row.Barcode) && barcode) row.Barcode = barcode;
+    if (!safe(row.Year) && safe(item.year)) row.Year = String(item.year);
+    if (!safe(row.Released) && safe(item.year)) row.Released = String(item.year);
+    if (!safe(row.Format) && formats) row.Format = formats;
+    if (!safe(row.Country) && safe(item.country)) row.Country = item.country;
+    if (!safe(row.Genre) && genres) row.Genre = genres;
+    if (!safe(row.Style) && styles) row.Style = styles;
+    row.URL = item.resource_url || item.uri || row.URL || '';
+    row.Artwork = item.cover_image || item.thumb || row.Artwork || '';
+  }
+
+  async function replaceArtworkWithNextMatch(){
+    const row = getCurrentUpcomingRow(false);
+    if (!row) {
+      setUpcomingStatus('No scanner row selected yet.', 'warn');
+      return;
+    }
+    if (!lastBarcodeResults.length) {
+      setUpcomingStatus('No alternate Discogs matches are loaded yet. Scan or look up a barcode first.', 'warn');
+      return;
+    }
+
+    currentBarcodeResultIndex += 1;
+    if (currentBarcodeResultIndex >= lastBarcodeResults.length) currentBarcodeResultIndex = 0;
+
+    const item = lastBarcodeResults[currentBarcodeResultIndex];
+    const preserved = {
+      Artist: row.Artist,
+      Title: row.Title,
+      Label: row.Label,
+      CatNo: row.CatNo,
+      Barcode: row.Barcode,
+      Year: row.Year,
+      Released: row.Released,
+      Format: row.Format,
+      Country: row.Country,
+      Genre: row.Genre,
+      Style: row.Style
+    };
+
+    row.URL = '';
+    row.Artwork = '';
+    row.__releaseTracklist = [];
+    row.__releaseTitle = '';
+    row.__releaseArtist = '';
+
+    applyDiscogsSearchResultToScannerRow(row, item);
+
+    // Restore user-filled fields when present, but keep the new artwork/url
+    for (const [k, v] of Object.entries(preserved)) {
+      if (safe(v)) row[k] = v;
+    }
+
+    const token = safe(discogsTokenInput.value);
+    if (token && safe(item.resource_url)) {
+      const releaseDetails = await fetchDiscogsReleaseDetails(item, token);
+      if (releaseDetails) {
+        row.__releaseTracklist = extractTracklistFromDiscogsRelease(releaseDetails, row.Artist || '');
+        row.__releaseTitle = row.Title || safe(releaseDetails.title);
+        row.__releaseArtist = row.Artist || (Array.isArray(releaseDetails.artists) ? releaseDetails.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).join(' / ') : row.Artist);
+        if (safe(releaseDetails.images?.[0]?.uri || releaseDetails.thumb)) {
+          row.Artwork = releaseDetails.images?.[0]?.uri || releaseDetails.thumb;
+        }
+      }
+    }
+
+    renderUpcoming();
+    setUpcomingStatus(`Replaced artwork using Discogs match ${currentBarcodeResultIndex + 1} of ${lastBarcodeResults.length}.`, 'good');
+  }
+
+  function maybeAutoLookupBarcode(rawValue){
+    const code = normalizeBarcodeValue(rawValue);
+    if (!code) return;
+    if (![8, 12, 13].includes(code.length)) return;
+    if (barcodeAutoLookupTimer) clearTimeout(barcodeAutoLookupTimer);
+    barcodeAutoLookupTimer = setTimeout(async () => {
+      await lookupDiscogsByBarcode(code);
+      if (barcodeInput) {
+        barcodeInput.focus();
+        barcodeInput.select?.();
+      }
+    }, 150);
+  }
+
+  async function handleUpcomingFile(file){
+    if (!file) return;
+    try{
+      setUpcomingStatus(`Reading upcoming file: ${file.name}...`);
+      upcomingRows = parseUpcomingText(await file.text(), file.name);
+      currentUpcomingIndex = upcomingRows.length ? 0 : -1;
+      renderUpcoming();
+      setUpcomingStatus(`Imported ${upcomingRows.length} upcoming row(s) in Discogs-style format.`, 'good');
+    }catch(err){ console.error(err); setUpcomingStatus(err.message || 'Could not read upcoming file.', 'bad'); }
+  }
+  function exportUpcomingRows(){
+    const visible = getVisibleUpcomingRows();
+    const lines = [UPCOMING_HEADERS.join(',')];
+    for (const row of visible) lines.push(UPCOMING_HEADERS.map(h => csvEscape(row[h] ?? '')).join(','));
+    const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'discogs_upcoming_reader.csv';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    setUpcomingStatus(`Exported ${visible.length} upcoming row(s).`, 'good');
+  }
+
+  // Workflow events
+  workflowTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('workflow'); });
+  upcomingTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('upcoming'); });
+
+  browseXmlBtn.addEventListener('click', () => xmlInput.click());
+  browseCsvBtn.addEventListener('click', () => csvInput.click());
+  xmlInput.addEventListener('change', e => handleXmlFile(e.target.files?.[0]));
+  csvInput.addEventListener('change', e => handleCsvOrTxtFile(e.target.files?.[0]));
+
+  ['dragenter','dragover'].forEach(type => dropzone.addEventListener(type, e => { e.preventDefault(); dropzone.classList.add('drag'); }));
+  ['dragleave','dragend'].forEach(type => dropzone.addEventListener(type, e => { e.preventDefault(); dropzone.classList.remove('drag'); }));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault(); dropzone.classList.remove('drag');
+    const file = e.dataTransfer?.files?.[0];
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    if (name.endsWith('.xml') || name.endsWith('.plist')) handleXmlFile(file);
+    else if (name.endsWith('.csv') || name.endsWith('.txt')) handleCsvOrTxtFile(file);
+    else setStatus('Drop an XML, PLIST, CSV, or TXT file.', 'warn');
   });
-  state.checkedRows = shifted;
-  renderPreview();
+
+  searchInput.addEventListener('input', e => { currentSearch = e.target.value; render(); });
+  filterSelect.addEventListener('change', e => { currentFilter = e.target.value; render(); });
+  tabEmptyCellsCheckbox.addEventListener('change', e => {
+    tabEmptyCellsOnly = !!e.target.checked;
+    setStatus(tabEmptyCellsOnly ? 'Tab Empty Cells is on.' : 'Tab Empty Cells is off.', 'good');
+  });
+
+  document.getElementById('camelotBtn').addEventListener('click', () => {
+    let changed = 0;
+    getTargetRowsForBulk().forEach(row => {
+      const next = normalizeKeyText(row.Key);
+      if (next && next !== row.Key) { row.Key = next; changed++; }
+    });
+    render();
+    setStatus(`Camelot cleanup finished. Updated ${changed} row(s).`, 'good');
+  });
+
+  document.getElementById('bpmBtn').addEventListener('click', () => {
+    let changed = 0;
+    getTargetRowsForBulk().forEach(row => {
+      const next = normalizeBpm(row.BPM);
+      if (next !== safe(row.BPM)) { row.BPM = next; changed++; }
+    });
+    render();
+    setStatus(`BPM cleanup finished. Updated ${changed} row(s).`, 'good');
+  });
+
+  document.getElementById('applyYearGenreBtn').addEventListener('click', () => {
+    const year = safe(document.getElementById('bulkYear').value);
+    const genre = safe(document.getElementById('bulkGenre').value);
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => { if (year) row.Year = year; if (genre) row.Genre = genre; });
+    render();
+    setStatus(`Applied bulk Year/Genre to ${targets.length} row(s).`, 'good');
+  });
+
+  document.getElementById('fillMissingBtn').addEventListener('click', () => {
+    const year = safe(document.getElementById('bulkYear').value);
+    const genre = safe(document.getElementById('bulkGenre').value);
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => {
+      if (year && !safe(row.Year)) row.Year = year;
+      if (genre && !safe(row.Genre)) row.Genre = genre;
+      if (safe(row.Key)) row.Key = normalizeKeyText(row.Key) || row.Key;
+      if (safe(row.BPM)) row.BPM = normalizeBpm(row.BPM) || row.BPM;
+    });
+    render();
+    setStatus(`Filled missing/default values on ${targets.length} row(s).`, 'good');
+  });
+
+  document.getElementById('discogsSelectedBtn').addEventListener('click', async () => {
+    const targets = rows.filter(r => r.selected);
+    if (!targets.length) { setStatus('Select one or more rows first.', 'warn'); return; }
+    for (const row of targets) { await matchRowWithDiscogs(row); }
+    render();
+  });
+
+  document.getElementById('discogsMissingBtn').addEventListener('click', async () => {
+    const targets = getTargetRowsForBulk().filter(r => !safe(r.Artwork));
+    if (!targets.length) { setStatus('No target rows are missing artwork.', 'warn'); return; }
+    for (const row of targets) { await matchRowWithDiscogs(row); }
+    render();
+  });
+
+  document.getElementById('exportAllBtn').addEventListener('click', () => { exportRows(rows, `${lastFilename}_clean.csv`); setStatus(`Exported ${rows.length} row(s) to CSV.`, 'good'); });
+  document.getElementById('exportFilteredBtn').addEventListener('click', () => { const visible = getVisibleRows(); exportRows(visible, `${lastFilename}_filtered.csv`); setStatus(`Exported ${visible.length} filtered row(s) to CSV.`, 'good'); });
+  document.getElementById('addBlankBtn').addEventListener('click', () => {
+    rows.unshift({id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now()+Math.random()), selected:false, Artist:'', Song:'', Album:'', BPM:'', Key:'', Year:'', Genre:'', Artwork:'', Size:'', Speed:'', 'Disc Number':'', 'Disc Number':''});
+    render();
+    setStatus('Added blank row.', 'good');
+  });
+  document.getElementById('deleteSelectedBtn').addEventListener('click', () => { const before = rows.length; rows = rows.filter(r => !r.selected); render(); setStatus(`Deleted ${before - rows.length} selected row(s).`, 'warn'); });
+  document.getElementById('clearAllBtn').addEventListener('click', () => { rows = []; render(); setStatus('Cleared all rows.', 'warn'); });
+  document.getElementById('selectVisibleBtn').addEventListener('click', () => { getVisibleRows().forEach(r => r.selected = true); render(); setStatus('Selected visible rows.', 'good'); });
+  document.getElementById('clearSelectionBtn').addEventListener('click', () => { rows.forEach(r => r.selected = false); render(); setStatus('Cleared selection.', ''); });
+
+  // Upcoming events
+  browseUpcomingBtn.addEventListener('click', () => upcomingInput.click());
+  startBatchSessionBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    batchSessionActive = !batchSessionActive;
+    updateBatchSessionUI();
+    setUpcomingStatus(
+      batchSessionActive
+        ? 'Batch Session turned on. Keep scanning albums one after another.'
+        : 'Batch Session turned off.',
+      batchSessionActive ? 'good' : 'warn'
+    );
+    if (startBatchSessionBtn) startBatchSessionBtn.blur();
+    if (batchSessionActive && barcodeInput) {
+      barcodeInput.focus();
+      barcodeInput.select?.();
+    }
+  });
+  upcomingInput.addEventListener('change', e => handleUpcomingFile(e.target.files?.[0]));
+  upcomingSearchEl.addEventListener('input', e => { upcomingSearch = e.target.value; renderUpcoming(); });
+
+  ['dragenter','dragover'].forEach(type => upcomingDropzone.addEventListener(type, e => { e.preventDefault(); upcomingDropzone.classList.add('drag'); }));
+  ['dragleave','dragend'].forEach(type => upcomingDropzone.addEventListener(type, e => { e.preventDefault(); upcomingDropzone.classList.remove('drag'); }));
+  upcomingDropzone.addEventListener('drop', e => {
+    e.preventDefault(); upcomingDropzone.classList.remove('drag');
+    const file = e.dataTransfer?.files?.[0];
+    handleUpcomingFile(file);
+  });
+
+  document.getElementById('upcomingExportBtn').addEventListener('click', exportUpcomingRows);
+  document.getElementById('clearUpcomingBtn').addEventListener('click', () => {
+    upcomingRows = [];
+    currentUpcomingIndex = -1;
+    stopCameraScanner();
+    renderUpcoming();
+    updateBatchSessionUI();
+    setUpcomingStatus(batchSessionActive ? 'Cleared scanner rows. Batch Session is still on.' : 'Cleared scanner rows.', 'warn');
+  });
+  document.getElementById('copyUpcomingBtn').addEventListener('click', async () => {
+    const urls = getVisibleUpcomingRows().map(r => safe(r.URL)).filter(Boolean).join('\n');
+    if (!urls) { setUpcomingStatus('No visible URLs to copy.', 'warn'); return; }
+    try { await navigator.clipboard.writeText(urls); setUpcomingStatus('Copied visible URLs to clipboard.', 'good'); }
+    catch (err) { console.error(err); setUpcomingStatus('Clipboard copy failed in this browser.', 'bad'); }
+  });
+  replaceArtworkBtn.addEventListener('click', replaceArtworkWithNextMatch);
+  lookupBarcodeBtn.addEventListener('click', async () => {
+    await lookupDiscogsByBarcode(barcodeInput.value);
+    if (barcodeInput) {
+      barcodeInput.focus();
+      barcodeInput.select?.();
+    }
+  });
+  barcodeInput.addEventListener('input', e => {
+    maybeAutoLookupBarcode(e.target.value);
+  });
+  barcodeInput.addEventListener('keydown', async e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (barcodeAutoLookupTimer) {
+        clearTimeout(barcodeAutoLookupTimer);
+        barcodeAutoLookupTimer = null;
+      }
+      await lookupDiscogsByBarcode(barcodeInput.value);
+      if (barcodeInput) {
+        barcodeInput.focus();
+        barcodeInput.select?.();
+      }
+    }
+  });
+  startCameraBtn.addEventListener('click', async (e) => { e.preventDefault(); await startCameraScanner(); if (startCameraBtn) startCameraBtn.blur(); if (barcodeInput) barcodeInput.focus(); });
+  stopCameraBtn.addEventListener('click', (e) => { e.preventDefault(); stopCameraScanner(); if (stopCameraBtn) stopCameraBtn.blur(); if (barcodeInput) barcodeInput.focus(); });
+  sendToWorkflowBtn.addEventListener('click', () => {
+    const row = getCurrentUpcomingRow(false);
+    if (!row) {
+      setUpcomingStatus('There is no upcoming row to send yet.', 'warn');
+      return;
+    }
+    applyUpcomingRowToWorkflow(row);
+    showTab('workflow');
+    const trackCount = Array.isArray(row.__releaseTracklist) ? row.__releaseTracklist.length : 0;
+    setUpcomingStatus(trackCount ? `Sent ${trackCount} album track(s) to Workflow Studio.` : 'Sent the current scanner row to Workflow Studio.', 'good');
+    setStatus('Received release data from Discogs Scanner.', 'good');
+  });
+  openReleaseBtn.addEventListener('click', () => {
+    const row = upcomingRows[currentUpcomingIndex];
+    if (!row || !row.URL) { setUpcomingStatus('No release URL on the current scanner row.', 'warn'); return; }
+    window.open(row.URL, 'discogs_release_preview', 'width=1100,height=820,resizable=yes,scrollbars=yes');
+  });
+  openArtworkBtn.addEventListener('click', () => {
+    const row = upcomingRows[currentUpcomingIndex];
+    if (!row || !row.Artwork) { setUpcomingStatus('No artwork URL on the current scanner row.', 'warn'); return; }
+    window.open(row.Artwork, 'discogs_artwork_preview', 'width=900,height=900,resizable=yes,scrollbars=yes');
+  });
+  copyArtworkBtn.addEventListener('click', async () => {
+    const row = upcomingRows[currentUpcomingIndex];
+    if (!row || !row.Artwork) { setUpcomingStatus('No artwork URL on the current scanner row.', 'warn'); return; }
+    try { await navigator.clipboard.writeText(row.Artwork); setUpcomingStatus('Copied artwork URL.', 'good'); }
+    catch (err) { console.error(err); setUpcomingStatus('Clipboard copy failed in this browser.', 'bad'); }
+  });
+
+  showTab('workflow');
+  updateBatchSessionUI();
+  render();
+  renderUpcoming();
+  setTimeout(() => {
+    if (barcodeInput && document.getElementById('upcomingView')?.style.display !== 'none') {
+      barcodeInput.focus();
+      barcodeInput.select?.();
+    }
+  }, 200);
+})();
+
+// Discogs token UX enhancements
+const discogsTokenEl = document.getElementById('discogsToken');
+const discogsWarning = document.getElementById('discogsWarning');
+const testTokenBtn = document.getElementById('testTokenBtn');
+const testTokenResult = document.getElementById('testTokenResult');
+
+let discogsTokenTestTimeout = null;
+
+function updateDiscogsWarning(){
+  if(!discogsTokenEl.value.trim()){
+    discogsWarning.style.display = 'block';
+  } else {
+    discogsWarning.style.display = 'none';
+  }
 }
 
-function removeSelectedRow() {
-  if (state.checkedRows.size) {
-    removeCheckedRows();
+async function runDiscogsTokenTest(){
+  const token = discogsTokenEl.value.trim();
+
+  if(!token){
+    testTokenResult.textContent = "";
+    updateDiscogsWarning();
     return;
   }
-  if (state.selectedRowIndex === null) {
-    alert("Select a row first.");
-    return;
+
+  testTokenResult.textContent = "Testing...";
+  testTokenResult.style.color = "#aaa";
+
+  try{
+    const res = await fetch('https://api.discogs.com/database/search?q=test&token=' + encodeURIComponent(token));
+
+    if(res.status === 200){
+      testTokenResult.textContent = "✓ Connected";
+      testTokenResult.style.color = "#6f6";
+      try {
+        localStorage.setItem('waxflow_discogs_token', token);
+      } catch (e) {}
+    } else if(res.status === 401){
+      testTokenResult.textContent = "✕ Invalid token";
+      testTokenResult.style.color = "#f66";
+    } else {
+      testTokenResult.textContent = "⚠ " + res.status;
+      testTokenResult.style.color = "#ffb347";
+    }
+  } catch(e){
+    testTokenResult.textContent = "✕ Network error";
+    testTokenResult.style.color = "#f66";
   }
-  removeRow(state.selectedRowIndex);
 }
 
+function debouncedDiscogsTokenTest(){
+  if(discogsTokenTestTimeout) clearTimeout(discogsTokenTestTimeout);
+  discogsTokenTestTimeout = setTimeout(runDiscogsTokenTest, 600);
+}
 
-document.getElementById('fileInput').addEventListener('change', e => { const file = e.target.files[0]; if (file) handleMainFile(file); });
-document.getElementById('mergeFileInput').addEventListener('change', e => { const file = e.target.files[0]; if (file) handleMergeCSVFile(file); });
-document.getElementById('parseBtn').addEventListener('click', parseText);
-document.getElementById('downloadBtn').addEventListener('click', downloadCSV);
-document.getElementById('filename').addEventListener('input', () => { updateFilenamePreview(); savePrefs(); });
-document.getElementById('camelot').addEventListener('change', savePrefs);
-document.getElementById('replaceExisting').addEventListener('change', savePrefs);
-document.getElementById('dedupe').addEventListener('change', savePrefs);
-document.getElementById('processingDetails').addEventListener('toggle', savePrefs);
-document.getElementById('columnsDetails').addEventListener('toggle', savePrefs);
-document.getElementById('themeSelect').addEventListener('change', function(){ applyTheme(this.value); savePrefs(); });
-document.getElementById('addRowBtn').addEventListener('click', addBlankRow);
-document.getElementById('selectAllBtn').addEventListener('click', selectAllVisibleRows);
-document.getElementById('deselectAllBtn').addEventListener('click', deselectAllRows);
-document.getElementById('removeSelectedBtn').addEventListener('click', removeSelectedRow);
-document.getElementById('undoDeleteBtn').addEventListener('click', undoLastDelete);
-document.querySelectorAll('.col').forEach(el => el.addEventListener('change', function(){ renderPreview(); savePrefs(); }));
-document.getElementById('tableSearch').addEventListener('input', renderPreview);
+try {
+  const savedDiscogsToken = localStorage.getItem('waxflow_discogs_token') || '';
+  if(savedDiscogsToken){
+    discogsTokenEl.value = savedDiscogsToken;
+  }
+} catch (e) {}
 
-const dropzone = document.getElementById('dropzone');
-['dragenter', 'dragover'].forEach(evtName => {
-  dropzone.addEventListener(evtName, function(e){ e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover'); });
+discogsTokenEl.addEventListener('input', () => {
+  updateDiscogsWarning();
+  debouncedDiscogsTokenTest();
 });
-['dragleave', 'dragend', 'drop'].forEach(evtName => {
-  dropzone.addEventListener(evtName, function(e){ e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover'); });
-});
-dropzone.addEventListener('drop', function(e){ const files = e.dataTransfer && e.dataTransfer.files; if (!files || !files.length) return; handleDroppedFile(files[0]); });
 
-loadPrefs();
-applyTheme(document.getElementById('themeSelect').value);
-updateFilenamePreview();
-updateMetrics();
-renderPreview();
+updateDiscogsWarning();
+
+if(discogsTokenEl.value.trim()){
+  debouncedDiscogsTokenTest();
+}
+
+testTokenBtn.addEventListener('click', runDiscogsTokenTest);
+
 </script>
 </body>
 </html>
