@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>WaxFlow by Decknics</title>
+<title>WaxFlow 1.5.1 by Decknics</title>
 <style>
 :root{
   --bg:#0b0f14;
@@ -31,7 +31,7 @@ body{
     linear-gradient(180deg,#0a0e13,#10161e 55%,#0c1117);
   color:var(--text);
 }
-.app{max-width:1480px;margin:0 auto;padding:16px}
+.app{max-width:1480px;margin:0 auto;padding:16px;position:relative}
 h1{margin:0 0 4px;font-size:28px;letter-spacing:-.02em;font-weight:800}
 .sub{color:var(--muted);margin:0 0 14px;font-size:13px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -272,6 +272,77 @@ td input{
   margin-top:10px
 }
 #batchSessionStatus{margin-top:6px}
+    .version-badge{
+      position:absolute;
+      top:16px;
+      right:16px;
+      z-index:10;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.08em;
+      color:#07111a;
+      background:linear-gradient(180deg,#7bc2ff,#54a8ff);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:999px;
+      padding:7px 10px;
+      line-height:1;
+      box-shadow:0 8px 22px rgba(84,168,255,.22);
+    }
+    .helpLayout{
+      display:grid;
+      gap:12px;
+    }
+    .helpHero{
+      border:1px solid rgba(102,179,255,.28);
+      border-radius:16px;
+      background:linear-gradient(180deg,rgba(102,179,255,.10),rgba(102,179,255,.04));
+      padding:16px;
+    }
+    .helpHero h2{
+      margin:0 0 6px;
+      font-size:22px;
+      letter-spacing:-.01em;
+    }
+    .helpHero p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+    .helpContext{
+      margin-top:10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:rgba(255,255,255,.03);
+      padding:10px 12px;
+      font-size:13px;
+      color:var(--text);
+    }
+    .helpGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+      gap:12px;
+    }
+    .helpCard{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:linear-gradient(180deg,rgba(19,26,35,.78),rgba(13,18,24,.72));
+      padding:14px;
+    }
+    .helpCard h3{
+      margin:0 0 8px;
+      font-size:15px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .helpCard p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.55;
+    }
+
 @media (max-width:1080px){
   .layout{grid-template-columns:1fr}
   .sidebar{position:static}
@@ -282,12 +353,14 @@ td input{
 </head>
 <body>
 <div class="app">
+  <div class="version-badge">v1.5.1</div>
   <h1>WaxFlow<br><span style="font-size:12px;color:#888;">by Decknics</span></h1>
   <div class="sub">Import XML, CSV, or TXT for your library, then scan Discogs releases and clean the library from one tighter workspace.</div>
 
   <div class="tabs">
     <button id="workflowTabBtn" class="tabBtn active" type="button" onclick="window.switchTab && window.switchTab('workflow')">Workflow Studio</button>
     <button id="upcomingTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('upcoming')">Discogs Scanner</button>
+    <button id="helpTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('help')">Help</button>
   </div>
 
   <div id="workflowView" style="display:block">
@@ -428,7 +501,7 @@ td input{
           <h2>Discogs Scanner</h2>
           <div class="small">Load a scanner file here. After rows appear, use <strong>Preview Art</strong> on each row to verify the artwork.</div>
           <div id="upcomingDropzone" class="dropzone" style="margin-top:8px">
-            <strong>Drop upcoming CSV, TXT, or JSON here</strong>
+            <strong>Drop CSV, TXT, or JSON here</strong>
             <div class="small">Discogs-style files</div>
           </div>
           <div class="row" style="margin-top:8px">
@@ -452,44 +525,7 @@ td input{
       </aside>
 
       <main class="card main">
-        <div class="stats">
-          <div class="stat"><div class="label">Rows</div><div id="upcomingCount" class="value">0</div></div>
-          <div class="stat"><div class="label">With Released</div><div id="upcomingDates" class="value">0</div></div>
-          <div class="stat"><div class="label">With Links</div><div id="upcomingLinks" class="value">0</div></div>
-          <div class="stat"><div class="label">With Artwork</div><div id="upcomingArtwork" class="value">0</div></div>
-          <div class="stat"><div class="label">Visible</div><div id="upcomingVisible" class="value">0</div></div>
-        </div>
 
-        <div class="toolbar">
-          <input id="upcomingSearch" class="grow" type="text" placeholder="Search artist, title, label, cat no, year, released, genre..." />
-          <button id="copyUpcomingBtn" type="button">Copy Visible URLs</button>
-        </div>
-
-        <div id="upcomingStatus" class="status">No scanner file loaded yet.</div><div class="small" style="margin:-4px 0 10px">The preview button appears inside each scanner row after you load a file.</div>
-
-        <div class="tableWrap">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:84px">Preview</th>
-                <th style="width:110px">Artist</th>
-                <th style="width:130px">Title</th>
-                <th style="width:100px">Label</th>
-                <th style="width:80px">Cat No</th>
-                <th style="width:95px">Barcode</th>
-                <th style="width:62px">Year</th>
-                <th style="width:90px">Released</th>
-                <th style="width:90px">Format</th>
-                <th style="width:80px">Country</th>
-                <th style="width:90px">Genre</th>
-                <th style="width:90px">Style</th>
-                <th style="width:150px">URL</th>
-                <th style="width:120px">Artwork</th>
-              </tr>
-            </thead>
-            <tbody id="upcomingTbody"></tbody>
-          </table>
-        </div>
 
         <div class="scannerGrid">
           <div class="previewCard">
@@ -551,17 +587,102 @@ td input{
             </div>
           </div>
         </div>
+
+        <div class="stats">
+          <div class="stat"><div class="label">Rows</div><div id="upcomingCount" class="value">0</div></div>
+          <div class="stat"><div class="label">With Released</div><div id="upcomingDates" class="value">0</div></div>
+          <div class="stat"><div class="label">With Links</div><div id="upcomingLinks" class="value">0</div></div>
+          <div class="stat"><div class="label">With Artwork</div><div id="upcomingArtwork" class="value">0</div></div>
+          <div class="stat"><div class="label">Visible</div><div id="upcomingVisible" class="value">0</div></div>
+        </div>
+
+        <div class="toolbar">
+          <input id="upcomingSearch" class="grow" type="text" placeholder="Search artist, title, label, cat no, year, released, genre..." />
+          <button id="copyUpcomingBtn" type="button">Copy Visible URLs</button>
+        </div>
+
+        <div id="upcomingStatus" class="status">No scanner file loaded yet.</div><div class="small" style="margin:-4px 0 10px">The preview button appears inside each scanner row after you load a file.</div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:84px">Preview</th>
+                <th style="width:110px">Artist</th>
+                <th style="width:130px">Title</th>
+                <th style="width:100px">Label</th>
+                <th style="width:80px">Cat No</th>
+                <th style="width:95px">Barcode</th>
+                <th style="width:62px">Year</th>
+                <th style="width:90px">Released</th>
+                <th style="width:90px">Format</th>
+                <th style="width:80px">Country</th>
+                <th style="width:90px">Genre</th>
+                <th style="width:90px">Style</th>
+                <th style="width:150px">URL</th>
+                <th style="width:120px">Artwork</th>
+              </tr>
+            </thead>
+            <tbody id="upcomingTbody"></tbody>
+          </table>
+        </div>
       </main>
     </div>
   </div>
-</div>
+  <div id="helpView" style="display:none">
+    <div class="helpLayout">
+      <div class="helpHero">
+        <h2>WaxFlow Help</h2>
+        <p>A quick guide to the main parts of the app. Use this tab as a reference while working.</p>
+        <div id="helpContextBox" class="helpContext"><strong>Current tip:</strong> Start in Workflow Studio to import your library, clean metadata, and export a finished CSV.</div>
+      </div>
+
+      <div class="helpGrid">
+        <div class="helpCard">
+          <h3>📥 Import</h3>
+          <p>Load XML, CSV, or TXT files into Workflow Studio. Drag and drop a file or use the browse buttons.</p>
+        </div>
+        <div class="helpCard">
+          <h3>🎛️ Workflow Studio</h3>
+          <p>Edit Artist, Song, Album, BPM, Key, Year, Genre, Artwork, Size, Speed, and Disc # directly in the table.</p>
+        </div>
+        <div class="helpCard">
+          <h3>⌨️ Tab Empty Cells</h3>
+          <p>When enabled, the Tab key jumps only to blank fields so cleanup goes much faster.</p>
+        </div>
+        <div class="helpCard">
+          <h3>🛠️ Tools</h3>
+          <p>Each row includes a compact Tools menu for Tunebat, Discogs web search, or a Discogs match.</p>
+        </div>
+        <div class="helpCard">
+          <h3>🎨 Artwork / Discogs</h3>
+          <p>Add your Discogs personal token to unlock artwork matching, release lookup, and scanner enrichment.</p>
+        </div>
+        <div class="helpCard">
+          <h3>📷 Discogs Scanner</h3>
+          <p>Scan or paste a UPC/EAN to pull release data, preview artwork, and send album tracks into Workflow Studio.</p>
+        </div>
+        <div class="helpCard">
+          <h3>📤 Export</h3>
+          <p>Export a clean CSV after editing. The file includes the hidden Artwork column along with your visible metadata.</p>
+        </div>
+        <div class="helpCard">
+          <h3>⚡ Recommended Flow</h3>
+          <p>Import your library, clean blanks, enrich with Discogs or scanner data, then export the finished CSV.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script>
 (() => {
   const workflowTabBtn = document.getElementById('workflowTabBtn');
   const upcomingTabBtn = document.getElementById('upcomingTabBtn');
+  const helpTabBtn = document.getElementById('helpTabBtn');
   const workflowView = document.getElementById('workflowView');
   const upcomingView = document.getElementById('upcomingView');
+  const helpView = document.getElementById('helpView');
+  const helpContextBox = document.getElementById('helpContextBox');
 
   const xmlInput = document.getElementById('xmlInput');
   const csvInput = document.getElementById('csvInput');
@@ -639,20 +760,36 @@ td input{
   function setStatus(msg, type=''){ statusEl.textContent = msg; statusEl.className = 'status' + (type ? ' ' + type : ''); }
   function setUpcomingStatus(msg, type=''){ upcomingStatusEl.textContent = msg; upcomingStatusEl.className = 'status' + (type ? ' ' + type : ''); }
 
+  function setHelpContext(message){
+    if (helpContextBox) helpContextBox.innerHTML = `<strong>Current tip:</strong> ${message}`;
+  }
+
   function showTab(name){
     const isWorkflow = name === 'workflow';
+    const isUpcoming = name === 'upcoming';
+    const isHelp = name === 'help';
+
     if (workflowView) workflowView.style.display = isWorkflow ? 'block' : 'none';
-    if (upcomingView) upcomingView.style.display = isWorkflow ? 'none' : 'block';
-    if (!isWorkflow) {
+    if (upcomingView) upcomingView.style.display = isUpcoming ? 'block' : 'none';
+    if (helpView) helpView.style.display = isHelp ? 'block' : 'none';
+
+    if (isUpcoming) {
       setTimeout(() => {
         if (barcodeInput) {
           barcodeInput.focus();
           barcodeInput.select?.();
         }
       }, 50);
+      setHelpContext('Discogs Scanner is best for barcode-based importing, artwork preview, and sending release tracks into Workflow Studio.');
+    } else if (isWorkflow) {
+      setHelpContext('Workflow Studio is best for cleanup. Use Tab Empty Cells to jump through missing metadata quickly.');
+    } else if (isHelp) {
+      setHelpContext('This Help tab explains the main areas of WaxFlow. Switch back to Workflow Studio or Discogs Scanner whenever you are ready.');
     }
+
     if (workflowTabBtn) workflowTabBtn.classList.toggle('active', isWorkflow);
-    if (upcomingTabBtn) upcomingTabBtn.classList.toggle('active', !isWorkflow);
+    if (upcomingTabBtn) upcomingTabBtn.classList.toggle('active', isUpcoming);
+    if (helpTabBtn) helpTabBtn.classList.toggle('active', isHelp);
   }
   window.switchTab = showTab;
 
@@ -1700,6 +1837,20 @@ td input{
   // Workflow events
   workflowTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('workflow'); });
   upcomingTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('upcoming'); });
+  helpTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('help'); });
+
+  searchInput.addEventListener('focus', () => {
+    setHelpContext('Search filters the visible library rows so you can focus on a subset of tracks while cleaning metadata.');
+  });
+  discogsTokenInput.addEventListener('focus', () => {
+    setHelpContext('Your Discogs token unlocks artwork matching, release search, and barcode scanning features.');
+  });
+  barcodeInput.addEventListener('focus', () => {
+    setHelpContext('Paste or scan a UPC/EAN here to look up a release and route the result into Workflow Studio.');
+  });
+  upcomingSearchEl.addEventListener('focus', () => {
+    setHelpContext('Use the scanner search box to narrow the visible Discogs rows by artist, title, label, year, or genre.');
+  });
 
   browseXmlBtn.addEventListener('click', () => xmlInput.click());
   browseCsvBtn.addEventListener('click', () => csvInput.click());
