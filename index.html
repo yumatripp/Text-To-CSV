@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>WaxFlow 1.5.1 by Decknics</title>
+<title>WaxFlow 1.6.8 by Decknics</title>
 <style>
 :root{
   --bg:#0b0f14;
@@ -401,11 +401,63 @@ td input{
   .scannerGrid{grid-template-columns:1fr}
   .collectionLayout{grid-template-columns:1fr}
 }
+
+  .libraryActionBar{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+  }
+  .libraryActionGroup{
+    display:flex;
+    gap:6px;
+    align-items:center;
+  }
+  .libraryActionGroup select,
+  .libraryActionGroup input{
+    padding:6px 8px;
+    font-size:12px;
+    border-radius:8px;
+    min-width:70px !important;
+    width:auto !important;
+  }
+  .libraryActionGroup button{
+    padding:6px 8px;
+    font-size:12px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+
+
+.collectionItem .collectionMeta:last-child{
+  opacity:.6;
+  font-size:10px;
+}
+.collectionItem:hover .collectionMeta:last-child{
+  opacity:1;
+}
+
+
+.itunesMatchLayout{display:grid;grid-template-columns:320px 1fr;gap:12px}
+.matchList{max-height:620px;overflow:auto;border:1px solid var(--line);border-radius:14px;background:#0b1017;padding:8px}
+.matchItem{width:100%;text-align:left;padding:10px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(180deg,#121923,#0f151d);margin-bottom:8px;color:var(--text);cursor:pointer}
+.matchItem.active{border-color:rgba(102,179,255,.45);box-shadow:0 0 0 1px rgba(102,179,255,.18) inset}
+.matchPreview{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#10161e,#0c1219);padding:12px}
+.matchTag{font-size:10px;color:#aebed0;background:#16202a;border:1px solid var(--line);border-radius:999px;padding:3px 7px}
+@media (max-width:1080px){.itunesMatchLayout{grid-template-columns:1fr}}
+
+
+.itunesScanLayout{display:grid;grid-template-columns:320px 1fr;gap:12px}
+.itunesScanPreview{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#10161e,#0c1219);padding:12px}
+.itunesScanTracklist{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#0b1017;padding:10px}
+@media (max-width:1080px){.itunesScanLayout{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="version-badge">v1.5.1</div>
+  <div class="version-badge">v1.6.8</div>
   <h1>WaxFlow<br><span style="font-size:12px;color:#888;">by Decknics</span></h1>
   <div class="sub">Import XML, CSV, or TXT for your library, then scan Discogs releases and clean the library from one tighter workspace.</div>
 
@@ -413,6 +465,8 @@ td input{
     <button id="workflowTabBtn" class="tabBtn active" type="button" onclick="window.switchTab && window.switchTab('workflow')">Workflow Studio</button>
     <button id="upcomingTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('upcoming')">Discogs Scanner</button>
     <button id="collectionTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('collection')">My Discogs Collection</button>
+    <button id="itunesMatchTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('itunesmatch')">iTunes Match</button>
+    <button id="itunesScanTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('itunesscan')">iTunes Scan</button>
     <button id="helpTabBtn" class="tabBtn" type="button" onclick="window.switchTab && window.switchTab('help')">Help</button>
   </div>
 
@@ -438,15 +492,9 @@ td input{
           <div class="row">
             <button id="camelotBtn" class="good">Key Cleanup → Camelot</button>
             <button id="bpmBtn">BPM Cleanup</button>
-          </div>
-          <div class="grid2" style="margin-top:8px">
-            <input id="bulkYear" type="text" placeholder="Set Year" />
-            <input id="bulkGenre" type="text" placeholder="Set Genre" />
-          </div>
-          <div class="row" style="margin-top:8px">
-            <button id="applyYearGenreBtn">Apply Year / Genre</button>
             <button id="fillMissingBtn">Fill Missing</button>
           </div>
+          <div class="small" style="margin-top:8px">Year, Genre, Size, Speed, and Disc # bulk updates now live in Library Actions.</div>
         </div>
 
         <div class="section">
@@ -518,6 +566,60 @@ td input{
               </label>
             </div>
           </div>
+
+          <div class="libraryActionBar" style="margin-top:10px">
+            <div class="libraryActionGroup">
+              <select id="bulkSizeSelect" style="min-width:84px">
+                <option value="">Set Size…</option>
+                <option value="12&quot;">12"</option>
+                <option value="10&quot;">10"</option>
+                <option value="9&quot;">9"</option>
+                <option value="7&quot;">7"</option>
+                <option value="4&quot;">4"</option>
+              </select>
+              <button id="applyBulkSizeBtn">Apply Size</button>
+            </div>
+            <div class="libraryActionGroup">
+              <select id="bulkSpeedSelect" style="min-width:88px">
+                <option value="">Set Speed…</option>
+                <option value="33">33</option>
+                <option value="45">45</option>
+                
+              </select>
+              <button id="applyBulkSpeedBtn">Apply Speed</button>
+            </div>
+            <div class="libraryActionGroup">
+              <input id="bulkDiscNumberInput" type="text" placeholder="Set Disc #" style="min-width:88px;width:88px" />
+              <button id="applyBulkDiscNumberBtn">Apply Disc #</button>
+            </div>
+            <div class="libraryActionGroup">
+              <input id="bulkYear" type="text" placeholder="Set Year" style="min-width:84px;width:84px" />
+              <button id="applyBulkYearBtn">Apply Year</button>
+            </div>
+            <div class="libraryActionGroup">
+              <input id="bulkGenre" type="text" placeholder="Set Genre" style="min-width:110px;width:110px" />
+              <button id="applyBulkGenreBtn">Apply Genre</button>
+            </div>
+            <div class="libraryActionGroup">
+              <select id="bulkClearFieldSelect" style="min-width:118px">
+                <option value="">Clear Field…</option>
+                <option value="Artist">Artist</option>
+                <option value="Song">Song</option>
+                <option value="Album">Album</option>
+                <option value="BPM">BPM</option>
+                <option value="Key">Key</option>
+                <option value="Year">Year</option>
+                <option value="Genre">Genre</option>
+                <option value="Artwork">Artwork</option>
+                <option value="Size">Size</option>
+                <option value="Speed">Speed</option>
+                <option value="Disc Number">Disc #</option>
+                <option value="Sides">Sides</option>
+              </select>
+              <button id="applyBulkClearBtn" class="warn">Clear Field</button>
+            </div>
+          </div>
+          <div class="small" style="margin-top:8px">Bulk actions apply to selected rows first. If nothing is selected, they apply to the currently visible rows.</div>
         </div>
 
         <div class="tableWrap">
@@ -536,13 +638,14 @@ td input{
                 <th style="width:64px">Size</th>
                 <th style="width:64px">Speed</th>
                 <th style="width:80px">Disc #</th>
+                <th style="width:110px">Sides</th>
                 <th style="width:90px">Tools</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
-        <div class="footer">CSV export includes Artist, Song, Album, BPM, Key, Year, Genre, Artwork.</div>
+        <div class="footer">CSV export includes Artist, Song, Album, BPM, Key, Year, Genre, Artwork, Size, Speed, Disc Number, and Sides.</div>
       </main>
     </div>
   </div>
@@ -690,6 +793,7 @@ td input{
           <div class="small">Use your Discogs token to load your collection album by album, then send a selected release into Workflow Studio.</div>
           <div class="row" style="margin-top:8px">
             <button id="loadCollectionBtn" type="button" class="primary">Load Collection</button>
+            <button id="indexCollectionBtn" type="button">Build Folder Search Index</button>
             <button id="importCollectionAlbumBtn" type="button">Import Selected Album</button>
           </div>
           <div class="grid2" style="margin-top:8px">
@@ -709,7 +813,7 @@ td input{
         <div class="section">
           <h2>Search Collection</h2>
           <input id="collectionSearchInput" type="text" placeholder="Search artist, title, label, year..." />
-          <div class="small" style="margin-top:8px">Loads a simple release list first. Click one album to preview it, then import it.</div>
+          <div class="small" style="margin-top:8px">Default search only filters the currently loaded page. Build Folder Search Index to search the full selected folder without changing tabs or page loading.</div>
         </div>
 
         <div class="section">
@@ -756,6 +860,153 @@ td input{
               <h2>Tracklist Preview</h2>
               <div id="collectionTracklist" class="small">No tracklist loaded yet.</div>
             </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="itunesMatchView" style="display:none">
+    <div class="itunesMatchLayout">
+      <aside class="card sidebar">
+        <div class="section">
+          <h2>iTunes Match</h2>
+          <div class="small">Load a Discogs folder and your iTunes XML. WaxFlow will match iTunes track metadata onto Discogs album tracks, then send only matched albums into Workflow Studio.</div>
+          <div class="row" style="margin-top:8px">
+            <button id="itunesMatchLoadCollectionBtn" type="button" class="primary">Load Discogs Folder</button>
+            <button id="itunesMatchIndexBtn" type="button">Index Folder</button>
+          </div>
+          <div class="grid2" style="margin-top:8px">
+            <input id="itunesMatchUsernameInput" type="text" placeholder="Discogs username (optional)" />
+            <select id="itunesMatchFolderSelect">
+              <option value="0">Folder 0 — All Items</option>
+            </select>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="itunesMatchLoadXmlBtn" type="button">Load iTunes XML</button>
+            <button id="itunesMatchLoadTracklistsBtn" type="button">Load All Tracklists</button>
+            <button id="itunesMatchRunBtn" type="button">Run Match</button>
+          </div>
+          <input id="itunesMatchXmlInput" type="file" accept=".xml,.plist,text/xml,application/xml" />
+          <div class="small" style="margin-top:8px">Matches artist + title + mix/remix wording. If one or more tracks on an album match BPM and/or Key, the whole Discogs album is sent to Workflow Studio. If none match, the album is skipped. <strong>Load All Tracklists</strong> fetches full Discogs release tracklists before matching with slower per-request pacing, retries, and local caching. Progress now shows a rough time estimate for tracklist loading, matching, and safe sending.</div>
+        </div>
+
+        <div class="section">
+          <h2>Search Matched Albums</h2>
+          <input id="itunesMatchSearchInput" type="text" placeholder="Search artist, album, matched tracks..." />
+          <div class="small" style="margin-top:8px">Review matched albums before sending them to Workflow Studio.</div>
+        </div>
+
+        <div class="section">
+          <h2>Status</h2>
+          <div id="itunesMatchStatus" class="status">No iTunes match data loaded yet.</div>
+        </div>
+      </aside>
+
+      <main class="card main">
+        <div class="stats">
+          <div class="stat"><div class="label">Discogs Albums</div><div id="itunesMatchAlbumCount" class="value">0</div></div>
+          <div class="stat"><div class="label">iTunes Tracks</div><div id="itunesMatchItunesCount" class="value">0</div></div>
+          <div class="stat"><div class="label">Matched Albums</div><div id="itunesMatchMatchedAlbums" class="value">0</div></div>
+          <div class="stat"><div class="label">Matched Tracks</div><div id="itunesMatchMatchedTracks" class="value">0</div></div>
+          <div class="stat"><div class="label">Visible</div><div id="itunesMatchVisible" class="value">0</div></div>
+        </div>
+
+        <div class="section" style="margin-bottom:12px">
+          <h2>Diagnostic Report</h2>
+          <div class="small" id="itunesMatchDiagnostics">Run Match to see diagnostic details here.</div>
+        </div>
+
+        <div class="itunesMatchLayout" style="grid-template-columns:360px 1fr;">
+          <div class="matchList" id="itunesMatchList"></div>
+
+          <div class="matchPreview">
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <strong id="itunesMatchTitle">No matched album selected</strong>
+                <div id="itunesMatchSubtitle" class="small">Load a Discogs folder and iTunes XML, then run the match to preview results here.</div>
+              </div>
+              <div class="row">
+                <button id="itunesMatchSendSelectedBtn" type="button" class="primary">Send Selected Album</button>
+                <button id="itunesMatchSendAllBtn" type="button">Send All Matched (Safe)</button>
+                <button id="itunesMatchCancelSendBtn" type="button" class="warn">Cancel Send</button>
+              </div>
+            </div>
+
+            <div class="previewMeta" style="margin-top:10px">
+              <div class="miniCard"><strong>Artist / Album</strong><div id="itunesMatchArtistAlbum" class="small"></div></div>
+              <div class="miniCard"><strong>Match Summary</strong><div id="itunesMatchSummary" class="small"></div></div>
+            </div>
+
+            <div class="section" style="margin-top:10px;margin-bottom:0;">
+              <h2>Track Preview</h2>
+              <div id="itunesMatchTracklist" class="small">No matched album selected.</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+
+  <div id="itunesScanView" style="display:none">
+    <div class="itunesScanLayout">
+      <aside class="card sidebar">
+        <div class="section">
+          <h2>iTunes Scan</h2>
+          <div class="small">Load your iTunes XML, then scan or type a barcode. WaxFlow will pull the Discogs release, cross-reference the album tracks against iTunes by artist + title + remix wording, and automatically send the finished album to Workflow Studio if at least one track has BPM and/or Key.</div>
+          <div class="row" style="margin-top:8px">
+            <button id="itunesScanLoadXmlBtn" type="button" class="primary">Load iTunes XML</button>
+          </div>
+          <input id="itunesScanXmlInput" type="file" accept=".xml,.plist,text/xml,application/xml" />
+        </div>
+
+        <div class="section">
+          <h2>Scan / Lookup</h2>
+          <input id="itunesScanBarcodeInput" type="text" placeholder="Scan or enter UPC / EAN" />
+          <div class="row" style="margin-top:8px">
+            <button id="itunesScanLookupBtn" type="button" class="primary">Lookup Barcode</button>
+            <button id="itunesScanUseCurrentScannerBtn" type="button">Use Current Scanner Album</button>
+          </div>
+          <div class="small" style="margin-top:8px">Album title does not need to match iTunes exactly. Matching is based on close artist, track, and remix wording. iTunes key is taken from the Key field or converted to Camelot from Comments just like the rest of WaxFlow.</div>
+        </div>
+
+        <div class="section">
+          <h2>Status</h2>
+          <div id="itunesScanStatus" class="status">No iTunes Scan data loaded yet.</div>
+        </div>
+      </aside>
+
+      <main class="card main">
+        <div class="stats">
+          <div class="stat"><div class="label">iTunes Tracks</div><div id="itunesScanItunesCount" class="value">0</div></div>
+          <div class="stat"><div class="label">Album Tracks</div><div id="itunesScanAlbumTrackCount" class="value">0</div></div>
+          <div class="stat"><div class="label">Matched Tracks</div><div id="itunesScanMatchedCount" class="value">0</div></div>
+          <div class="stat"><div class="label">BPM Filled</div><div id="itunesScanBpmCount" class="value">0</div></div>
+          <div class="stat"><div class="label">Key Filled</div><div id="itunesScanKeyCount" class="value">0</div></div>
+        </div>
+
+        <div class="itunesScanPreview">
+          <div class="row" style="justify-content:space-between">
+            <div>
+              <strong id="itunesScanTitle">No release scanned yet</strong>
+              <div id="itunesScanSubtitle" class="small">Load your iTunes XML and scan a record or reuse the current scanner album to preview matched tracks here.</div>
+            </div>
+            <div class="row">
+              <button id="itunesScanOpenReleaseBtn" type="button">Open Release</button>
+              <button id="itunesScanSendBtn" type="button" class="primary">Send Again to Workflow</button>
+            </div>
+          </div>
+
+          <div class="previewMeta" style="margin-top:10px">
+            <div class="miniCard"><strong>Artist / Album</strong><div id="itunesScanArtistAlbum" class="small"></div></div>
+            <div class="miniCard"><strong>Match Summary</strong><div id="itunesScanSummary" class="small"></div></div>
+            <div class="miniCard"><strong>Barcode</strong><div id="itunesScanBarcodeValue" class="small"></div></div>
+          </div>
+
+          <div class="section" style="margin-top:10px;margin-bottom:0;">
+            <h2>Track Preview</h2>
+            <div id="itunesScanTracklist" class="itunesScanTracklist small">No release scanned yet.</div>
           </div>
         </div>
       </main>
@@ -812,14 +1063,19 @@ td input{
   const workflowTabBtn = document.getElementById('workflowTabBtn');
   const upcomingTabBtn = document.getElementById('upcomingTabBtn');
   const collectionTabBtn = document.getElementById('collectionTabBtn');
+  const itunesMatchTabBtn = document.getElementById('itunesMatchTabBtn');
+  const itunesScanTabBtn = document.getElementById('itunesScanTabBtn');
   const helpTabBtn = document.getElementById('helpTabBtn');
   const workflowView = document.getElementById('workflowView');
   const upcomingView = document.getElementById('upcomingView');
   const collectionView = document.getElementById('collectionView');
+  const itunesMatchView = document.getElementById('itunesMatchView');
+  const itunesScanView = document.getElementById('itunesScanView');
   const helpView = document.getElementById('helpView');
   const helpContextBox = document.getElementById('helpContextBox');
 
   const loadCollectionBtn = document.getElementById('loadCollectionBtn');
+  const indexCollectionBtn = document.getElementById('indexCollectionBtn');
   const importCollectionAlbumBtn = document.getElementById('importCollectionAlbumBtn');
   const collectionUsernameInput = document.getElementById('collectionUsernameInput');
   const collectionFolderSelect = document.getElementById('collectionFolderSelect');
@@ -840,6 +1096,40 @@ td input{
   const collectionTracklist = document.getElementById('collectionTracklist');
   const openCollectionReleaseBtn = document.getElementById('openCollectionReleaseBtn');
   const sendCollectionToWorkflowBtn = document.getElementById('sendCollectionToWorkflowBtn');
+  const itunesMatchLoadCollectionBtn = document.getElementById('itunesMatchLoadCollectionBtn');
+  const itunesMatchIndexBtn = document.getElementById('itunesMatchIndexBtn');
+  const itunesMatchUsernameInput = document.getElementById('itunesMatchUsernameInput');
+  const itunesMatchFolderSelect = document.getElementById('itunesMatchFolderSelect');
+  const itunesMatchLoadXmlBtn = document.getElementById('itunesMatchLoadXmlBtn');
+  const itunesMatchLoadTracklistsBtn = document.getElementById('itunesMatchLoadTracklistsBtn');
+  const itunesMatchXmlInput = document.getElementById('itunesMatchXmlInput');
+  const itunesMatchRunBtn = document.getElementById('itunesMatchRunBtn');
+  const itunesMatchSearchInput = document.getElementById('itunesMatchSearchInput');
+  const itunesMatchStatusEl = document.getElementById('itunesMatchStatus');
+  const itunesMatchList = document.getElementById('itunesMatchList');
+  const itunesMatchTitle = document.getElementById('itunesMatchTitle');
+  const itunesMatchSubtitle = document.getElementById('itunesMatchSubtitle');
+  const itunesMatchArtistAlbum = document.getElementById('itunesMatchArtistAlbum');
+  const itunesMatchSummary = document.getElementById('itunesMatchSummary');
+  const itunesMatchTracklist = document.getElementById('itunesMatchTracklist');
+  const itunesMatchDiagnostics = document.getElementById('itunesMatchDiagnostics');
+  const itunesMatchSendSelectedBtn = document.getElementById('itunesMatchSendSelectedBtn');
+  const itunesMatchSendAllBtn = document.getElementById('itunesMatchSendAllBtn');
+  const itunesMatchCancelSendBtn = document.getElementById('itunesMatchCancelSendBtn');
+  const itunesScanLoadXmlBtn = document.getElementById('itunesScanLoadXmlBtn');
+  const itunesScanXmlInput = document.getElementById('itunesScanXmlInput');
+  const itunesScanBarcodeInput = document.getElementById('itunesScanBarcodeInput');
+  const itunesScanLookupBtn = document.getElementById('itunesScanLookupBtn');
+  const itunesScanUseCurrentScannerBtn = document.getElementById('itunesScanUseCurrentScannerBtn');
+  const itunesScanStatusEl = document.getElementById('itunesScanStatus');
+  const itunesScanTitle = document.getElementById('itunesScanTitle');
+  const itunesScanSubtitle = document.getElementById('itunesScanSubtitle');
+  const itunesScanArtistAlbum = document.getElementById('itunesScanArtistAlbum');
+  const itunesScanSummary = document.getElementById('itunesScanSummary');
+  const itunesScanBarcodeValue = document.getElementById('itunesScanBarcodeValue');
+  const itunesScanTracklist = document.getElementById('itunesScanTracklist');
+  const itunesScanOpenReleaseBtn = document.getElementById('itunesScanOpenReleaseBtn');
+  const itunesScanSendBtn = document.getElementById('itunesScanSendBtn');
 
   const xmlInput = document.getElementById('xmlInput');
   const csvInput = document.getElementById('csvInput');
@@ -851,6 +1141,12 @@ td input{
   const searchInput = document.getElementById('searchInput');
   const filterSelect = document.getElementById('filterSelect');
   const tabEmptyCellsCheckbox = document.getElementById('tabEmptyCellsCheckbox');
+  const bulkSizeSelect = document.getElementById('bulkSizeSelect');
+  const bulkSpeedSelect = document.getElementById('bulkSpeedSelect');
+  const bulkDiscNumberInput = document.getElementById('bulkDiscNumberInput');
+  const bulkYear = document.getElementById('bulkYear');
+  const bulkGenre = document.getElementById('bulkGenre');
+  const bulkClearFieldSelect = document.getElementById('bulkClearFieldSelect');
   const discogsTokenInput = document.getElementById('discogsToken');
 
   const upcomingInput = document.getElementById('upcomingInput');
@@ -903,14 +1199,31 @@ td input{
   let barcodeAutoLookupTimer = null;
 
   let collectionRows = [];
+  let collectionIndexedRows = [];
   let collectionSearch = '';
   let selectedCollectionRelease = null;
   let collectionFolders = [];
   let collectionPage = 1;
   let collectionPages = 1;
   let collectionUsernameResolved = '';
+  let itunesMatchCollectionRows = [];
+  let itunesMatchIndexedRows = [];
+  let itunesMatchSearch = '';
+  let itunesMatchItunesRows = [];
+  let itunesMatchResults = [];
+  let itunesMatchDiagnosticsState = null;
+  let itunesMatchTracklistsLoaded = 0;
+  let itunesMatchTracklistFailures = 0;
+  let itunesMatchTracklistsFromCache = 0;
+  let itunesMatchFetchOkEmptyTracklist = 0;
+  let itunesMatchFetchFailed = 0;
+  let itunesMatchFailureSamples = [];
+  let itunesMatchCancelSendRequested = false;
+  let selectedItunesMatchAlbum = null;
+  let itunesScanItunesRows = [];
+  let itunesScanCurrentRelease = null;
 
-  const CSV_HEADERS = ['Artist','Song','Album','BPM','Key','Year','Genre','Artwork','Size','Speed','Disc Number'];
+  const CSV_HEADERS = ['Artist','Song','Album','BPM','Key','Year','Genre','Artwork','Size','Speed','Disc Number','Sides'];
   const UPCOMING_HEADERS = ['Artist','Title','Label','CatNo','Barcode','Year','Released','Format','Country','Genre','Style','URL','Artwork'];
 
   const camelotMap = {
@@ -933,11 +1246,15 @@ td input{
     const isWorkflow = name === 'workflow';
     const isUpcoming = name === 'upcoming';
     const isCollection = name === 'collection';
+    const isItunesMatch = name === 'itunesmatch';
+    const isItunesScan = name === 'itunesscan';
     const isHelp = name === 'help';
 
     if (workflowView) workflowView.style.display = isWorkflow ? 'block' : 'none';
     if (upcomingView) upcomingView.style.display = isUpcoming ? 'block' : 'none';
     if (collectionView) collectionView.style.display = isCollection ? 'block' : 'none';
+    if (itunesMatchView) itunesMatchView.style.display = isItunesMatch ? 'block' : 'none';
+    if (itunesScanView) itunesScanView.style.display = isItunesScan ? 'block' : 'none';
     if (helpView) helpView.style.display = isHelp ? 'block' : 'none';
 
     if (isUpcoming) {
@@ -952,6 +1269,10 @@ td input{
       setHelpContext('Workflow Studio is best for cleanup. Use Tab Empty Cells to jump through missing metadata quickly.');
     } else if (isCollection) {
       setHelpContext('My Discogs Collection lets you pull one album at a time from your Discogs account and send it into Workflow Studio.');
+    } else if (isItunesMatch) {
+      setHelpContext('iTunes Match combines Discogs album tracklists with BPM/Key data from your iTunes XML, then sends only matched albums to Workflow Studio.');
+    } else if (isItunesScan) {
+      setHelpContext('iTunes Scan lets you scan one Discogs record at a time, cross-reference it against your iTunes XML, and send matched BPM/Key data straight to Workflow Studio.');
     } else if (isHelp) {
       setHelpContext('This Help tab explains the main areas of WaxFlow. Switch back to Workflow Studio, Discogs Scanner, or My Discogs Collection whenever you are ready.');
     }
@@ -959,6 +1280,8 @@ td input{
     if (workflowTabBtn) workflowTabBtn.classList.toggle('active', isWorkflow);
     if (upcomingTabBtn) upcomingTabBtn.classList.toggle('active', isUpcoming);
     if (collectionTabBtn) collectionTabBtn.classList.toggle('active', isCollection);
+    if (itunesMatchTabBtn) itunesMatchTabBtn.classList.toggle('active', isItunesMatch);
+    if (itunesScanTabBtn) itunesScanTabBtn.classList.toggle('active', isItunesScan);
     if (helpTabBtn) helpTabBtn.classList.toggle('active', isHelp);
   }
   window.switchTab = showTab;
@@ -982,15 +1305,1211 @@ td input{
       if (!res.ok) throw new Error('Discogs folder load failed: ' + res.status);
       const data = await res.json();
       collectionFolders = Array.isArray(data.folders) ? data.folders : [];
-      collectionFolderSelect.innerHTML = collectionFolders.map(folder =>
+      const folderOptions = collectionFolders.map(folder =>
         `<option value="${folder.id}">Folder ${folder.id} — ${folder.name}</option>`
       ).join('') || '<option value="0">Folder 0 — All Items</option>';
+      collectionFolderSelect.innerHTML = folderOptions;
+      if (itunesMatchFolderSelect) itunesMatchFolderSelect.innerHTML = folderOptions;
       if (!collectionFolderSelect.value) collectionFolderSelect.value = '0';
+      if (itunesMatchFolderSelect && !itunesMatchFolderSelect.value) itunesMatchFolderSelect.value = '0';
     } catch (err) {
       console.error(err);
       collectionFolders = [];
       collectionFolderSelect.innerHTML = '<option value="0">Folder 0 — All Items</option>';
     }
+  }
+
+
+  function mapCollectionEntry(entry, idx, folderId){
+    const basic = entry.basic_information || {};
+    const artist = Array.isArray(basic.artists) ? basic.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).filter(Boolean).join(' / ') : '';
+    const label = Array.isArray(basic.labels) ? basic.labels.map(l => safe(l.name)).filter(Boolean).join(' / ') : '';
+    const catno = Array.isArray(basic.labels) ? basic.labels.map(l => safe(l.catno)).filter(Boolean).join(' / ') : '';
+    const format = Array.isArray(basic.formats) ? basic.formats.map(f => safe(f.name || f.descriptions?.join(' / '))).filter(Boolean).join(' / ') : '';
+    const genre = Array.isArray(basic.genres) ? basic.genres.join(' / ') : '';
+    const style = Array.isArray(basic.styles) ? basic.styles.join(' / ') : '';
+    return {
+      id: String(entry.instance_id || basic.id || idx),
+      releaseId: basic.id,
+      instanceId: entry.instance_id,
+      folderId,
+      artist,
+      title: safe(basic.title),
+      year: safe(basic.year),
+      label,
+      catno,
+      format,
+      country: safe(basic.country),
+      genre,
+      style,
+      artwork: safe(basic.cover_image || basic.thumb),
+      thumb: safe(basic.thumb),
+      resource_url: safe(basic.resource_url),
+      tracklist: null,
+      discogsRelease: null,
+      size: '',
+      speed: ''
+    };
+  }
+
+  function getCollectionSourceRows(){
+    return collectionIndexedRows.length ? collectionIndexedRows : collectionRows;
+  }
+
+  async function buildIsolatedCollectionIndex(){
+    const token = safe(discogsTokenInput.value);
+    if (!token){
+      setCollectionStatus('Add your Discogs personal token first.', 'warn');
+      return;
+    }
+
+    let username = safe(collectionUsernameInput.value);
+    const folderId = safe(collectionFolderSelect?.value) || '0';
+
+    if (!username){
+      setCollectionStatus('Resolving Discogs username from token...', 'warn');
+      username = await resolveDiscogsUsernameFromToken(token);
+      if (username) collectionUsernameInput.value = username;
+    }
+
+    if (!username){
+      setCollectionStatus('Could not determine your Discogs username. Enter it manually and try again.', 'warn');
+      return;
+    }
+
+    collectionUsernameResolved = username;
+    setCollectionStatus(`Building folder search index for ${username}...`, 'warn');
+
+    try{
+      await loadDiscogsCollectionFolders(username, token);
+
+      const perPage = 100;
+      const firstUrl = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/${encodeURIComponent(folderId)}/releases?per_page=${perPage}&page=1`;
+      const firstRes = await fetch(firstUrl, {
+        headers: {
+          'Authorization':'Discogs token=' + token,
+          'User-Agent':'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!firstRes.ok) throw new Error('Discogs folder index failed: ' + firstRes.status);
+      const firstData = await firstRes.json();
+      const totalPages = Number(firstData.pagination?.pages || 1);
+
+      let allReleases = Array.isArray(firstData.releases) ? firstData.releases.slice() : [];
+      setCollectionStatus(`Building folder index: page 1 of ${totalPages}...`, 'warn');
+
+      for (let page = 2; page <= totalPages; page++){
+        const pageUrl = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/${encodeURIComponent(folderId)}/releases?per_page=${perPage}&page=${page}`;
+        const res = await fetch(pageUrl, {
+          headers: {
+            'Authorization':'Discogs token=' + token,
+            'User-Agent':'DJLibraryWorkflowStudio/1.0'
+          }
+        });
+        if (!res.ok) throw new Error('Discogs folder index failed on page ' + page + ': ' + res.status);
+        const data = await res.json();
+        const releases = Array.isArray(data.releases) ? data.releases : [];
+        allReleases = allReleases.concat(releases);
+        setCollectionStatus(`Building folder index: page ${page} of ${totalPages}...`, 'warn');
+      }
+
+      collectionIndexedRows = allReleases
+        .filter(isVinylCollectionItem)
+        .map((entry, idx) => mapCollectionEntry(entry, idx, folderId));
+
+      renderCollectionList();
+      renderCollectionPreview();
+      updateCollectionStats();
+      setCollectionStatus(`Indexed ${collectionIndexedRows.length} vinyl release(s). Search now covers the whole selected folder.`, 'good');
+    } catch (err) {
+      console.error(err);
+      setCollectionStatus(err.message || 'Could not build folder search index.', 'bad');
+    }
+  }
+
+
+  function setItunesMatchStatus(msg, type=''){
+    itunesMatchStatusEl.textContent = msg;
+    itunesMatchStatusEl.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function renderItunesMatchDiagnostics(){
+    if (!itunesMatchDiagnostics) return;
+    const d = itunesMatchDiagnosticsState;
+    if (!d){
+      const sourceCount = getItunesMatchSourceRows().length;
+      itunesMatchDiagnostics.innerHTML = `Run Match to see diagnostic details here.<br><span class="small">Currently loaded albums: ${sourceCount} / tracklists loaded: ${itunesMatchTracklistsLoaded} / failures: ${itunesMatchTracklistFailures} / cache: ${itunesMatchTracklistsFromCache} / empty: ${itunesMatchFetchOkEmptyTracklist}</span>`;
+      return;
+    }
+
+    const nearMisses = (d.nearMisses || []).slice(0, 12).map(item =>
+      `<div style="padding:3px 0;border-bottom:1px solid var(--line-soft)">
+        <strong>${item.artist || '—'}</strong> — ${item.discogsTitle || '—'}
+        <div class="small">Closest iTunes title: ${item.itunesTitle || 'none'}${item.score !== undefined ? ` / score ${item.score}` : ''}</div>
+      </div>`
+    ).join('') || '<div class="small">No near misses captured.</div>';
+
+    itunesMatchDiagnostics.innerHTML = `
+      <div><strong>Discogs albums loaded:</strong> ${d.discogsAlbums}</div>
+      <div><strong>Discogs albums with tracklists:</strong> ${d.discogsAlbumsWithTracklists}</div>
+      <div><strong>Tracklists loaded in iTunes Match:</strong> ${d.tracklistsLoaded || 0}</div>
+      <div><strong>Tracklist fetch failures:</strong> ${d.tracklistFailures || 0}</div>
+      <div><strong>Tracklists from cache:</strong> ${d.tracklistsFromCache || 0}</div>
+      <div><strong>Fetch OK but empty tracklist:</strong> ${d.fetchOkEmptyTracklist || 0}</div>
+      <div><strong>Fetch failed before parsing:</strong> ${d.fetchFailed || 0}</div>
+      <div><strong>Discogs tracks checked:</strong> ${d.discogsTracksChecked}</div>
+      <div><strong>iTunes tracks loaded:</strong> ${d.itunesTracks}</div>
+      <div><strong>iTunes tracks with BPM:</strong> ${d.itunesWithBpm}</div>
+      <div><strong>iTunes tracks with Key:</strong> ${d.itunesWithKey}</div>
+      <div><strong>iTunes tracks with BPM or Key:</strong> ${d.itunesWithEither}</div>
+      <div><strong>Albums matched:</strong> ${d.albumsMatched}</div>
+      <div><strong>Tracks matched:</strong> ${d.tracksMatched}</div>
+      <div><strong>Tracks with artist/title candidate but no BPM/Key:</strong> ${d.candidateNoData}</div>
+      <div><strong>Tracks with no candidate match:</strong> ${d.noCandidate}</div>
+      <div class="small" style="margin-top:8px"><strong>Failure samples</strong></div>
+      <div style="margin-top:4px">${(d.failureSamples || []).slice(0, 12).map(item => `<div style="padding:3px 0;border-bottom:1px solid var(--line-soft)"><strong>${item.type}</strong>: ${item.title || '—'}${item.releaseId ? ` / release ${item.releaseId}` : ''}${item.reason ? ` / ${item.reason}` : ''}</div>`).join('') || '<div class="small">No failure samples captured.</div>'}</div>
+      <div class="small" style="margin-top:8px"><strong>Near misses</strong></div>
+      <div style="margin-top:4px">${nearMisses}</div>
+    `;
+  }
+
+  function setItunesMatchStatus(msg, type=''){
+    itunesMatchStatusEl.textContent = msg;
+    itunesMatchStatusEl.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function normalizeMatchText(value){
+    return safe(value)
+      .toLowerCase()
+      .replace(/&/g, ' and ')
+      .replace(/\([^)]*\)/g, ' ')
+      .replace(/\[[^\]]*\]/g, ' ')
+      .replace(/\bfeat\.?\b/g, ' featuring ')
+      .replace(/\bft\.?\b/g, ' featuring ')
+      .replace(/\bvs\.?\b/g, ' ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .replace(/\b(the|a|an)\b/g, ' ')
+      .replace(/\b(original|extended|club|radio|vocal|instrumental|dub|mix|remix|rmx|edit|version)\b/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function stripMixTokens(value){
+    return safe(value)
+      .toLowerCase()
+      .replace(/\([^)]*\)/g, ' ')
+      .replace(/\[[^\]]*\]/g, ' ')
+      .replace(/\b(original|extended|club|radio|vocal|instrumental|dub|mix|remix|rmx|edit|version)\b/g, ' ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function normalizeArtistTitleKey(artist, title){
+    return normalizeMatchText(artist) + ' :: ' + normalizeMatchText(title);
+  }
+
+  function buildItunesMatchIndex(rows){
+    const exactMap = new Map();
+    const looseMap = new Map();
+    const byArtist = new Map();
+
+    for (const row of rows){
+      const artist = safe(row.Artist);
+      const song = safe(row.Song);
+      if (!artist || !song) continue;
+
+      const exactKey = normalizeArtistTitleKey(artist, song);
+      if (!exactMap.has(exactKey)) exactMap.set(exactKey, []);
+      exactMap.get(exactKey).push(row);
+
+      const looseKey = normalizeMatchText(artist) + ' :: ' + stripMixTokens(song);
+      if (!looseMap.has(looseKey)) looseMap.set(looseKey, []);
+      looseMap.get(looseKey).push(row);
+
+      const artistKey = normalizeMatchText(artist);
+      if (!byArtist.has(artistKey)) byArtist.set(artistKey, []);
+      byArtist.get(artistKey).push(row);
+    }
+
+    return { exactMap, looseMap, byArtist };
+  }
+
+  function pickUsefulMatch(candidates){
+    return candidates.find(r => safe(r.BPM) || safe(r.Key)) || null;
+  }
+
+  function titleScore(a, b){
+    const aa = new Set(stripMixTokens(a).split(' ').filter(Boolean));
+    const bb = new Set(stripMixTokens(b).split(' ').filter(Boolean));
+    if (!aa.size || !bb.size) return 0;
+    let overlap = 0;
+    aa.forEach(token => { if (bb.has(token)) overlap += 1; });
+    return overlap / Math.max(aa.size, bb.size);
+  }
+
+  function findClosestArtistTitleCandidate(index, artist, title){
+    const pool = index.byArtist.get(normalizeMatchText(artist)) || [];
+    let best = null;
+    let bestScore = 0;
+    for (const row of pool){
+      const score = titleScore(row.Song, title);
+      if (score > bestScore){
+        bestScore = score;
+        best = row;
+      }
+    }
+    return best ? { row: best, score: Number(bestScore.toFixed(2)) } : null;
+  }
+
+  function findBestItunesTrackMatch(index, artist, title){
+    const exactKey = normalizeArtistTitleKey(artist, title);
+    const exactCandidates = index.exactMap.get(exactKey) || [];
+    const exact = pickUsefulMatch(exactCandidates);
+    if (exact) return { row: exact, confidence: 'exact' };
+
+    const looseKey = normalizeMatchText(artist) + ' :: ' + stripMixTokens(title);
+    const looseCandidates = index.looseMap.get(looseKey) || [];
+    const loose = pickUsefulMatch(looseCandidates);
+    if (loose) return { row: loose, confidence: 'loose' };
+
+    const sameArtistPool = (index.byArtist.get(normalizeMatchText(artist)) || []).filter(r => safe(r.BPM) || safe(r.Key));
+    let best = null;
+    let bestScore = 0;
+    for (const row of sameArtistPool){
+      const score = titleScore(row.Song, title);
+      if (score > bestScore){
+        bestScore = score;
+        best = row;
+      }
+    }
+    if (best && bestScore >= 0.74) return { row: best, confidence: 'same-artist-fallback', score: Number(bestScore.toFixed(2)) };
+
+    const candidateNoData = exactCandidates.concat(looseCandidates).find(r => !safe(r.BPM) && !safe(r.Key));
+    if (candidateNoData) return { row: candidateNoData, confidence: 'candidate-no-data', noData: true };
+
+    return null;
+  }
+
+
+  function getItunesMatchSourceRows(){
+    return itunesMatchIndexedRows.length ? itunesMatchIndexedRows : itunesMatchCollectionRows;
+  }
+
+  function updateItunesMatchStats(){
+    const visible = getVisibleItunesMatchResults();
+    document.getElementById('itunesMatchAlbumCount').textContent = getItunesMatchSourceRows().length;
+    document.getElementById('itunesMatchItunesCount').textContent = itunesMatchItunesRows.length;
+    document.getElementById('itunesMatchMatchedAlbums').textContent = itunesMatchResults.length;
+    document.getElementById('itunesMatchMatchedTracks').textContent = itunesMatchResults.reduce((n, a) => n + (a.matchedTracks?.length || 0), 0);
+    document.getElementById('itunesMatchVisible').textContent = visible.length;
+  }
+
+  function getVisibleItunesMatchResults(){
+    const q = lc(itunesMatchSearch);
+    return itunesMatchResults.filter(item => {
+      if (!q) return true;
+      return [
+        item.artist,
+        item.title,
+        item.year,
+        item.label,
+        ...(item.matchedTracks || []).map(t => [t.discogsTitle, t.itunesTitle].join(' '))
+      ].join(' ').toLowerCase().includes(q);
+    });
+  }
+
+  function renderItunesMatchList(){
+    const visible = getVisibleItunesMatchResults();
+    itunesMatchList.innerHTML = '';
+    for (const item of visible){
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'matchItem' + ((selectedItunesMatchAlbum && selectedItunesMatchAlbum.id === item.id) ? ' active' : '');
+      btn.innerHTML = `
+        <div><strong>${item.artist || '—'}</strong> — ${item.title || 'Untitled'}</div>
+        <div class="collectionMeta">${item.matchedTracks.length} matched track(s) / ${item.tracklist.length} album track(s)</div>
+      `;
+      btn.addEventListener('click', () => {
+        selectedItunesMatchAlbum = item;
+        renderItunesMatchList();
+        renderItunesMatchPreview();
+      });
+      itunesMatchList.appendChild(btn);
+    }
+    if (!visible.length){
+      itunesMatchList.innerHTML = '<div class="small">No matched albums yet.</div>';
+    }
+    updateItunesMatchStats();
+  }
+
+  function renderItunesMatchPreview(){
+    const item = selectedItunesMatchAlbum;
+    if (!item){
+      itunesMatchTitle.textContent = 'No matched album selected';
+      itunesMatchSubtitle.textContent = 'Load a Discogs folder and iTunes XML, then run the match to preview results here.';
+      itunesMatchArtistAlbum.textContent = '';
+      itunesMatchSummary.textContent = '';
+      itunesMatchTracklist.innerHTML = 'No matched album selected.';
+      updateItunesMatchStats();
+      return;
+    }
+    itunesMatchTitle.textContent = item.title || 'Untitled';
+    itunesMatchSubtitle.textContent = 'Any matched BPM / Key data will be copied into the corresponding Discogs album tracks before sending them to Workflow Studio.';
+    itunesMatchArtistAlbum.textContent = [item.artist, item.title, item.year].filter(Boolean).join(' / ');
+    itunesMatchSummary.textContent = `${item.matchedTracks.length} matched track(s); whole album will be sent to Workflow Studio.`;
+
+    const matchMap = new Map((item.matchedTracks || []).map(t => [t.trackIndex, t]));
+    itunesMatchTracklist.innerHTML = item.tracklist.map((track, idx) => {
+      const m = matchMap.get(idx);
+      return `<div style="padding:4px 0;border-bottom:1px solid var(--line-soft)">
+        <strong>${track.position || idx + 1}. ${track.title || 'Untitled'}</strong>
+        ${m ? `<div class="small">Matched to iTunes: ${m.itunesTitle || '—'}${m.bpm ? ` / BPM ${m.bpm}` : ''}${m.key ? ` / Key ${m.key}` : ''}${m.confidence ? ` / ${m.confidence}` : ''}</div>` : `<div class="small">No direct iTunes BPM/Key match on this track.</div>`}
+      </div>`;
+    }).join('');
+    updateItunesMatchStats();
+  }
+
+
+  async function loadItunesMatchFolders(username, token){
+    const res = await fetch(`https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders`, {
+      headers: {
+        'Authorization':'Discogs token=' + token,
+        'User-Agent':'DJLibraryWorkflowStudio/1.0'
+      }
+    });
+    if (!res.ok) throw new Error('Discogs folder load failed: ' + res.status);
+    const data = await res.json();
+    const folders = Array.isArray(data.folders) ? data.folders : [];
+    const folderOptions = folders.map(folder =>
+      `<option value="${folder.id}">Folder ${folder.id} — ${folder.name}</option>`
+    ).join('') || '<option value="0">Folder 0 — All Items</option>';
+    itunesMatchFolderSelect.innerHTML = folderOptions;
+    if (!itunesMatchFolderSelect.value) itunesMatchFolderSelect.value = '0';
+    return folders;
+  }
+
+  async function loadItunesMatchCollection(page = 1){
+    const token = safe(discogsTokenInput.value);
+    if (!token){
+      setItunesMatchStatus('Add your Discogs personal token first.', 'warn');
+      return;
+    }
+    let username = safe(itunesMatchUsernameInput.value);
+    let folderId = safe(itunesMatchFolderSelect.value) || '0';
+
+    if (!username){
+      setItunesMatchStatus('Resolving Discogs username from token...', 'warn');
+      username = await resolveDiscogsUsernameFromToken(token);
+      if (username) itunesMatchUsernameInput.value = username;
+    }
+    if (!username){
+      setItunesMatchStatus('Could not determine your Discogs username. Enter it manually and try again.', 'warn');
+      return;
+    }
+
+    try{
+      setItunesMatchStatus(`Loading folder list for ${username}...`, 'warn');
+      const folders = await loadItunesMatchFolders(username, token);
+      if (folders.length && !folders.some(f => String(f.id) == String(folderId))) {
+        folderId = '0';
+        itunesMatchFolderSelect.value = '0';
+      }
+
+      setItunesMatchStatus(`Loading Discogs folder ${folderId}, page ${page}...`, 'warn');
+      const url = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/${encodeURIComponent(folderId)}/releases?per_page=100&page=${encodeURIComponent(page)}`;
+      const res = await fetch(url, {
+        headers: {
+          'Authorization':'Discogs token=' + token,
+          'User-Agent':'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) throw new Error('Discogs collection load failed: ' + res.status);
+      const data = await res.json();
+      const releases = Array.isArray(data.releases) ? data.releases : [];
+
+      itunesMatchCollectionRows = releases.filter(isVinylCollectionItem).map((entry, idx) => mapCollectionEntry(entry, idx, folderId));
+      itunesMatchTracklistsLoaded = 0;
+      itunesMatchTracklistFailures = 0;
+      itunesMatchTracklistsFromCache = 0;
+      itunesMatchFetchOkEmptyTracklist = 0;
+      itunesMatchFetchFailed = 0;
+      itunesMatchFailureSamples = [];
+      itunesMatchIndexedRows = [];
+      itunesMatchResults = [];
+      selectedItunesMatchAlbum = null;
+      renderItunesMatchList();
+      renderItunesMatchPreview();
+      renderItunesMatchDiagnostics();
+      setItunesMatchStatus(`Loaded ${itunesMatchCollectionRows.length} vinyl album(s) from folder ${folderId}, page ${page}.`, 'good');
+    } catch (err) {
+      console.error(err);
+      setItunesMatchStatus(err.message || 'Could not load Discogs folder for iTunes Match.', 'bad');
+    }
+  }
+
+  async function indexItunesMatchFolder(){
+    const token = safe(discogsTokenInput.value);
+    if (!token){
+      setItunesMatchStatus('Add your Discogs personal token first.', 'warn');
+      return;
+    }
+    let username = safe(itunesMatchUsernameInput.value);
+    let folderId = safe(itunesMatchFolderSelect.value) || '0';
+
+    if (!username){
+      setItunesMatchStatus('Resolving Discogs username from token...', 'warn');
+      username = await resolveDiscogsUsernameFromToken(token);
+      if (username) itunesMatchUsernameInput.value = username;
+    }
+    if (!username){
+      setItunesMatchStatus('Could not determine your Discogs username. Enter it manually and try again.', 'warn');
+      return;
+    }
+
+    try{
+      setItunesMatchStatus(`Loading folder list for ${username}...`, 'warn');
+      const folders = await loadItunesMatchFolders(username, token);
+      if (folders.length && !folders.some(f => String(f.id) == String(folderId))) {
+        folderId = '0';
+        itunesMatchFolderSelect.value = '0';
+      }
+
+      setItunesMatchStatus(`Indexing Discogs folder ${folderId}...`, 'warn');
+      const perPage = 100;
+      const firstUrl = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/${encodeURIComponent(folderId)}/releases?per_page=${perPage}&page=1`;
+      const firstRes = await fetch(firstUrl, {
+        headers: {'Authorization':'Discogs token=' + token, 'User-Agent':'DJLibraryWorkflowStudio/1.0'}
+      });
+      if (!firstRes.ok) throw new Error('Discogs folder index failed: ' + firstRes.status);
+      const firstData = await firstRes.json();
+      const totalPages = Number(firstData.pagination?.pages || 1);
+      let allReleases = Array.isArray(firstData.releases) ? firstData.releases.slice() : [];
+      for (let page = 2; page <= totalPages; page++){
+        setItunesMatchStatus(`Indexing Discogs folder ${folderId}: page ${page} of ${totalPages}...`, 'warn');
+        const pageUrl = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/${encodeURIComponent(folderId)}/releases?per_page=${perPage}&page=${page}`;
+        const res = await fetch(pageUrl, {
+          headers: {'Authorization':'Discogs token=' + token, 'User-Agent':'DJLibraryWorkflowStudio/1.0'}
+        });
+        if (!res.ok) throw new Error('Discogs folder index failed on page ' + page + ': ' + res.status);
+        const data = await res.json();
+        allReleases = allReleases.concat(Array.isArray(data.releases) ? data.releases : []);
+      }
+      itunesMatchIndexedRows = allReleases.filter(isVinylCollectionItem).map((entry, idx) => mapCollectionEntry(entry, idx, folderId));
+      itunesMatchTracklistsLoaded = 0;
+      itunesMatchTracklistFailures = 0;
+      itunesMatchTracklistsFromCache = 0;
+      itunesMatchFetchOkEmptyTracklist = 0;
+      itunesMatchFetchFailed = 0;
+      itunesMatchFailureSamples = [];
+      itunesMatchCollectionRows = [];
+      itunesMatchResults = [];
+      selectedItunesMatchAlbum = null;
+      renderItunesMatchList();
+      renderItunesMatchPreview();
+      setItunesMatchStatus(`Indexed ${itunesMatchIndexedRows.length} vinyl album(s) from folder ${folderId}.`, 'good');
+    } catch (err) {
+      console.error(err);
+      setItunesMatchStatus(err.message || 'Could not index Discogs folder for iTunes Match.', 'bad');
+    }
+  }
+
+
+
+  function getItunesMatchReleaseCacheKey(releaseId){
+    return `waxflow_discogs_release_${releaseId}`;
+  }
+
+  function readItunesMatchReleaseCache(releaseId){
+    try{
+      const raw = localStorage.getItem(getItunesMatchReleaseCacheKey(releaseId));
+      return raw ? JSON.parse(raw) : null;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
+  function writeItunesMatchReleaseCache(releaseId, payload){
+    try{
+      localStorage.setItem(getItunesMatchReleaseCacheKey(releaseId), JSON.stringify(payload));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function sleepMs(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function fetchDiscogsReleaseWithRetry(releaseId, token, attempt = 0){
+    let res;
+    try{
+      res = await fetch(`https://api.discogs.com/releases/${releaseId}`, {
+        headers: {
+          'Authorization':'Discogs token=' + token,
+          'User-Agent':'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+    } catch (err) {
+      if (attempt < 3){
+        await sleepMs(2500 * (attempt + 1));
+        return fetchDiscogsReleaseWithRetry(releaseId, token, attempt + 1);
+      }
+      throw new Error('Network error: ' + (err?.message || 'fetch failed'));
+    }
+
+    if (res.ok) return res.json();
+
+    const retryAfterHeader = Number(res.headers.get('Retry-After') || 0);
+    const explicitReason = `HTTP ${res.status}${retryAfterHeader ? ` / Retry-After ${retryAfterHeader}s` : ''}`;
+
+    if ((res.status === 429 || res.status >= 500) && attempt < 5){
+      const retryMs = retryAfterHeader > 0 ? retryAfterHeader * 1000 : (3000 * Math.pow(2, attempt));
+      await sleepMs(retryMs);
+      return fetchDiscogsReleaseWithRetry(releaseId, token, attempt + 1);
+    }
+
+    throw new Error(explicitReason);
+  }
+
+  async function ensureItunesMatchAlbumDetailsRateSafe(item){
+    if (!item) return { ok:false, reason:'missing-item', type:'missing-item' };
+    if (Array.isArray(item.tracklist) && item.tracklist.length) return { ok:true, cached:false, already:true, type:'already-loaded' };
+
+    const token = safe(discogsTokenInput.value);
+    if (!token || !item.releaseId) return { ok:false, reason:'missing-token-or-release', type:'fetch-failed' };
+
+    const cached = readItunesMatchReleaseCache(item.releaseId);
+    if (cached && Array.isArray(cached.tracklist) && cached.tracklist.length){
+      item.discogsRelease = cached.discogsRelease || null;
+      item.tracklist = cached.tracklist;
+      item.artwork = item.artwork || safe(cached.artwork);
+      item.format = item.format || safe(cached.format);
+      item.genre = item.genre || safe(cached.genre);
+      item.style = item.style || safe(cached.style);
+      item.country = item.country || safe(cached.country);
+      item.label = item.label || safe(cached.label);
+      item.catno = item.catno || safe(cached.catno);
+      item.size = item.size || safe(cached.size);
+      item.speed = item.speed || safe(cached.speed);
+      return { ok:true, cached:true, type:'cache-hit' };
+    }
+
+    let data;
+    try{
+      data = await fetchDiscogsReleaseWithRetry(item.releaseId, token);
+    } catch (err) {
+      return { ok:false, reason: err?.message || 'fetch-failed', type:'fetch-failed' };
+    }
+
+    item.discogsRelease = data;
+    item.tracklist = extractTracklistFromDiscogsRelease(data, item.artist || '');
+    if (!item.artwork) item.artwork = safe(data.images?.[0]?.uri || data.thumb);
+    if (!item.format && Array.isArray(data.formats)) item.format = data.formats.map(f => safe(f.name || f.descriptions?.join(' / '))).filter(Boolean).join(' / ');
+    if (!item.genre && Array.isArray(data.genres)) item.genre = data.genres.join(' / ');
+    if (!item.style && Array.isArray(data.styles)) item.style = data.styles.join(' / ');
+    if (!item.country) item.country = safe(data.country);
+    if (!item.label && Array.isArray(data.labels)) item.label = data.labels.map(l => safe(l.name)).filter(Boolean).join(' / ');
+    if (!item.catno && Array.isArray(data.labels)) item.catno = data.labels.map(l => safe(l.catno)).filter(Boolean).join(' / ');
+
+    const vinylFormat = Array.isArray(data.formats) ? data.formats.find(f => safe(f.name).toLowerCase().includes('vinyl')) : null;
+    if (vinylFormat && Array.isArray(vinylFormat.descriptions)) {
+      if (!item.size) {
+        const size = vinylFormat.descriptions.find(d => ['12"', '10"', '9"', '7"', '4"'].includes(safe(d)));
+        if (size) item.size = size;
+      }
+      if (!item.speed) {
+        const speed = vinylFormat.descriptions.find(d => ['33 RPM', '45 RPM', '78 RPM'].includes(safe(d)));
+        if (speed) item.speed = speed.replace(' RPM', '');
+      }
+    }
+
+    if (Array.isArray(item.tracklist) && item.tracklist.length){
+      writeItunesMatchReleaseCache(item.releaseId, {
+        discogsRelease: data,
+        tracklist: item.tracklist || [],
+        artwork: item.artwork || '',
+        format: item.format || '',
+        genre: item.genre || '',
+        style: item.style || '',
+        country: item.country || '',
+        label: item.label || '',
+        catno: item.catno || '',
+        size: item.size || '',
+        speed: item.speed || ''
+      });
+      return { ok:true, cached:false, type:'fetched-tracklist' };
+    }
+
+    return { ok:false, reason:'200-but-empty-tracklist', type:'empty-tracklist' };
+  }
+
+  async function loadAllItunesMatchTracklists(){
+    const source = getItunesMatchSourceRows();
+    if (!source.length){
+      setItunesMatchStatus('Load or index a Discogs folder first.', 'warn');
+      return;
+    }
+
+    itunesMatchTracklistsLoaded = 0;
+    itunesMatchTracklistFailures = 0;
+    itunesMatchTracklistsFromCache = 0;
+    itunesMatchFetchOkEmptyTracklist = 0;
+    itunesMatchFetchFailed = 0;
+    itunesMatchFailureSamples = [];
+    const tracklistLoadStartedAt = Date.now();
+    setItunesMatchStatus(`Loading tracklists for ${source.length} album(s) with slower per-request pacing...`, 'warn');
+
+    for (let i = 0; i < source.length; i++){
+      const item = source[i];
+      try{
+        const result = await ensureItunesMatchAlbumDetailsRateSafe(item);
+        if (result?.cached) {
+          itunesMatchTracklistsFromCache += 1;
+        } else if (result?.type === 'already-loaded') {
+          itunesMatchTracklistsLoaded += 1;
+        } else if (Array.isArray(item.tracklist) && item.tracklist.length){
+          itunesMatchTracklistsLoaded += 1;
+        } else if (result?.type === 'empty-tracklist'){
+          itunesMatchTracklistFailures += 1;
+          itunesMatchFetchOkEmptyTracklist += 1;
+          if (itunesMatchFailureSamples.length < 25){
+            itunesMatchFailureSamples.push({
+              type: 'empty-tracklist',
+              title: item.title || '',
+              releaseId: item.releaseId || '',
+              reason: result.reason || ''
+            });
+          }
+        } else if (!result?.already) {
+          itunesMatchTracklistFailures += 1;
+          itunesMatchFetchFailed += 1;
+          if (itunesMatchFailureSamples.length < 25){
+            itunesMatchFailureSamples.push({
+              type: 'fetch-failed',
+              title: item.title || '',
+              releaseId: item.releaseId || '',
+              reason: result?.reason || ''
+            });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        itunesMatchTracklistFailures += 1;
+        itunesMatchFetchFailed += 1;
+        if (itunesMatchFailureSamples.length < 25){
+          itunesMatchFailureSamples.push({
+            type: 'fetch-threw',
+            title: item.title || '',
+            releaseId: item.releaseId || '',
+            reason: err?.message || 'unknown-error'
+          });
+        }
+      }
+
+      itunesMatchDiagnosticsState = {
+        discogsAlbums: source.length,
+        discogsAlbumsWithTracklists: itunesMatchTracklistsLoaded,
+        tracklistsLoaded: itunesMatchTracklistsLoaded,
+        tracklistFailures: itunesMatchTracklistFailures,
+        tracklistsFromCache: itunesMatchTracklistsFromCache,
+        fetchOkEmptyTracklist: itunesMatchFetchOkEmptyTracklist,
+        fetchFailed: itunesMatchFetchFailed,
+        discogsTracksChecked: 0,
+        itunesTracks: itunesMatchItunesRows.length,
+        itunesWithBpm: itunesMatchItunesRows.filter(r => safe(r.BPM)).length,
+        itunesWithKey: itunesMatchItunesRows.filter(r => safe(r.Key)).length,
+        itunesWithEither: itunesMatchItunesRows.filter(r => safe(r.BPM) || safe(r.Key)).length,
+        albumsMatched: 0,
+        tracksMatched: 0,
+        candidateNoData: 0,
+        noCandidate: 0,
+        nearMisses: [],
+        failureSamples: itunesMatchFailureSamples
+      };
+
+      if (i === 0 || (i + 1) % 3 === 0 || i === source.length - 1){
+        const etaMs = estimateRemainingMs(tracklistLoadStartedAt, i + 1, source.length);
+        setItunesMatchStatus(`Tracklists: loaded ${itunesMatchTracklistsLoaded}, failed ${itunesMatchTracklistFailures}, empty ${itunesMatchFetchOkEmptyTracklist}, fetch ${itunesMatchFetchFailed}, cache ${itunesMatchTracklistsFromCache} (${i + 1}/${source.length}) / ETA ${formatDurationMs(etaMs)}...`, 'warn');
+        renderItunesMatchDiagnostics();
+      }
+
+      // Slow down every live request. Cache hits can move faster.
+      await sleepMs(1500);
+    }
+
+    updateItunesMatchStats();
+    renderItunesMatchDiagnostics();
+    renderItunesMatchList();
+    renderItunesMatchPreview();
+    const totalElapsedMs = Date.now() - tracklistLoadStartedAt;
+    setItunesMatchStatus(`Finished loading tracklists in ${formatDurationMs(totalElapsedMs)}. Loaded ${itunesMatchTracklistsLoaded}, failed ${itunesMatchTracklistFailures}, empty ${itunesMatchFetchOkEmptyTracklist}, fetch ${itunesMatchFetchFailed}, cache ${itunesMatchTracklistsFromCache}.`, itunesMatchTracklistsLoaded ? 'good' : 'warn');
+  }
+
+  async function handleItunesMatchXml(file){
+    if (!file) return;
+    try{
+      setItunesMatchStatus(`Reading iTunes XML: ${file.name}...`, 'warn');
+      itunesMatchItunesRows = parseItunesXml(await file.text());
+      updateItunesMatchStats();
+      renderItunesMatchDiagnostics();
+      setItunesMatchStatus(`Loaded ${itunesMatchItunesRows.length} iTunes track(s).`, 'good');
+    } catch (err) {
+      console.error(err);
+      setItunesMatchStatus(err.message || 'Could not read iTunes XML.', 'bad');
+    }
+  }
+
+  async function ensureItunesMatchAlbumDetails(item){
+    if (!item) return;
+    if (item.tracklist) return;
+    await ensureItunesMatchAlbumDetailsRateSafe(item);
+  }
+
+  async function runItunesMatch(){
+    const albums = getItunesMatchSourceRows();
+    if (!albums.length){
+      setItunesMatchStatus('Load or index a Discogs folder first.', 'warn');
+      return;
+    }
+    if (!itunesMatchItunesRows.length){
+      setItunesMatchStatus('Load your iTunes XML first.', 'warn');
+      return;
+    }
+
+    const runMatchStartedAt = Date.now();
+    setItunesMatchStatus(`Running diagnostic match on ${albums.length} album(s) against ${itunesMatchItunesRows.length} iTunes track(s)...`, 'warn');
+
+    const index = buildItunesMatchIndex(itunesMatchItunesRows);
+    const results = [];
+    const diagnostics = {
+      discogsAlbums: albums.length,
+      discogsAlbumsWithTracklists: 0,
+      tracklistsLoaded: itunesMatchTracklistsLoaded,
+      tracklistFailures: itunesMatchTracklistFailures,
+      tracklistsFromCache: itunesMatchTracklistsFromCache,
+      fetchOkEmptyTracklist: itunesMatchFetchOkEmptyTracklist,
+      fetchFailed: itunesMatchFetchFailed,
+      discogsTracksChecked: 0,
+      itunesTracks: itunesMatchItunesRows.length,
+      itunesWithBpm: itunesMatchItunesRows.filter(r => safe(r.BPM)).length,
+      itunesWithKey: itunesMatchItunesRows.filter(r => safe(r.Key)).length,
+      itunesWithEither: itunesMatchItunesRows.filter(r => safe(r.BPM) || safe(r.Key)).length,
+      albumsMatched: 0,
+      tracksMatched: 0,
+      candidateNoData: 0,
+      noCandidate: 0,
+      nearMisses: [],
+      failureSamples: itunesMatchFailureSamples
+    };
+
+    for (let albumIdx = 0; albumIdx < albums.length; albumIdx++){
+      const album = albums[albumIdx];
+      const tracks = Array.isArray(album.tracklist) ? album.tracklist : [];
+      if (!tracks.length) continue;
+      diagnostics.discogsAlbumsWithTracklists += 1;
+
+      if (albumIdx === 0 || (albumIdx + 1) % 10 === 0){
+        const etaMs = estimateRemainingMs(runMatchStartedAt, albumIdx + 1, albums.length);
+        setItunesMatchStatus(`Matching album ${albumIdx + 1} of ${albums.length} / ETA ${formatDurationMs(etaMs)}...`, 'warn');
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+
+      const matchedTracks = [];
+      tracks.forEach((track, idx) => {
+        diagnostics.discogsTracksChecked += 1;
+        const match = findBestItunesTrackMatch(index, track.artist || album.artist || '', track.title || '');
+        if (match && match.row && !match.noData){
+          matchedTracks.push({
+            trackIndex: idx,
+            discogsTitle: safe(track.title),
+            itunesTitle: safe(match.row.Song),
+            bpm: safe(match.row.BPM),
+            key: safe(match.row.Key),
+            confidence: match.confidence
+          });
+        } else if (match && match.noData){
+          diagnostics.candidateNoData += 1;
+        } else {
+          diagnostics.noCandidate += 1;
+          const near = findClosestArtistTitleCandidate(index, track.artist || album.artist || '', track.title || '');
+          if (near && near.score >= 0.4 && diagnostics.nearMisses.length < 30){
+            diagnostics.nearMisses.push({
+              artist: track.artist || album.artist || '',
+              discogsTitle: safe(track.title),
+              itunesTitle: safe(near.row?.Song),
+              score: near.score
+            });
+          }
+        }
+      });
+
+      if (matchedTracks.length){
+        results.push({
+          ...album,
+          matchedTracks,
+          tracklist: tracks
+        });
+      }
+    }
+
+    diagnostics.albumsMatched = results.length;
+    diagnostics.tracksMatched = results.reduce((n, a) => n + (a.matchedTracks?.length || 0), 0);
+
+    itunesMatchResults = results;
+    itunesMatchDiagnosticsState = diagnostics;
+    selectedItunesMatchAlbum = results[0] || null;
+    renderItunesMatchList();
+    renderItunesMatchPreview();
+    renderItunesMatchDiagnostics();
+
+    if (!results.length){
+      const runElapsedMs = Date.now() - runMatchStartedAt;
+      setItunesMatchStatus(`Diagnostic run finished in ${formatDurationMs(runElapsedMs)}. Checked ${diagnostics.discogsTracksChecked} Discogs track(s), but no albums had usable BPM/Key matches.`, 'warn');
+      return;
+    }
+
+    const runElapsedMs = Date.now() - runMatchStartedAt;
+    setItunesMatchStatus(`Diagnostic run finished in ${formatDurationMs(runElapsedMs)}. Matched ${diagnostics.albumsMatched} album(s) and ${diagnostics.tracksMatched} track(s).`, 'good');
+  }
+
+  function sendItunesMatchAlbumToWorkflow(item){
+    if (!item) return;
+    const matchMap = new Map((item.matchedTracks || []).map(t => [t.trackIndex, t]));
+    const parsedTracklist = (item.tracklist || []).map((track, idx) => ({
+      position: safe(track.position),
+      title: safe(track.title),
+      artist: safe(track.artist || item.artist),
+      discNumber: (() => {
+        const pos = safe(track.position);
+        const m = pos.match(/^(\d+)[.-]/);
+        return m ? m[1] : '';
+      })(),
+      side: deriveSideLabel(track.position),
+      bpm: safe(matchMap.get(idx)?.bpm),
+      key: safe(matchMap.get(idx)?.key)
+    }));
+
+    const fakeUpcomingRow = {
+      Artist: item.artist || '',
+      Title: item.title || '',
+      Label: item.label || '',
+      CatNo: item.catno || '',
+      Barcode: '',
+      Year: item.year || '',
+      Released: item.year || '',
+      Format: item.format || '',
+      Country: item.country || '',
+      Genre: item.genre || '',
+      Style: item.style || '',
+      URL: item.resource_url || '',
+      Artwork: item.artwork || '',
+      Size: item.size || '',
+      Speed: item.speed || '',
+      __releaseTracklist: parsedTracklist
+    };
+
+    const created = applyUpcomingRowToWorkflow(fakeUpcomingRow);
+    if (Array.isArray(created)) {
+      created.forEach((row, idx) => {
+        const source = parsedTracklist[idx];
+        if (!source) return;
+        if (!safe(row['Disc Number']) && safe(source.discNumber)) row['Disc Number'] = source.discNumber;
+        if (!safe(row['Sides']) && safe(source.side)) row['Sides'] = source.side;
+        if (!safe(row.Size) && safe(item.size)) row.Size = item.size;
+        if (!safe(row.Speed) && safe(item.speed)) row.Speed = item.speed;
+        if (!safe(row.BPM) && safe(source.bpm)) row.BPM = source.bpm;
+        if (!safe(row.Key) && safe(source.key)) row.Key = source.key;
+      });
+      render();
+    }
+  }
+
+  function sendAllItunesMatchesToWorkflow(){
+    if (!itunesMatchResults.length){
+      setItunesMatchStatus('No matched albums to send yet.', 'warn');
+      return Promise.resolve();
+    }
+
+    return (async () => {
+      itunesMatchCancelSendRequested = false;
+      const batchSize = 10;
+      const startedAt = Date.now();
+      let sentAlbums = 0;
+
+      for (let i = 0; i < itunesMatchResults.length; i += batchSize){
+        if (itunesMatchCancelSendRequested){
+          setItunesMatchStatus(`Safe send canceled after ${sentAlbums} album(s).`, 'warn');
+          return;
+        }
+
+        const batch = itunesMatchResults.slice(i, i + batchSize);
+        for (const item of batch){
+          sendItunesMatchAlbumToWorkflow(item);
+          sentAlbums += 1;
+        }
+
+        const etaMs = estimateRemainingMs(startedAt, sentAlbums, itunesMatchResults.length);
+        setItunesMatchStatus(`Sending matched albums safely: ${sentAlbums} / ${itunesMatchResults.length} / ETA ${formatDurationMs(etaMs)}...`, 'warn');
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+
+      const elapsedMs = Date.now() - startedAt;
+      setStatus(`Imported ${itunesMatchResults.length} matched album(s) from iTunes Match into Workflow Studio.`, 'good');
+      setItunesMatchStatus(`Finished safe send in ${formatDurationMs(elapsedMs)}. Sent ${itunesMatchResults.length} matched album(s) to Workflow Studio.`, 'good');
+    })();
+  }
+
+
+  function setItunesScanStatus(msg, type=''){
+    itunesScanStatusEl.textContent = msg;
+    itunesScanStatusEl.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  function updateItunesScanStats(){
+    const matched = Array.isArray(itunesScanCurrentRelease?.matchedTracks) ? itunesScanCurrentRelease.matchedTracks : [];
+    document.getElementById('itunesScanItunesCount').textContent = itunesScanItunesRows.length;
+    document.getElementById('itunesScanAlbumTrackCount').textContent = Array.isArray(itunesScanCurrentRelease?.tracklist) ? itunesScanCurrentRelease.tracklist.length : 0;
+    document.getElementById('itunesScanMatchedCount').textContent = matched.length;
+    document.getElementById('itunesScanBpmCount').textContent = matched.filter(t => safe(t.bpm)).length;
+    document.getElementById('itunesScanKeyCount').textContent = matched.filter(t => safe(t.key)).length;
+  }
+
+  function renderItunesScan(){
+    const item = itunesScanCurrentRelease;
+    if (!item){
+      itunesScanTitle.textContent = 'No release scanned yet';
+      itunesScanSubtitle.textContent = 'Load your iTunes XML and scan a record to preview matched tracks here.';
+      itunesScanArtistAlbum.textContent = '';
+      itunesScanSummary.textContent = '';
+      itunesScanBarcodeValue.textContent = '';
+      itunesScanTracklist.innerHTML = 'No release scanned yet.';
+      updateItunesScanStats();
+      return;
+    }
+
+    const matched = Array.isArray(item.matchedTracks) ? item.matchedTracks : [];
+    const matchMap = new Map(matched.map(t => [t.trackIndex, t]));
+
+    itunesScanTitle.textContent = item.title || 'Untitled';
+    itunesScanSubtitle.textContent = matched.length
+      ? 'Matched BPM/Key data was found and the album was sent to Workflow Studio automatically.'
+      : 'No usable BPM/Key matches were found, so the album was not sent to Workflow Studio.';
+    itunesScanArtistAlbum.textContent = [item.artist, item.title, item.year].filter(Boolean).join(' / ');
+    itunesScanSummary.textContent = `${matched.length} matched track(s) / ${(item.tracklist || []).length} album track(s)`;
+    itunesScanBarcodeValue.textContent = item.barcode || '—';
+
+    itunesScanTracklist.innerHTML = (item.tracklist || []).map((track, idx) => {
+      const m = matchMap.get(idx);
+      return `<div style="padding:4px 0;border-bottom:1px solid var(--line-soft)">
+        <strong>${track.position || idx + 1}. ${track.title || 'Untitled'}</strong>
+        ${m ? `<div class="small">Matched to iTunes: ${m.itunesTitle || '—'}${m.bpm ? ` / BPM ${m.bpm}` : ''}${m.key ? ` / Key ${m.key}` : ''}${m.confidence ? ` / ${m.confidence}` : ''}</div>` : `<div class="small">No usable iTunes BPM/Key match for this track.</div>`}
+      </div>`;
+    }).join('') || 'No tracklist loaded.';
+    updateItunesScanStats();
+  }
+
+  function sendItunesScanReleaseToWorkflow(item){
+    if (!item) return false;
+    const matchMap = new Map((item.matchedTracks || []).map(t => [t.trackIndex, t]));
+    const parsedTracklist = (item.tracklist || []).map((track, idx) => ({
+      position: safe(track.position),
+      title: safe(track.title),
+      artist: safe(track.artist || item.artist),
+      discNumber: (() => {
+        const pos = safe(track.position);
+        const m = pos.match(/^(\d+)[.-]/);
+        return m ? m[1] : '';
+      })(),
+      side: deriveSideLabel(track.position),
+      bpm: safe(matchMap.get(idx)?.bpm),
+      key: safe(matchMap.get(idx)?.key)
+    }));
+
+    const fakeUpcomingRow = {
+      Artist: item.artist || '',
+      Title: item.title || '',
+      Label: item.label || '',
+      CatNo: item.catno || '',
+      Barcode: item.barcode || '',
+      Year: item.year || '',
+      Released: item.year || '',
+      Format: item.format || '',
+      Country: item.country || '',
+      Genre: item.genre || '',
+      Style: item.style || '',
+      URL: item.resource_url || '',
+      Artwork: item.artwork || '',
+      Size: item.size || '',
+      Speed: item.speed || '',
+      __releaseTracklist: parsedTracklist
+    };
+
+    const created = applyUpcomingRowToWorkflow(fakeUpcomingRow);
+    if (Array.isArray(created)) {
+      created.forEach((row, idx) => {
+        const source = parsedTracklist[idx];
+        if (!source) return;
+        if (!safe(row['Disc Number']) && safe(source.discNumber)) row['Disc Number'] = source.discNumber;
+        if (!safe(row['Sides']) && safe(source.side)) row['Sides'] = source.side;
+        if (!safe(row.Size) && safe(item.size)) row.Size = item.size;
+        if (!safe(row.Speed) && safe(item.speed)) row.Speed = item.speed;
+        if (!safe(row.BPM) && safe(source.bpm)) row.BPM = source.bpm;
+        if (!safe(row.Key) && safe(source.key)) row.Key = source.key;
+      });
+      render();
+      return true;
+    }
+    return false;
+  }
+
+  async function processItunesScanReleaseFromResult(best, barcode=''){
+    const token = safe(discogsTokenInput.value);
+    if (!token){
+      setItunesScanStatus('Add your Discogs personal token first.', 'warn');
+      return;
+    }
+    if (!itunesScanItunesRows.length){
+      setItunesScanStatus('Load your iTunes XML first.', 'warn');
+      return;
+    }
+
+    setItunesScanStatus('Loading Discogs release details...', 'warn');
+    let releaseDetails;
+    try{
+      releaseDetails = await fetchDiscogsReleaseDetails(best, token);
+    } catch (err) {
+      console.error(err);
+      setItunesScanStatus(err.message || 'Could not load Discogs release details for this barcode.', 'bad');
+      return;
+    }
+
+    const artist = Array.isArray(releaseDetails.artists)
+      ? releaseDetails.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).filter(Boolean).join(' / ')
+      : (safe(best.artist) || '');
+    const title = safe(releaseDetails.title || best.title);
+    const tracklist = extractTracklistFromDiscogsRelease(releaseDetails, artist);
+    const index = buildItunesMatchIndex(itunesScanItunesRows);
+    const matchedTracks = [];
+
+    tracklist.forEach((track, idx) => {
+      const match = findBestItunesTrackMatch(index, track.artist || artist, track.title || '');
+      if (match && match.row){
+        matchedTracks.push({
+          trackIndex: idx,
+          discogsTitle: safe(track.title),
+          itunesTitle: safe(match.row.Song),
+          bpm: safe(match.row.BPM),
+          key: safe(match.row.Key),
+          confidence: match.confidence || ''
+        });
+      }
+    });
+
+    const item = {
+      id: String(releaseDetails.id || best.id || Date.now()),
+      releaseId: releaseDetails.id || best.id,
+      artist,
+      title,
+      year: safe(releaseDetails.year || best.year),
+      label: Array.isArray(releaseDetails.labels) ? releaseDetails.labels.map(l => safe(l.name)).filter(Boolean).join(' / ') : '',
+      catno: Array.isArray(releaseDetails.labels) ? releaseDetails.labels.map(l => safe(l.catno)).filter(Boolean).join(' / ') : '',
+      format: Array.isArray(releaseDetails.formats) ? releaseDetails.formats.map(f => safe(f.name || f.descriptions?.join(' / '))).filter(Boolean).join(' / ') : '',
+      country: safe(releaseDetails.country || best.country),
+      genre: Array.isArray(releaseDetails.genres) ? releaseDetails.genres.join(' / ') : '',
+      style: Array.isArray(releaseDetails.styles) ? releaseDetails.styles.join(' / ') : '',
+      artwork: safe(releaseDetails.images?.[0]?.uri || releaseDetails.thumb || best.cover_image || best.thumb),
+      resource_url: safe(releaseDetails.uri || releaseDetails.resource_url || best.resource_url || best.uri),
+      barcode: barcode || normalizeDiscogsList(best.barcode || best.identifiers || ''),
+      size: '',
+      speed: '',
+      tracklist,
+      matchedTracks
+    };
+
+    const vinylFormat = Array.isArray(releaseDetails.formats) ? releaseDetails.formats.find(f => safe(f.name).toLowerCase().includes('vinyl')) : null;
+    if (vinylFormat && Array.isArray(vinylFormat.descriptions)) {
+      const size = vinylFormat.descriptions.find(d => ['12"', '10"', '9"', '7"', '4"'].includes(safe(d)));
+      const speed = vinylFormat.descriptions.find(d => ['33 RPM', '45 RPM', '78 RPM'].includes(safe(d)));
+      item.size = size || '';
+      item.speed = speed ? speed.replace(' RPM', '') : '';
+    }
+
+    itunesScanCurrentRelease = item;
+    renderItunesScan();
+
+    if (!matchedTracks.length){
+      setItunesScanStatus(`Scanned ${title}, but no usable BPM/Key matches were found in iTunes, so nothing was sent to Workflow Studio.`, 'warn');
+      return;
+    }
+
+    const sent = sendItunesScanReleaseToWorkflow(item);
+    if (sent){
+      setStatus(`Received matched release data from iTunes Scan.`, 'good');
+      setItunesScanStatus(`Scanned ${title}. Matched ${matchedTracks.length} track(s) and sent the full album to Workflow Studio.`, 'good');
+    } else {
+      setItunesScanStatus(`Matched ${matchedTracks.length} track(s), but the album could not be sent to Workflow Studio.`, 'bad');
+    }
+  }
+
+  async function lookupItunesScanBarcode(code){
+    const token = safe(discogsTokenInput.value);
+    if (!token){
+      setItunesScanStatus('Add your Discogs personal token first.', 'warn');
+      return;
+    }
+    if (!itunesScanItunesRows.length){
+      setItunesScanStatus('Load your iTunes XML first.', 'warn');
+      return;
+    }
+    const barcode = normalizeBarcodeValue(code);
+    if (!barcode){
+      setItunesScanStatus('Scan or enter a UPC / EAN first.', 'warn');
+      return;
+    }
+
+    setItunesScanStatus(`Looking up barcode ${barcode} on Discogs...`, 'warn');
+    try{
+      const url = 'https://api.discogs.com/database/search?barcode=' + encodeURIComponent(barcode) + '&type=release&per_page=10';
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': 'Discogs token=' + token,
+          'User-Agent': 'DJLibraryWorkflowStudio/1.0'
+        }
+      });
+      if (!res.ok) throw new Error('Discogs barcode search failed: ' + res.status);
+      const data = await res.json();
+      const results = Array.isArray(data.results) ? data.results : [];
+      if (!results.length){
+        itunesScanCurrentRelease = null;
+        renderItunesScan();
+        setItunesScanStatus(`No Discogs release found for barcode ${barcode}.`, 'warn');
+        return;
+      }
+
+      const best = results.find(r => r.cover_image || r.thumb) || results[0];
+      await processItunesScanReleaseFromResult(best, barcode);
+    } catch (err) {
+      console.error(err);
+      setItunesScanStatus(err.message || 'Barcode lookup failed.', 'bad');
+    }
+  }
+
+
+  function formatDurationMs(ms){
+    const totalSec = Math.max(0, Math.round(ms / 1000));
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    if (min <= 0) return `${sec}s`;
+    return `${min}m ${sec}s`;
+  }
+
+  function estimateRemainingMs(startMs, completed, total){
+    if (!completed || total <= completed) return 0;
+    const elapsed = Date.now() - startMs;
+    const perItem = elapsed / completed;
+    return perItem * (total - completed);
   }
 
   function setCollectionStatus(msg, type=''){
@@ -1000,17 +2519,17 @@ td input{
 
   function updateCollectionStats(){
     const visible = getVisibleCollectionRows();
-    document.getElementById('collectionCount').textContent = collectionRows.length;
+    document.getElementById('collectionCount').textContent = getCollectionSourceRows().length || collectionRows.length;
     document.getElementById('collectionVisible').textContent = visible.length;
     document.getElementById('collectionTrackCount').textContent = Array.isArray(selectedCollectionRelease?.tracklist) ? selectedCollectionRelease.tracklist.length : 0;
     document.getElementById('collectionYear').textContent = safe(selectedCollectionRelease?.year) || '—';
-    document.getElementById('collectionFolderStat').textContent = String(collectionPage);
-    if (collectionPageInfo) collectionPageInfo.textContent = `Page ${collectionPage} of ${collectionPages}`;
+    document.getElementById('collectionFolderStat').textContent = collectionIndexedRows.length ? 'IDX' : String(collectionPage);
+    if (collectionPageInfo) collectionPageInfo.textContent = collectionIndexedRows.length ? `Indexed folder (${collectionIndexedRows.length})` : `Page ${collectionPage} of ${collectionPages}`;
   }
 
   function getVisibleCollectionRows(){
     const q = lc(collectionSearch);
-    return collectionRows.filter(item => {
+    return getCollectionSourceRows().filter(item => {
       if (!q) return true;
       return [
         item.artist,
@@ -1031,9 +2550,10 @@ td input{
     for (const item of visible){
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'collectionItem' + ((selectedCollectionRelease && selectedCollectionRelease.id === item.id) ? ' active' : '');
+      btn.className = 'collectionItem'; btn.title = "Double-click to import into Workflow Studio" + ((selectedCollectionRelease && selectedCollectionRelease.id === item.id) ? ' active' : '');
       btn.innerHTML = `
         <div><strong>${item.artist || '—'}</strong> — ${item.title || 'Untitled'}</div>
+        <div class="collectionMeta">Double-click to import</div>
         <div class="collectionMeta">${[item.label, item.catno, item.year].filter(Boolean).join(' / ') || 'No extra details yet'}</div>
       `;
       btn.addEventListener('click', async () => {
@@ -1042,6 +2562,16 @@ td input{
         await ensureCollectionReleaseDetails(item);
         renderCollectionPreview();
       });
+      btn.addEventListener('dblclick', async () => {
+        selectedCollectionRelease = item;
+        await ensureCollectionReleaseDetails(item);
+
+        const currentTab = 'collection';
+        sendCollectionReleaseToWorkflow();
+        showTab(currentTab);
+        setCollectionStatus(`Imported ${item.title || 'selected album'} and stayed in My Discogs Collection.`, 'good');
+      });
+
       collectionList.appendChild(btn);
     }
     if (!visible.length){
@@ -1135,6 +2665,7 @@ td input{
 
     collectionUsernameResolved = username;
     collectionPage = page;
+    collectionIndexedRows = [];
     setCollectionStatus(`Loading Discogs collection for ${username}...`, 'warn');
 
     try{
@@ -1271,7 +2802,8 @@ td input{
               const m = pos.match(/^(\d+)[.-]/);
               if (m) return m[1];
               return '';
-            })()
+            })(),
+            side: deriveSideLabel(track.position)
           }))
           .filter(track => track.title)
       : (Array.isArray(item.tracklist) ? item.tracklist : []);
@@ -1306,7 +2838,6 @@ td input{
       });
       render();
     }
-    showTab('workflow');
     setStatus(`Imported ${item.title || 'selected album'} from My Discogs Collection into Workflow Studio.`, 'good');
     setCollectionStatus(`Sent ${item.title || 'selected album'} to Workflow Studio.`, 'good');
   }
@@ -1605,11 +3136,11 @@ td input{
       sizeSelect.dataset.libraryCell = '1';
       sizeSelect.innerHTML = `
         <option value=""></option>
-        <option value="12\">12"</option>
-        <option value="10\">10"</option>
-        <option value="9\">9"</option>
-        <option value="7\">7"</option>
-        <option value="4\">4"</option>
+        <option value="12&quot;">12"</option>
+        <option value="10&quot;">10"</option>
+        <option value="9&quot;">9"</option>
+        <option value="7&quot;">7"</option>
+        <option value="4&quot;">4"</option>
       `;
       sizeSelect.value = row.Size ?? '';
       sizeSelect.addEventListener('change', e => { row.Size = e.target.value; updateStats(); });
@@ -1660,6 +3191,20 @@ td input{
       });
       discTd.appendChild(discInput);
       tr.appendChild(discTd);
+
+      const sidesTd = document.createElement('td');
+      const sidesInput = document.createElement('input');
+      sidesInput.value = row['Sides'] ?? '';
+      sidesInput.dataset.libraryCell = '1';
+      sidesInput.addEventListener('input', e => { row['Sides'] = e.target.value; updateStats(); });
+      sidesInput.addEventListener('keydown', e => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          moveLibraryFocus(sidesInput, e.shiftKey);
+        }
+      });
+      sidesTd.appendChild(sidesInput);
+      tr.appendChild(sidesTd);
 
       const toolsTd = document.createElement('td');
       const box = document.createElement('div');
@@ -1762,11 +3307,40 @@ td input{
     return selected.length ? selected : getVisibleRows();
   }
 
-  function createBlankWorkflowRow(){
+  
+function deriveSideLabel(position){
+    const pos = safe(position).toUpperCase();
+    if (!pos) return '';
+
+    let m = pos.match(/^SIDE\s*([A-Z])(?:\s*\d+)?$/);
+    if (m) return m[1];
+
+    m = pos.match(/^([A-Z])(?:\d+)?$/);
+    if (m) return m[1];
+
+    m = pos.match(/^(?:SIDE\s*)?([A-Z])[-.\s]?(\d+)?$/);
+    if (m) return m[1];
+
+    m = pos.match(/^(\d+)\s*[-/]\s*([A-Z])(?:\d+)?$/);
+    if (m) return `Record ${m[1]} / Side ${m[2]}`;
+
+    m = pos.match(/^(\d+)[-.]([A-Z])(?:\d+)?$/);
+    if (m) return `Record ${m[1]} / Side ${m[2]}`;
+
+    m = pos.match(/^RECORD\s*(\d+)\s*SIDE\s*([A-Z])$/);
+    if (m) return `Record ${m[1]} / Side ${m[2]}`;
+
+    m = pos.match(/^(\d+)[-.](\d+)$/);
+    if (m) return `Record ${m[1]}`;
+
+    return '';
+  }
+
+function createBlankWorkflowRow(){
     return {
       id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()+Math.random()),
       selected:false,
-      Artist:'', Song:'', Album:'', BPM:'', Key:'', Year:'', Genre:'', Artwork:'', Size:'', Speed:'', 'Disc Number':'', 'Disc Number':''
+      Artist:'', Song:'', Album:'', BPM:'', Key:'', Year:'', Genre:'', Artwork:'', Size:'', Speed:'', 'Disc Number':'', 'Sides':''
     };
   }
 
@@ -1804,6 +3378,7 @@ td input{
         if (!safe(target.Year) && releaseYear) target.Year = releaseYear;
         if (!safe(target.Genre) && releaseGenre) target.Genre = releaseGenre;
         if (!safe(target.Artwork) && releaseArtwork) target.Artwork = releaseArtwork;
+        if (!safe(target['Sides']) && safe(track.side || track.Side)) target['Sides'] = safe(track.side || track.Side);
 
         createdOrUpdated.push(target);
       }
@@ -2015,21 +3590,36 @@ td input{
   }
 
   async function fetchDiscogsReleaseDetails(item, token){
-    const resourceUrl = safe(item.resource_url);
-    if (!resourceUrl) return null;
-    try {
-      const res = await fetch(resourceUrl, {
-        headers: {
-          'Authorization': 'Discogs token=' + token,
-          'User-Agent': 'DJLibraryWorkflowStudio/1.0'
+    const resourceUrl = safe(item?.resource_url);
+    const releaseId = safe(item?.id);
+    const urls = [];
+    if (resourceUrl) urls.push(resourceUrl);
+    if (releaseId) urls.push(`https://api.discogs.com/releases/${encodeURIComponent(releaseId)}`);
+
+    let lastError = 'Load failed';
+
+    for (const url of urls){
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': 'Discogs token=' + token,
+            'User-Agent': 'DJLibraryWorkflowStudio/1.0'
+          }
+        });
+        if (!res.ok) {
+          lastError = `Discogs release detail fetch failed: ${res.status}`;
+          continue;
         }
-      });
-      if (!res.ok) throw new Error('Discogs release detail fetch failed: ' + res.status);
-      return await res.json();
-    } catch (err) {
-      console.error(err);
-      return null;
+        const data = await res.json();
+        if (data && (Array.isArray(data.tracklist) || safe(data.title))) return data;
+        lastError = 'Discogs release detail fetch returned incomplete data';
+      } catch (err) {
+        console.error(err);
+        lastError = err?.message || 'Load failed';
+      }
     }
+
+    throw new Error(lastError);
   }
 
   function extractTracklistFromDiscogsRelease(release, fallbackArtist=''){
@@ -2138,14 +3728,19 @@ td input{
       fillRowFromDiscogsResult(row, best);
       applyDiscogsSearchResultToScannerRow(row, best);
 
-      const releaseDetails = await fetchDiscogsReleaseDetails(best, token);
-      if (releaseDetails) {
-        row.__releaseTracklist = extractTracklistFromDiscogsRelease(releaseDetails, row.Artist || '');
-        row.__releaseTitle = row.Title || safe(releaseDetails.title);
-        row.__releaseArtist = row.Artist || (Array.isArray(releaseDetails.artists) ? releaseDetails.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).join(' / ') : row.Artist);
-        if (!safe(row.Artwork) && safe(releaseDetails.images?.[0]?.uri || releaseDetails.thumb)) {
-          row.Artwork = releaseDetails.images?.[0]?.uri || releaseDetails.thumb;
+      try {
+        const releaseDetails = await fetchDiscogsReleaseDetails(best, token);
+        if (releaseDetails) {
+          row.__releaseTracklist = extractTracklistFromDiscogsRelease(releaseDetails, row.Artist || '');
+          row.__releaseTitle = row.Title || safe(releaseDetails.title);
+          row.__releaseArtist = row.Artist || (Array.isArray(releaseDetails.artists) ? releaseDetails.artists.map(a => safe(a.name).replace(/\s*\(\d+\)$/, '')).join(' / ') : row.Artist);
+          if (!safe(row.Artwork) && safe(releaseDetails.images?.[0]?.uri || releaseDetails.thumb)) {
+            row.Artwork = releaseDetails.images?.[0]?.uri || releaseDetails.thumb;
+          }
         }
+      } catch (detailErr) {
+        console.error(detailErr);
+        setUpcomingStatus(detailErr.message || 'Could not load Discogs release details for this barcode.', 'warn');
       }
 
       row.Barcode = row.Barcode || barcode;
@@ -2353,14 +3948,143 @@ td input{
   }
 
   // Workflow events
-  workflowTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('workflow'); });
-  upcomingTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('upcoming'); });
-  collectionTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('collection'); });
-  helpTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('help'); });
+  if (workflowTabBtn) workflowTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('workflow'); });
+  if (upcomingTabBtn) upcomingTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('upcoming'); });
+  if (collectionTabBtn) collectionTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('collection'); });
+  if (itunesMatchTabBtn) itunesMatchTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('itunesmatch'); });
+  if (itunesScanTabBtn) itunesScanTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('itunesscan'); });
+  if (helpTabBtn) helpTabBtn.addEventListener('click', (e) => { e.preventDefault(); showTab('help'); });
+
+  if (itunesScanLoadXmlBtn) itunesScanLoadXmlBtn.addEventListener('click', () => itunesScanXmlInput.click());
+  if (itunesScanXmlInput) itunesScanXmlInput.addEventListener('change', async e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try{
+      setItunesScanStatus(`Reading iTunes XML: ${file.name}...`, 'warn');
+      itunesScanItunesRows = parseItunesXml(await file.text());
+      renderItunesScan();
+      setItunesScanStatus(`Loaded ${itunesScanItunesRows.length} iTunes track(s) for iTunes Scan.`, 'good');
+    } catch (err) {
+      console.error(err);
+      setItunesScanStatus(err.message || 'Could not read iTunes XML.', 'bad');
+    }
+  });
+  if (itunesScanLookupBtn) itunesScanLookupBtn.addEventListener('click', async () => {
+    await lookupItunesScanBarcode(itunesScanBarcodeInput.value);
+    if (itunesScanBarcodeInput) {
+      itunesScanBarcodeInput.focus();
+      itunesScanBarcodeInput.select?.();
+    }
+  });
+  if (itunesScanBarcodeInput) itunesScanBarcodeInput.addEventListener('keydown', async e => {
+    if (e.key === 'Enter'){
+      e.preventDefault();
+      await lookupItunesScanBarcode(itunesScanBarcodeInput.value);
+      if (itunesScanBarcodeInput) {
+        itunesScanBarcodeInput.focus();
+        itunesScanBarcodeInput.select?.();
+      }
+    }
+  });
+  if (itunesScanUseCurrentScannerBtn) itunesScanUseCurrentScannerBtn.addEventListener('click', async () => {
+    const row = upcomingRows[currentUpcomingIndex];
+    if (!row || !safe(row.Barcode)) {
+      setItunesScanStatus('No current Discogs Scanner album with a barcode is selected.', 'warn');
+      return;
+    }
+    await lookupItunesScanBarcode(row.Barcode);
+  });
+  if (itunesScanOpenReleaseBtn) itunesScanOpenReleaseBtn.addEventListener('click', () => {
+    if (!itunesScanCurrentRelease || !itunesScanCurrentRelease.resource_url){
+      setItunesScanStatus('No release URL is available yet.', 'warn');
+      return;
+    }
+    window.open(itunesScanCurrentRelease.resource_url, 'itunes_scan_release', 'width=1100,height=820,resizable=yes,scrollbars=yes');
+  });
+  if (itunesScanSendBtn) itunesScanSendBtn.addEventListener('click', () => {
+    if (!itunesScanCurrentRelease){
+      setItunesScanStatus('No scanned release is ready yet.', 'warn');
+      return;
+    }
+    const ok = sendItunesScanReleaseToWorkflow(itunesScanCurrentRelease);
+    if (ok){
+      setStatus('Received matched release data from iTunes Scan.', 'good');
+      setItunesScanStatus(`Sent ${itunesScanCurrentRelease.title || 'current scanned release'} to Workflow Studio again.`, 'good');
+    } else {
+      setItunesScanStatus('Could not send the current scanned release to Workflow Studio.', 'bad');
+    }
+  });
+
+  itunesMatchLoadCollectionBtn.addEventListener('click', async () => {
+    try {
+      await loadItunesMatchCollection(1);
+    } catch (err) {
+      console.error(err);
+      setItunesMatchStatus(err.message || 'Could not load Discogs folder for iTunes Match.', 'bad');
+    }
+  });
+  itunesMatchIndexBtn.addEventListener('click', indexItunesMatchFolder);
+  itunesMatchLoadXmlBtn.addEventListener('click', () => itunesMatchXmlInput.click());
+  itunesMatchLoadTracklistsBtn.addEventListener('click', loadAllItunesMatchTracklists);
+  itunesMatchXmlInput.addEventListener('change', e => handleItunesMatchXml(e.target.files?.[0]));
+  itunesMatchRunBtn.addEventListener('click', async () => {
+    const source = getItunesMatchSourceRows();
+    if (!source.length){
+      setItunesMatchStatus('Load or index a Discogs folder first.', 'warn');
+      return;
+    }
+    if (!itunesMatchItunesRows.length){
+      setItunesMatchStatus('Load your iTunes XML first.', 'warn');
+      return;
+    }
+
+    try{
+      if (itunesMatchTracklistsLoaded < Math.max(5, Math.floor(source.length * 0.5))) {
+        setItunesMatchStatus('Not enough tracklists are loaded yet. Loading all tracklists first...', 'warn');
+        await loadAllItunesMatchTracklists();
+      }
+      await runItunesMatch();
+    } catch (err) {
+      console.error(err);
+      setItunesMatchStatus(err.message || 'Run Match failed.', 'bad');
+    }
+  });
+  itunesMatchSearchInput.addEventListener('input', e => {
+    itunesMatchSearch = e.target.value;
+    renderItunesMatchList();
+  });
+  itunesMatchSendSelectedBtn.addEventListener('click', () => {
+    if (!selectedItunesMatchAlbum){
+      setItunesMatchStatus('No matched album selected.', 'warn');
+      return;
+    }
+    sendItunesMatchAlbumToWorkflow(selectedItunesMatchAlbum);
+    setStatus(`Imported ${selectedItunesMatchAlbum.title || 'selected matched album'} from iTunes Match into Workflow Studio.`, 'good');
+    setItunesMatchStatus(`Sent ${selectedItunesMatchAlbum.title || 'selected album'} to Workflow Studio.`, 'good');
+  });
+  itunesMatchSendAllBtn.addEventListener('click', async () => {
+    try{
+      await sendAllItunesMatchesToWorkflow();
+    } catch (err) {
+      console.error(err);
+      setItunesMatchStatus(err.message || 'Safe send failed.', 'bad');
+    }
+  });
+  if (itunesMatchCancelSendBtn) itunesMatchCancelSendBtn.addEventListener('click', () => {
+    itunesMatchCancelSendRequested = true;
+    setItunesMatchStatus('Cancel requested. Current safe-send batch will stop after this chunk.', 'warn');
+  });
 
   loadCollectionBtn.addEventListener('click', () => loadDiscogsCollection(1));
-  importCollectionAlbumBtn.addEventListener('click', sendCollectionReleaseToWorkflow);
-  sendCollectionToWorkflowBtn.addEventListener('click', sendCollectionReleaseToWorkflow);
+  indexCollectionBtn.addEventListener('click', buildIsolatedCollectionIndex);
+  importCollectionAlbumBtn.addEventListener('click', () => {
+    sendCollectionReleaseToWorkflow();
+    showTab('workflow');
+  });
+  sendCollectionToWorkflowBtn.addEventListener('click', () => {
+    sendCollectionReleaseToWorkflow();
+    showTab('workflow');
+  });
   collectionPrevPageBtn.addEventListener('click', () => {
     if (collectionPage > 1) loadDiscogsCollection(collectionPage - 1);
   });
@@ -2368,6 +4092,7 @@ td input{
     if (collectionPage < collectionPages) loadDiscogsCollection(collectionPage + 1);
   });
   collectionFolderSelect.addEventListener('change', () => {
+    collectionIndexedRows = [];
     if (collectionUsernameResolved || safe(collectionUsernameInput.value)) loadDiscogsCollection(1);
   });
   collectionSearchInput.addEventListener('input', e => {
@@ -2439,27 +4164,14 @@ td input{
     setStatus(`BPM cleanup finished. Updated ${changed} row(s).`, 'good');
   });
 
-  document.getElementById('applyYearGenreBtn').addEventListener('click', () => {
-    const year = safe(document.getElementById('bulkYear').value);
-    const genre = safe(document.getElementById('bulkGenre').value);
-    const targets = getTargetRowsForBulk();
-    targets.forEach(row => { if (year) row.Year = year; if (genre) row.Genre = genre; });
-    render();
-    setStatus(`Applied bulk Year/Genre to ${targets.length} row(s).`, 'good');
-  });
-
   document.getElementById('fillMissingBtn').addEventListener('click', () => {
-    const year = safe(document.getElementById('bulkYear').value);
-    const genre = safe(document.getElementById('bulkGenre').value);
     const targets = getTargetRowsForBulk();
     targets.forEach(row => {
-      if (year && !safe(row.Year)) row.Year = year;
-      if (genre && !safe(row.Genre)) row.Genre = genre;
       if (safe(row.Key)) row.Key = normalizeKeyText(row.Key) || row.Key;
       if (safe(row.BPM)) row.BPM = normalizeBpm(row.BPM) || row.BPM;
     });
     render();
-    setStatus(`Filled missing/default values on ${targets.length} row(s).`, 'good');
+    setStatus(`Normalized existing Key/BPM values on ${targets.length} row(s).`, 'good');
   });
 
   document.getElementById('discogsSelectedBtn').addEventListener('click', async () => {
@@ -2487,6 +4199,60 @@ td input{
   document.getElementById('clearAllBtn').addEventListener('click', () => { rows = []; render(); setStatus('Cleared all rows.', 'warn'); });
   document.getElementById('selectVisibleBtn').addEventListener('click', () => { getVisibleRows().forEach(r => r.selected = true); render(); setStatus('Selected visible rows.', 'good'); });
   document.getElementById('clearSelectionBtn').addEventListener('click', () => { rows.forEach(r => r.selected = false); render(); setStatus('Cleared selection.', ''); });
+
+  document.getElementById('applyBulkSizeBtn').addEventListener('click', () => {
+    const value = safe(bulkSizeSelect.value);
+    if (!value) { setStatus('Choose a Size value first.', 'warn'); return; }
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => { row.Size = value; });
+    render();
+    setStatus(`Applied Size ${value} to ${targets.length} row(s).`, 'good');
+  });
+
+  document.getElementById('applyBulkSpeedBtn').addEventListener('click', () => {
+    const value = safe(bulkSpeedSelect.value);
+    if (!value) { setStatus('Choose a Speed value first.', 'warn'); return; }
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => { row.Speed = value; });
+    render();
+    setStatus(`Applied Speed ${value} to ${targets.length} row(s).`, 'good');
+  });
+
+  document.getElementById('applyBulkDiscNumberBtn').addEventListener('click', () => {
+    const value = safe(bulkDiscNumberInput.value);
+    if (!value) { setStatus('Enter a Disc # value first.', 'warn'); return; }
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => { row['Disc Number'] = value; });
+    render();
+    setStatus(`Applied Disc # ${value} to ${targets.length} row(s).`, 'good');
+  });
+
+  document.getElementById('applyBulkYearBtn').addEventListener('click', () => {
+    const value = safe(bulkYear.value);
+    if (!value) { setStatus('Enter a Year value first.', 'warn'); return; }
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => { row.Year = value; });
+    render();
+    setStatus(`Applied Year ${value} to ${targets.length} row(s).`, 'good');
+  });
+
+  document.getElementById('applyBulkGenreBtn').addEventListener('click', () => {
+    const value = safe(bulkGenre.value);
+    if (!value) { setStatus('Enter a Genre value first.', 'warn'); return; }
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => { row.Genre = value; });
+    render();
+    setStatus(`Applied Genre ${value} to ${targets.length} row(s).`, 'good');
+  });
+
+  document.getElementById('applyBulkClearBtn').addEventListener('click', () => {
+    const field = safe(bulkClearFieldSelect.value);
+    if (!field) { setStatus('Choose a field to clear first.', 'warn'); return; }
+    const targets = getTargetRowsForBulk();
+    targets.forEach(row => { row[field] = ''; });
+    render();
+    setStatus(`Cleared ${field} on ${targets.length} row(s).`, 'good');
+  });
 
   // Upcoming events
   browseUpcomingBtn.addEventListener('click', () => upcomingInput.click());
